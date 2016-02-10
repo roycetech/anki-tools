@@ -24,6 +24,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.TableColumn;
@@ -165,9 +166,7 @@ public class AnkiMainGui extends javax.swing.JFrame {
         setTitle("Anki Source Editor");
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        panelLeft.setBorder(
-            new javax.swing.border.SoftBevelBorder(
-                javax.swing.border.BevelBorder.RAISED));
+        panelLeft.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         panelLeft.setMaximumSize(new java.awt.Dimension(2147483647, 218));
         panelLeft.setLayout(new java.awt.GridBagLayout());
 
@@ -175,25 +174,6 @@ public class AnkiMainGui extends javax.swing.JFrame {
         btnApply.setEnabled(false);
         btnApply.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         btnApply.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-        btnApply.addActionListener((event) -> {
-            final int selectedRow = tblCard.getSelectedRow();
-            final int selectedCol = tblCard.getSelectedColumn();
-            final Card card = cardModel.getCardAt(selectedRow);
-            switch (selectedCol) {
-                case 0:
-                    card.setFront(textArea.getText());
-                    break;
-
-                case 1:
-                    card.setBack(textArea.getText());
-                    break;
-            }
-
-            cardModel.fireTableRowsUpdated(selectedRow, selectedRow);
-            btnApply.setEnabled(false);
-            textArea.setEditable(false);
-        });
-
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -231,11 +211,19 @@ public class AnkiMainGui extends javax.swing.JFrame {
 
         chkCheckAll.setSelected(true);
         chkCheckAll.setText("Check All");
-        chkCheckAll.addActionListener(evt -> chkCheckAllActionPerformed(evt));
+        chkCheckAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkCheckAllActionPerformed(evt);
+            }
+        });
         panelCheckBox.add(chkCheckAll);
 
         btnInverse.setText("Inverse");
-        btnInverse.addActionListener(evt -> btnInverseActionPerformed(evt));
+        btnInverse.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInverseActionPerformed(evt);
+            }
+        });
         panelCheckBox.add(btnInverse);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -256,16 +244,15 @@ public class AnkiMainGui extends javax.swing.JFrame {
 
         });
 
-        final ListSelectionModel tagCellSelectionModel =
-                tblTag.getSelectionModel();
-        tagCellSelectionModel
-            .setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        ListSelectionModel tagCellSelectionModel = tblTag.getSelectionModel();
+        tagCellSelectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        tagCellSelectionModel.addListSelectionListener(e -> {
-            final int[] selectedRow = tblTag.getSelectedRows();
-            btnDeleteTag.setEnabled(
-                selectedRow.length > 0
-                        && selectedRow[0] >= TagModel.FIXED_TAGS.length);
+        tagCellSelectionModel.addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                int[] selectedRow = tblTag.getSelectedRows();
+                btnDeleteTag.setEnabled(selectedRow.length > 0 && selectedRow[0] >= TagModel.FIXED_TAGS.length);
+            }
+
         });
         scrollPaneTag.setViewportView(tblTag);
 
@@ -281,13 +268,21 @@ public class AnkiMainGui extends javax.swing.JFrame {
 
         btnAddTag.setText("Add");
         btnAddTag.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        btnAddTag.addActionListener(evt -> btnAddTagActionPerformed(evt));
+        btnAddTag.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddTagActionPerformed(evt);
+            }
+        });
         panelButton.add(btnAddTag);
 
         btnDeleteTag.setText("Delete");
         btnDeleteTag.setEnabled(false);
         btnDeleteTag.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        btnDeleteTag.addActionListener(evt -> btnDeleteTagActionPerformed(evt));
+        btnDeleteTag.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteTagActionPerformed(evt);
+            }
+        });
         panelButton.add(btnDeleteTag);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -309,17 +304,29 @@ public class AnkiMainGui extends javax.swing.JFrame {
         rdoGrpToggleCol.add(rdoShowBoth);
         rdoShowBoth.setSelected(true);
         rdoShowBoth.setText("Show Both");
-        rdoShowBoth.addActionListener(evt -> rdoShowBothActionPerformed(evt));
+        rdoShowBoth.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rdoShowBothActionPerformed(evt);
+            }
+        });
         panelRadio.add(rdoShowBoth);
 
         rdoGrpToggleCol.add(rdoShowFront);
         rdoShowFront.setText("Front Only");
-        rdoShowFront.addActionListener(evt -> rdoShowFrontActionPerformed(evt));
+        rdoShowFront.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rdoShowFrontActionPerformed(evt);
+            }
+        });
         panelRadio.add(rdoShowFront);
 
         rdoGrpToggleCol.add(rdoShowBack);
         rdoShowBack.setText("Back Only");
-        rdoShowBack.addActionListener(evt -> rdoShowBackActionPerformed(evt));
+        rdoShowBack.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rdoShowBackActionPerformed(evt);
+            }
+        });
         panelRadio.add(rdoShowBack);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -328,38 +335,29 @@ public class AnkiMainGui extends javax.swing.JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         panelBottom.add(panelRadio, gridBagConstraints);
 
+        // ListSelectionModel cardCellSelectionModel = tblCard.getSelectionModel();
+        tblCard.setAutoCreateRowSorter(true);
         tblCard.setModel(cardModel);
-
         tblCard.setColumnSelectionAllowed(true);
         tblCard.setRowSelectionAllowed(true);
-
-        cardRowSorter = new TableRowSorter<>(cardModel);
-        tblCard.setRowSorter(cardRowSorter);
-
-        final ListSelectionModel cardColSelectionModel =
-                tblCard.getColumnModel().getSelectionModel();
-
-        final ListSelectionModel cardRowSelectionModel =
-                tblCard.getSelectionModel();
-
+        ListSelectionModel cardColSelectionModel = tblCard.getColumnModel().getSelectionModel();
+        ListSelectionModel cardRowSelectionModel = tblCard.getSelectionModel();
         tblCard.setShowGrid(true);
-        final ListSelectionListener cellChangeListener = e -> {
-            String selectedData = null;
+        ListSelectionListener cellChangeListener = new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                String selectedData = null;
 
-            final int[] selectedRow = tblCard.getSelectedRows();
-            final int[] selectedColumns = tblCard.getSelectedColumns();
+                int[] selectedRow = tblCard.getSelectedRows();
+                int[] selectedColumns = tblCard.getSelectedColumns();
 
-            for (int i = 0; i < selectedRow.length; i++) {
-                for (int j = 0; j < selectedColumns.length; j++) {
-                    selectedData = (String) tblCard
-                        .getValueAt(selectedRow[i], selectedColumns[j]);
-                    if (selectedColumns[j] < 2) {
-                        textArea.setText(selectedData);
-                    } else {
-                        textArea.setText("");
+                for (int i = 0; i < selectedRow.length; i++) {
+                    for (int j = 0; j < selectedColumns.length; j++) {
+                        selectedData = (String)tblCard.getValueAt(selectedRow[i], selectedColumns[j]);
+                        if (selectedColumns[j] < 2) {
+                            textArea.setText(selectedData);
+                        }
+                        textArea.setEditable(selectedColumns[j] < 2);
                     }
-                    textArea.setEditable(selectedColumns[j] < 2);
-                    btnApply.setEnabled(textArea.isEditable());
                 }
             }
         };
@@ -367,8 +365,7 @@ public class AnkiMainGui extends javax.swing.JFrame {
         cardColSelectionModel.addListSelectionListener(cellChangeListener);
         cardRowSelectionModel.addListSelectionListener(cellChangeListener);
         scrollPaneCard.setViewportView(tblCard);
-        tblCard.getColumnModel().getSelectionModel().setSelectionMode(
-            javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tblCard.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -399,40 +396,36 @@ public class AnkiMainGui extends javax.swing.JFrame {
 
         jMenu1.setText("File");
 
-        mnuOpen.setAccelerator(
-            javax.swing.KeyStroke.getKeyStroke(
-                java.awt.event.KeyEvent.VK_O,
-                java.awt.event.InputEvent.META_MASK));
+        mnuOpen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.META_MASK));
         mnuOpen.setText("Open...");
-        mnuOpen.addActionListener(evt -> mnuOpenActionPerformed(evt));
+        mnuOpen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuOpenActionPerformed(evt);
+            }
+        });
         jMenu1.add(mnuOpen);
 
         mnuSaveAs.setText("Save As...");
         mnuSaveAs.setEnabled(false);
         jMenu1.add(mnuSaveAs);
 
-        mnuSave.setAccelerator(
-            javax.swing.KeyStroke.getKeyStroke(
-                java.awt.event.KeyEvent.VK_S,
-                java.awt.event.InputEvent.META_MASK));
+        mnuSave.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.META_MASK));
         mnuSave.setText("Save");
         mnuSave.setEnabled(false);
         jMenu1.add(mnuSave);
 
-        mnuExport.setAccelerator(
-            javax.swing.KeyStroke.getKeyStroke(
-                java.awt.event.KeyEvent.VK_E,
-                java.awt.event.InputEvent.META_MASK));
+        mnuExport.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.META_MASK));
         mnuExport.setText("Export");
         mnuExport.setEnabled(false);
         jMenu1.add(mnuExport);
 
-        mnuExit.setAccelerator(
-            javax.swing.KeyStroke.getKeyStroke(
-                java.awt.event.KeyEvent.VK_Q,
-                java.awt.event.InputEvent.META_MASK));
+        mnuExit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.META_MASK));
         mnuExit.setText("Quit");
-        mnuExit.addActionListener(evt -> mnuExitActionPerformed(evt));
+        mnuExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuExitActionPerformed(evt);
+            }
+        });
         jMenu1.add(mnuExit);
 
         mnuMain.add(jMenu1);
