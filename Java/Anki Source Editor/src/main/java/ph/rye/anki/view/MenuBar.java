@@ -16,11 +16,13 @@
 package ph.rye.anki.view;
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 import ph.rye.anki.AnkiMainGui;
@@ -69,22 +71,24 @@ public class MenuBar extends JMenuBar {
             javax.swing.KeyStroke.getKeyStroke(
                 java.awt.event.KeyEvent.VK_O,
                 java.awt.event.InputEvent.META_MASK));
+
         mnuOpen.setText("Open...");
         mnuOpen.addActionListener(evt -> mnuOpenActionPerformed());
         mnuFile.add(mnuOpen);
-
-        mnuSaveAs.setText("Save As...");
-        mnuSaveAs.setEnabled(false);
-        mnuFile.add(mnuSaveAs);
 
         mnuSave.setAccelerator(
             javax.swing.KeyStroke.getKeyStroke(
                 java.awt.event.KeyEvent.VK_S,
                 java.awt.event.InputEvent.META_MASK));
+
         mnuSave.setText("Save");
         mnuSave.setEnabled(false);
         mnuSave.addActionListener(event -> mnuSavePerformed());
         mnuFile.add(mnuSave);
+
+        mnuSaveAs.setText("Save As...");
+        mnuSaveAs.setEnabled(false);
+        mnuFile.add(mnuSaveAs);
 
         mnuExport.setAccelerator(
             javax.swing.KeyStroke.getKeyStroke(
@@ -107,6 +111,15 @@ public class MenuBar extends JMenuBar {
 
     private void mnuSavePerformed() {
         parent.setFileClean();
+        try {
+            service.saveToFile();
+        } catch (final IOException e) {
+            JOptionPane.showMessageDialog(
+                parent,
+                "Could not save file!",
+                "Save Error",
+                JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void mnuOpenActionPerformed() {
@@ -145,13 +158,21 @@ public class MenuBar extends JMenuBar {
 
             mnuSaveAs.setEnabled(true);
             mnuExport.setEnabled(true);
-            parent.getPanelLeft().getBtnApply().setEnabled(false);
+            parent.getPanelLeft().setApplyButtonEnabled(false);
             parent.getPanelLeft().getTextArea().setEditable(false);
             parent.getPanelLeft().getTextArea().setText("");
-
+            //            parent.getPanelLeft().getScrollPaneText().setVisible(true);
+            //            parent.getPanelLeft().getScrollPaneCardTag().setVisible(false);
             parent.getPanelBottom().refreshLabelText();
         }
 
+    }
+
+    /**
+     *
+     */
+    public void enableSave() {
+        mnuSave.setEnabled(true);
     }
 
 

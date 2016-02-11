@@ -39,9 +39,7 @@ import ph.rye.anki.util.StringUtil;
 public class PanelRight extends JPanel {
 
 
-    /**
-     *
-     */
+    /** */
     private static final long serialVersionUID = 4749453698226021946L;
 
 
@@ -95,6 +93,7 @@ public class PanelRight extends JPanel {
         tblTag.setModel(service.getTagModel());
         tblTag.setCellSelectionEnabled(false);
         tblTag.setRowSelectionAllowed(true);
+        tblTag.getColumnModel().getColumn(1).setMaxWidth(70);
 
         tblTag.getModel().addTableModelListener(p -> {
 
@@ -139,8 +138,6 @@ public class PanelRight extends JPanel {
         panelButton.add(btnDeleteTag);
 
         add(panelButton, new Constraint.Builder().gridx(0).gridy(2).build());
-
-
     }
 
     private void btnAddTagActionPerformed() {

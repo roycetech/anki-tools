@@ -2,7 +2,6 @@ package ph.rye.anki;
 
 
 import java.awt.Window;
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
@@ -157,9 +156,10 @@ public class AnkiMainGui extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
             final AnkiMainGui main = new AnkiMainGui();
+            main.setLocationRelativeTo(null);
             main.setVisible(true);
-            main.service.openFile(
-                new File("/Users/royce/DropBox/Documents/Memorize/Git.txt"));
+            //            main.service.openFile(
+            //                new File("/Users/royce/DropBox/Documents/Memorize/Git.txt"));
         });
     }
 
@@ -187,12 +187,19 @@ public class AnkiMainGui extends javax.swing.JFrame {
 
     /** */
     public void setFileDirty() {
-        setTitle(getTitle() + " *");
+        if (getTitle().indexOf(" *") < 0) {
+            setTitle(getTitle() + " *");
+        }
     }
 
     /** */
     public void setFileClean() {
-        setTitle(getTitle().replaceAll("\\s*", ""));
+        setTitle(getTitle().replaceAll("\\s\\*", ""));
+    }
+
+    /** */
+    public MenuBar getMainMenu() {
+        return menuBar;
     }
 
 }

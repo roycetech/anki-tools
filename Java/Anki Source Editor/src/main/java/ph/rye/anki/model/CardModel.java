@@ -20,6 +20,7 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import ph.rye.anki.util.Ano2;
 import ph.rye.anki.util.StringUtil;
 
 /**
@@ -33,9 +34,9 @@ public class CardModel extends AbstractTableModel {
     private static final long serialVersionUID = 1L;
 
 
-    private final List<Card> cardList = new ArrayList<>();
+    private final transient List<Card> cardList = new ArrayList<>();
 
-    private final String[] columnNames = new String[] {
+    private final transient String[] columnNames = new String[] {
             "Front",
             "Back",
             "@Tags" };
@@ -70,21 +71,16 @@ public class CardModel extends AbstractTableModel {
      */
     @Override
     public Object getValueAt(final int rowIndex, final int columnIndex) {
-        final Card card = getCardAt(rowIndex);
-
-        Object retval = null;
-        switch (columnIndex) {
-            case 0:
-                retval = card.getFront();
-                break;
-            case 1:
-                retval = card.getBack();
-                break;
-            case 2:
-                retval = StringUtil.join(card.getTags(), ",");
-                break;
+        final Ano2<String, Card> two = new Ano2<>(null, getCardAt(rowIndex));
+        if (columnIndex == 0) {
+            two.set(two.get2().getFront());
+        } else if (columnIndex == 1) {
+            two.set(two.get2().getBack());
+        } else if (columnIndex == 2) {
+            two.set(StringUtil.join(two.get2().getTags(), ","));
         }
-        return retval;
+        return two.get();
+
     }
 
     /* (non-Javadoc)
@@ -98,13 +94,6 @@ public class CardModel extends AbstractTableModel {
     public Card getCardAt(final int rowIndex) {
         return cardList.get(rowIndex);
     }
-
-    //    public void setCardAt(final int rowIndex, Card card) {
-    //        final Card card = cardList.get(rowIndex);
-    //        cardList.remove(rowIndex);
-    //        card
-    //        cardList.add(rowIndex, card);
-    //    }
 
     public void addCard(final Card card) {
         cardList.add(card);

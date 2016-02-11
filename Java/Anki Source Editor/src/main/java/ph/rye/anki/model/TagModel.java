@@ -17,17 +17,17 @@ package ph.rye.anki.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import javax.swing.table.AbstractTableModel;
 
 import ph.rye.anki.util.Ano;
+import ph.rye.anki.util.Range;
 
 /**
  * @author royce
- *
  */
 public class TagModel extends AbstractTableModel {
 
@@ -36,20 +36,20 @@ public class TagModel extends AbstractTableModel {
     private static final long serialVersionUID = 1L;
 
 
-    private final transient List<Tag> tagList = new ArrayList<>();
+    //    private final transient List<Tag> tagList = new ArrayList<>();
+    private final transient Map<String, Tag> tagMap = new LinkedHashMap<>();
+
+    public static final String UNTAGGED = "<untagged>";
 
     public static final String[] FIXED_TAGS = {
-            "<untagged>",
             "High",
-            "Low",
-            "Enum",
-            "BF Only",
             "FB Only",
-            "Ignore" };
+            "BF Only",
+            "Enum",
+            "Low",
+            "Ignore",
+            UNTAGGED };
 
-
-    private final transient Set<String> allTagNames =
-            new HashSet<>(Arrays.asList(FIXED_TAGS));
 
     private static final String[] COL_NAMES = new String[] {
             "Tag",
@@ -62,11 +62,16 @@ public class TagModel extends AbstractTableModel {
 
 
     @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
-    private final void initFixedTags() {
+    private final void initFixedTags(final boolean state) {
         for (final String fixedTag : FIXED_TAGS) {
-            tagList.add(new Tag(fixedTag, true));
+            tagMap.put(fixedTag, new Tag(fixedTag, state));
         }
     }
+
+    private final void initFixedTags() {
+        initFixedTags(true);
+    }
+
 
     /* (non-Javadoc)
      * @see javax.swing.table.AbstractTableModel#getColumnName(int)
@@ -87,7 +92,8 @@ public class TagModel extends AbstractTableModel {
      */
     @Override
     public int getRowCount() {
-        return allTagNames.size();
+        //return allTagNames.size();
+        return tagMap.size();
     }
 
     /* (non-Javadoc)
@@ -99,10 +105,9 @@ public class TagModel extends AbstractTableModel {
     }
 
     public void addTag(final Tag tag) {
-        if (!allTagNames.contains(tag.getName())) {
-            tagList.add(tag);
-            allTagNames.add(tag.getName());
-            super.fireTableRowsInserted(tagList.size() - 1, tagList.size() - 1);
+        if (!tagMap.keySet().contains(tag.getName())) {
+            tagMap.put(tag.getName(), tag);
+            super.fireTableRowsInserted(tagMap.size() - 1, tagMap.size() - 1);
         }
     }
 
@@ -118,7 +123,7 @@ public class TagModel extends AbstractTableModel {
             retval.set(tag.getName());
         } else if (columnIndex == 1) {
             final Tag tag = getTagAt(rowIndex);
-            retval.set(tag.isShow());
+            retval.set(tag.isChecked());
         }
 
         return retval.get();
@@ -130,8 +135,19 @@ public class TagModel extends AbstractTableModel {
     @Override
     public void setValueAt(final Object aValue, final int rowIndex,
                            final int columnIndex) {
-        final Tag tag = tagList.get(rowIndex);
-        tag.setShow((boolean) aValue);
+
+
+        final List<String> keyList = new ArrayList<>(tagMap.keySet());
+        final Tag tag = tagMap.get(keyList.get(rowIndex));
+
+        if (UNTAGGED.equals(tag.getName())) {
+            this.initWithTags(UNTAGGED);
+        } else {
+            this.untickTags(UNTAGGED);
+        }
+
+        tag.setChecked((boolean) aValue);
+        super.fireTableCellUpdated(FIXED_TAGS.length - 1, columnIndex);
         super.fireTableCellUpdated(rowIndex, columnIndex);
 
     }
@@ -141,7 +157,8 @@ public class TagModel extends AbstractTableModel {
      * @return
      */
     public Tag getTagAt(final int rowIndex) {
-        return tagList.get(rowIndex);
+        final List<String> keyList = new ArrayList<>(tagMap.keySet());
+        return tagMap.get(keyList.get(rowIndex));
     }
 
     @Override
@@ -150,32 +167,28 @@ public class TagModel extends AbstractTableModel {
     }
 
     public boolean isTagEnabled(final String tag) {
-        final Ano<Boolean> ano = new Ano<>(false);
-
-        for (final Tag nextTag : tagList) {
-            if (nextTag.isShow() && nextTag.getName().equals(tag)) {
-                ano.set(true);
-                break;
-            }
+        if (tagMap.get(tag) == null) {
+            return false;
+        } else {
+            return tagMap.get(tag).isChecked();
         }
-        return ano.get();
+
     }
 
     public void initWithTags(final String... tags) {
 
-        final List<String> cardTags = new ArrayList<>(Arrays.asList(tags));
-        for (int i = 0; i < tagList.size(); i++) {
-            final Tag nextTag = tagList.get(i);
-            nextTag.setShow(cardTags.contains(nextTag.getName()));
+        final List<String> keyList = new ArrayList<>(tagMap.keySet());
+        new Range<Integer>(0, tagMap.size()).each((i) -> {
+            final Tag nextTag = tagMap.get(keyList.get(i));
+            nextTag.setChecked(Arrays.asList(tags).contains(nextTag.getName()));
             fireTableCellUpdated(i, 1);
-        }
+        });
     }
 
     public String[] getSelectedTags() {
         final List<String> retval = new ArrayList<>();
-
-        for (final Tag nextTag : tagList) {
-            if (nextTag.isShow()) {
+        for (final Tag nextTag : tagMap.values()) {
+            if (nextTag.isChecked()) {
                 retval.add(nextTag.getName());
             }
         }
@@ -183,11 +196,25 @@ public class TagModel extends AbstractTableModel {
     }
 
     /** */
-    public void reset() {
-        tagList.clear();
-        initFixedTags();
-        allTagNames.clear();
-        allTagNames.addAll(Arrays.asList(FIXED_TAGS));
+    public void reset(final boolean state) {
+        tagMap.clear();
+        initFixedTags(state);
         super.fireTableDataChanged();
     }
+
+    public void untickTags(final String... tags) {
+        for (final String string : tags) {
+            final Tag tag = tagMap.get(string);
+            tag.setChecked(false);
+        }
+    }
+
+    public void tickTags(final String... tags) {
+        for (final String string : tags) {
+            final Tag tag = tagMap.get(string);
+            tag.setChecked(true);
+        }
+
+    }
+
 }

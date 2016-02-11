@@ -15,16 +15,24 @@
  */
 package ph.rye.anki.view;
 
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.SoftBevelBorder;
 
 import ph.rye.anki.AnkiMainGui;
 import ph.rye.anki.model.AnkiService;
+import ph.rye.anki.model.Card;
+import ph.rye.anki.model.Tag;
+import ph.rye.anki.model.TagModel;
 
 /**
  * @author royce
@@ -49,7 +57,7 @@ public class PanelLeft extends JPanel {
 
 
     /** */
-    private final JButton btnApply = new JButton();;
+    private final transient JButton btnApply = new JButton();;
 
 
     public PanelLeft(final AnkiMainGui parent, final AnkiService service) {
@@ -60,11 +68,9 @@ public class PanelLeft extends JPanel {
 
     public void initComponents() {
 
-        setBorder(
-            new javax.swing.border.SoftBevelBorder(
-                javax.swing.border.BevelBorder.RAISED));
+        setBorder(new SoftBevelBorder(BevelBorder.RAISED));
 
-        setMaximumSize(new java.awt.Dimension(2147483647, 218));
+        setMaximumSize(new Dimension(2147483647, 218));
         setLayout(new GridBagLayout());
 
         btnApply.setText("Apply");
@@ -79,17 +85,23 @@ public class PanelLeft extends JPanel {
             new Constraint.Builder()
                 .gridx(0)
                 .gridy(0)
+                .gridwidth(2)
                 .anchor(java.awt.GridBagConstraints.EAST)
                 .build());
 
-        scrollPaneText.setMaximumSize(new java.awt.Dimension(32767, 80));
-        scrollPaneText.setVisible(true);
+        scrollPaneText.setMaximumSize(new Dimension(32767, 80));
 
-        textArea.setEditable(false);
+        textArea.setEnabled(false);
         textArea.setColumns(20);
         textArea.setLineWrap(true);
         textArea.setRows(5);
         textArea.setWrapStyleWord(true);
+        textArea.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(final KeyEvent event) {
+                btnApply.setEnabled(true);
+            }
+        });
         scrollPaneText.setViewportView(textArea);
 
         add(
@@ -104,25 +116,53 @@ public class PanelLeft extends JPanel {
                 .build());
 
         scrollPaneCardTag.setVisible(true);
+        scrollPaneCardTag.setMinimumSize(new Dimension(150, Integer.MAX_VALUE));
+        scrollPaneCardTag
+            .setPreferredSize(new Dimension(200, Integer.MAX_VALUE));
+        scrollPaneCardTag.setMaximumSize(new Dimension(600, Integer.MAX_VALUE));
 
         add(
             scrollPaneCardTag,
             new Constraint.Builder()
-                .gridx(0)
+                .gridx(1)
                 .gridy(1)
-                .fill(java.awt.GridBagConstraints.BOTH)
-                .weightx(1)
+                .fill(java.awt.GridBagConstraints.VERTICAL)
+                .weightx(0)
                 .weighty(1)
                 .build());
-
 
         tblCardTag.setModel(service.getCardTagModel());
         tblCardTag.setColumnSelectionAllowed(false);
         tblCardTag.setRowSelectionAllowed(false);
         tblCardTag.setShowGrid(true);
+        tblCardTag.getColumnModel().getColumn(1).setMaxWidth(100);
+        tblCardTag.setEnabled(false);
 
-        tblCardTag.getModel().addTableModelListener(e -> {
-            btnApply.setEnabled(true);
+        tblCardTag.getModel().addTableModelListener(event -> {
+            if (service.isFileLoaded() && !service.isRefreshing()) {
+
+                final int row = event.getFirstRow();
+                final Tag cardTag = service.getCardTagModel().getTagAt(row);
+
+                final JTable tblCard = parent.getPanelBottom().getTblCard();
+                final int selectedRow = tblCard.getSelectedRow();
+                final int modelRow =
+                        tblCard.convertRowIndexToModel(selectedRow);
+
+                final Card card = service.getCardModel().getCardAt(modelRow);
+                if (cardTag.isChecked()) {
+                    if (TagModel.UNTAGGED.equals(cardTag.getName())) {
+                        card.setTags();
+                    } else {
+                        card.addTags(cardTag.getName());
+                    }
+                } else {
+                    card.removeTags(cardTag.getName());
+                }
+                service.getCardModel().fireTableCellUpdated(selectedRow, 2);
+
+                btnApply.setEnabled(false);
+            }
         });
 
         scrollPaneCardTag.setViewportView(tblCardTag);
@@ -133,18 +173,15 @@ public class PanelLeft extends JPanel {
         final JTable tblCard = parent.getPanelBottom().getTblCard();
 
         final int selectedRow = tblCard.getSelectedRow();
-
         final int selectedCol = tblCard.getSelectedColumn();
-
 
         if (selectedRow > -1 && selectedCol > -1) {
 
-            scrollPaneText.setVisible(selectedCol < 2);
-            scrollPaneCardTag.setVisible(selectedCol >= 2);
+            //            scrollPaneText.setVisible(selectedCol < 2);
+            //            scrollPaneCardTag.setVisible(selectedCol >= 2);
 
 
             final int modelRow = tblCard.convertRowIndexToModel(selectedRow);
-            tblCard.getSelectedRow();
 
             if (selectedCol == 0) {
 
@@ -162,20 +199,27 @@ public class PanelLeft extends JPanel {
 
             service.getCardModel().fireTableCellUpdated(modelRow, selectedCol);
             btnApply.setEnabled(false);
+            parent.getMainMenu().enableSave();
             textArea.setEditable(false);
         }
 
         parent.setFileDirty();
-
     }
 
+    public void setTableEnabled(final boolean state) {
+        tblCardTag.setEnabled(state);
+    }
+
+    public void setApplyButtonEnabled(final boolean newState) {
+        btnApply.setEnabled(newState);
+    }
 
     /**
      * @return the btnApply
      */
-    public JButton getBtnApply() {
-        return btnApply;
-    }
+    //    public JButton getBtnApply() {
+    //        return btnApply;
+    //    }
 
 
     /**
@@ -207,6 +251,15 @@ public class PanelLeft extends JPanel {
      */
     public JTable getTblCardTag() {
         return tblCardTag;
+    }
+
+
+    /** */
+    public void setAllEditable() {
+        getTblCardTag().setEnabled(true);
+        getTextArea().setEnabled(true);
+        getTextArea().setEditable(true);
+
     }
 
 }

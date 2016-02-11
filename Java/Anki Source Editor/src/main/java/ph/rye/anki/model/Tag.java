@@ -12,13 +12,13 @@ package ph.rye.anki.model;
 public class Tag {
 
     private final String name;
-    private transient boolean show;
+    private transient boolean checked;
 
-    public Tag(final String name, final boolean show) {
+    public Tag(final String name, final boolean checked) {
         assert name != null;
 
         this.name = name;
-        this.show = show;
+        this.checked = checked;
     }
 
     /**
@@ -31,24 +31,24 @@ public class Tag {
     /**
      * @return the show
      */
-    public boolean isShow() {
-        return show;
+    public boolean isChecked() {
+        return checked;
     }
 
     /**
-     * @param show the show to set
+     * @param checked the show to set
      */
     public void toggleState() {
-        show = !show;
+        checked = !checked;
     }
 
-    public void setShow(final boolean state) {
-        show = state;
+    public void setChecked(final boolean state) {
+        checked = state;
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + name + "," + show + ")";
+        return getClass().getSimpleName() + "(" + name + "," + checked + ")";
     }
 
 }

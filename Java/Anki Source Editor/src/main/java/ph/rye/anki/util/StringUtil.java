@@ -29,23 +29,24 @@ public final class StringUtil {
     private StringUtil() {}
 
 
-    public static String join(List<String> strings, String delimeter) {
-        StringBuilder strBuilder = new StringBuilder();
-        for (String string : strings) {
+    public static String join(final List<String> strings,
+                              final String delimeter) {
+        final StringBuilder strBuilder = new StringBuilder();
+        for (final String string : strings) {
             if (strBuilder.length() > 0) {
                 strBuilder.append(delimeter);
             }
-            strBuilder.append(string);            
+            strBuilder.append(string);
         }
         return strBuilder.toString();
     }
-    
-    public static String ltrim(String string) {
-        return string.replaceAll("^\\s+","");
+
+    public static String ltrim(final String string) {
+        return string.replaceAll("^\\s+", "");
     }
-        
-    public static String rtrim(String string) {
-        return string.replaceAll("\\s+$","");
+
+    public static String rtrim(final String string) {
+        return string.replaceAll("\\s+$", "");
     }
 
     /**
@@ -53,8 +54,7 @@ public final class StringUtil {
      *
      * @param array String array to trim contents.
      */
-    public static String[] trimArray(final String[] array)
-    {
+    public static String[] trimArray(final String[] array) {
         String[] retval = null; //NOPMD: null default, conditionally redefine.
         if (array != null) {
             retval = new String[array.length];
@@ -76,8 +76,7 @@ public final class StringUtil {
      *
      * @param string string to check.
      */
-    public static boolean hasValue(final String string)
-    {
+    public static boolean hasValue(final String string) {
         return string != null && !"".equals(string);
     }
 

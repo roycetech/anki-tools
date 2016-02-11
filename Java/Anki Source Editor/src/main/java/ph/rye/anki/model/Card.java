@@ -76,4 +76,24 @@ public class Card {
         tags.addAll(Arrays.asList(newTags));
     }
 
+    public String toSource() {
+        final StringBuilder strBuilder = new StringBuilder();
+        if (!getTags().isEmpty()) {
+            strBuilder.append(AnkiService.TAGS_MARKER);
+            for (final String string : tags) {
+                if (strBuilder.length() > AnkiService.TAGS_MARKER.length()) {
+                    strBuilder.append(", ");
+                }
+                strBuilder.append(string);
+            }
+            strBuilder.append('\n');
+        }
+        strBuilder
+            .append(this.getFront())
+            .append("\n\n")
+            .append(this.getBack())
+            .append('\n');
+        return strBuilder.toString();
+    }
+
 }

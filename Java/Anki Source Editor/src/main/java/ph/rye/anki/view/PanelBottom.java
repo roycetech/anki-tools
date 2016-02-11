@@ -23,11 +23,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 
 import ph.rye.anki.AnkiMainGui;
+import ph.rye.anki.controller.PanelBottomHandler;
 import ph.rye.anki.model.AnkiService;
 import ph.rye.anki.model.CardModel;
 import ph.rye.anki.util.Ano;
@@ -43,15 +43,16 @@ public class PanelBottom extends JPanel {
     /** */
     private static final long serialVersionUID = 172157402700377123L;
 
-    @SuppressWarnings({
-            "PMD.UnusedPrivateField",
-            "PMD.SingularField" })
+
     private transient final AnkiMainGui parent;
 
     private final transient AnkiService service;
 
 
     private transient TableRowSorter<CardModel> cardRowSorter;
+
+    private final transient PanelBottomHandler handler =
+            new PanelBottomHandler();
 
 
     private final transient JPanel panelRadio = new JPanel();
@@ -61,6 +62,8 @@ public class PanelBottom extends JPanel {
     private final transient JRadioButton rdoShowFront = new JRadioButton();
     private final transient JScrollPane scrollPaneCard = new JScrollPane();
     private final transient JTable tblCard = new JTable();
+
+
     private final transient JLabel lblCard = new JLabel();
 
 
@@ -73,34 +76,25 @@ public class PanelBottom extends JPanel {
     public void initComponents() {
         setLayout(new java.awt.GridBagLayout());
 
-        rdoGrpToggleCol.add(rdoShowBoth);
-        rdoShowBoth.setSelected(true);
-        rdoShowBoth.setText("Show Both");
-        rdoShowBoth.addActionListener(evt -> rdoShowBothActionPerformed());
-        panelRadio.add(rdoShowBoth);
+        initRadioButtons();
 
-        rdoGrpToggleCol.add(rdoShowFront);
-        rdoShowFront.setText("Front Only");
-        rdoShowFront.addActionListener(evt -> rdoShowFrontActionPerformed());
-        panelRadio.add(rdoShowFront);
-
-        rdoGrpToggleCol.add(rdoShowBack);
-        rdoShowBack.setText("Back Only");
-        rdoShowBack.addActionListener(evt -> rdoShowBackActionPerformed());
-        panelRadio.add(rdoShowBack);
-
-        add(
-            panelRadio,
-            new Constraint.Builder()
-                .gridx(0)
-                .gridy(0)
-                .anchor(java.awt.GridBagConstraints.WEST)
-                .build());
 
         tblCard.setModel(service.getCardModel());
 
         tblCard.setColumnSelectionAllowed(true);
         tblCard.setRowSelectionAllowed(true);
+
+        final TableColumn tagsColumn = tblCard.getColumnModel().getColumn(2);
+        tagsColumn.setMaxWidth(300);
+        tagsColumn.setPreferredWidth(150);
+
+        tblCard
+            .getColumnModel()
+            .getColumn(1)
+            .setCellRenderer(new CardRenderer());
+
+
+        tblCard.setRowHeight(32);
 
         cardRowSorter = new TableRowSorter<>(service.getCardModel());
         tblCard.setRowSorter(cardRowSorter);
@@ -114,46 +108,23 @@ public class PanelBottom extends JPanel {
 
         tblCard.setShowGrid(true);
 
-        final ListSelectionListener cellChangeListener = event -> {
+        colSelectionModel.addListSelectionListener(
+            eevent -> cellSelectChangeActionPerformed());
 
-            final int selectedRow = tblCard.getSelectedRow();
-            final int selectedColumn = tblCard.getSelectedColumn();
+        rowSelectionModel.addListSelectionListener(
+            event -> cellSelectChangeActionPerformed());
 
-            if (selectedRow < 0) {
-                return;
-            }
-
-            final PanelLeft panelLeft = parent.getPanelLeft();
-
-            if (selectedColumn < 2) {
-
-                panelLeft.getTextArea().setText(
-                    (String) tblCard.getValueAt(selectedRow, selectedColumn));
-
-                panelLeft.getScrollPaneCardTag().setVisible(false);
-                panelLeft.getScrollPaneText().setVisible(true);
-
-            } else {
-
-                panelLeft.getTextArea().setText("");
-                panelLeft.getScrollPaneCardTag().setVisible(true);
-                panelLeft.getScrollPaneText().setVisible(false);
-            }
-
-            panelLeft.getTextArea().setEditable(selectedColumn < 2);
-            panelLeft.getBtnApply().setEnabled(true);
-        };
-
-
-        colSelectionModel.addListSelectionListener(cellChangeListener);
-        rowSelectionModel.addListSelectionListener(cellChangeListener);
-        rowSelectionModel.addListSelectionListener(e -> {
+        rowSelectionModel.addListSelectionListener(event -> {
+            service.setRefreshing(true);
             final int selectedRow = tblCard.getSelectedRow();
             if (selectedRow > -1) {
                 service.initCardTagFromTag(
                     (String) tblCard.getValueAt(selectedRow, 2));
+                parent.getPanelLeft().setTableEnabled(true);
+            } else {
+                parent.getPanelLeft().setTableEnabled(false);
             }
-
+            service.setRefreshing(false);
         });
 
         scrollPaneCard.setViewportView(tblCard);
@@ -186,39 +157,56 @@ public class PanelBottom extends JPanel {
 
     }
 
-    private void rdoShowFrontActionPerformed() {
-        shrinkColumnSize(tblCard.getColumnModel().getColumn(1));
-        restoreColumnSize(tblCard.getColumnModel().getColumn(0));
+    private void initRadioButtons() {
+        rdoGrpToggleCol.add(rdoShowBoth);
+        rdoShowBoth.setSelected(true);
+        rdoShowBoth.setText("Show Both");
+        rdoShowBoth.addActionListener(
+            evt -> handler.rdoShowBothActionPerformed(tblCard));
+        panelRadio.add(rdoShowBoth);
+
+        rdoGrpToggleCol.add(rdoShowFront);
+        rdoShowFront.setText("Front Only");
+        rdoShowFront.addActionListener(
+            evt -> handler.rdoShowFrontActionPerformed(tblCard));
+        panelRadio.add(rdoShowFront);
+
+        rdoGrpToggleCol.add(rdoShowBack);
+        rdoShowBack.setText("Back Only");
+        rdoShowBack.addActionListener(
+            evt -> handler.rdoShowBackActionPerformed(tblCard));
+        panelRadio.add(rdoShowBack);
+
+        add(
+            panelRadio,
+            new Constraint.Builder()
+                .gridx(0)
+                .gridy(0)
+                .anchor(java.awt.GridBagConstraints.WEST)
+                .build());
     }
 
-    private void rdoShowBackActionPerformed() {
-        shrinkColumnSize(tblCard.getColumnModel().getColumn(0));
-        restoreColumnSize(tblCard.getColumnModel().getColumn(1));
-    }
+    private void cellSelectChangeActionPerformed() {
+        final int selectedRow = tblCard.getSelectedRow();
 
+        if (selectedRow < 0) {
+            return;
+        }
 
-    private void rdoShowBothActionPerformed() {
-        restoreColumnSize(tblCard.getColumnModel().getColumn(0));
-        restoreColumnSize(tblCard.getColumnModel().getColumn(1));
-    }
+        final int selectedColumn = tblCard.getSelectedColumn();
+        final PanelLeft panelLeft = parent.getPanelLeft();
 
+        if (selectedColumn < 2) {
 
-    /** */
-    void restoreColumnSize(final TableColumn column) {
-        column.setPreferredWidth(75);
-        column.setMinWidth(15);
-        column.setMaxWidth(Integer.MAX_VALUE);
-    }
+            panelLeft.getTextArea().setText(
+                (String) tblCard.getValueAt(selectedRow, selectedColumn));
+        } else {
 
-    /**
-     * Hide column.
-     *
-     * @param column column to hide.
-     */
-    void shrinkColumnSize(final TableColumn column) {
-        column.setPreferredWidth(0);
-        column.setMinWidth(0);
-        column.setMaxWidth(0);
+            panelLeft.getTextArea().setText("");
+        }
+
+        panelLeft.setAllEditable();
+        panelLeft.setApplyButtonEnabled(false);
     }
 
 
