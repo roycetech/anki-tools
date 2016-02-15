@@ -29,6 +29,7 @@ import javax.swing.table.TableRowSorter;
 import ph.rye.anki.AnkiMainGui;
 import ph.rye.anki.controller.PanelBottomHandler;
 import ph.rye.anki.model.AnkiService;
+import ph.rye.anki.model.Card;
 import ph.rye.anki.model.CardModel;
 import ph.rye.anki.util.Ano;
 import ph.rye.anki.util.StringUtil;
@@ -99,38 +100,22 @@ public class PanelBottom extends JPanel {
         cardRowSorter = new TableRowSorter<>(service.getCardModel());
         tblCard.setRowSorter(cardRowSorter);
 
-        final ListSelectionModel colSelectionModel =
-                tblCard.getColumnModel().getSelectionModel();
-
+        //        final ListSelectionModel colSelectionModel =
+        //                tblCard.getColumnModel().getSelectionModel();
 
         final ListSelectionModel rowSelectionModel =
                 tblCard.getSelectionModel();
 
         tblCard.setShowGrid(true);
 
-        colSelectionModel.addListSelectionListener(
-            eevent -> cellSelectChangeActionPerformed());
+        rowSelectionModel
+            .addListSelectionListener(event -> cellSelectRowActionPerformed());
 
-        rowSelectionModel.addListSelectionListener(
-            event -> cellSelectChangeActionPerformed());
-
-        rowSelectionModel.addListSelectionListener(event -> {
-            service.setRefreshing(true);
-            final int selectedRow = tblCard.getSelectedRow();
-            if (selectedRow > -1) {
-                service.initCardTagFromTag(
-                    (String) tblCard.getValueAt(selectedRow, 2));
-                parent.getPanelLeft().setTableEnabled(true);
-            } else {
-                parent.getPanelLeft().setTableEnabled(false);
-            }
-            service.setRefreshing(false);
-        });
 
         scrollPaneCard.setViewportView(tblCard);
 
-        tblCard.getColumnModel().getSelectionModel().setSelectionMode(
-            ListSelectionModel.SINGLE_SELECTION);
+        //        tblCard.getColumnModel().getSelectionModel().setSelectionMode(
+        //            ListSelectionModel.SINGLE_SELECTION);
         tblCard.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         add(
@@ -153,8 +138,6 @@ public class PanelBottom extends JPanel {
                 .gridy(2)
                 .fill(java.awt.GridBagConstraints.HORIZONTAL)
                 .build());
-
-
     }
 
     private void initRadioButtons() {
@@ -186,29 +169,26 @@ public class PanelBottom extends JPanel {
                 .build());
     }
 
-    private void cellSelectChangeActionPerformed() {
+    private void cellSelectRowActionPerformed() {
+
         final int selectedRow = tblCard.getSelectedRow();
+        if (selectedRow > -1) {
 
-        if (selectedRow < 0) {
-            return;
-        }
+            final String tag = (String) tblCard.getValueAt(selectedRow, 2);
 
-        final int selectedColumn = tblCard.getSelectedColumn();
-        final PanelLeft panelLeft = parent.getPanelLeft();
+            parent.getPanelLeft().setTableEnabled(true);
+            service.initCardTagFromTag(tag);
 
-        if (selectedColumn < 2) {
+            final PanelLeft panelLeft = parent.getPanelLeft();
 
             panelLeft.getTextArea().setText(
-                (String) tblCard.getValueAt(selectedRow, selectedColumn));
-        } else {
+                (String) tblCard.getValueAt(selectedRow, 0));
 
-            panelLeft.getTextArea().setText("");
+            panelLeft.setTableEnabled(false);
+            panelLeft.setAllEditable();
+            panelLeft.setApplyButtonEnabled(false);
         }
-
-        panelLeft.setAllEditable();
-        panelLeft.setApplyButtonEnabled(false);
     }
-
 
     public void filterCards() {
 
@@ -265,6 +245,38 @@ public class PanelBottom extends JPanel {
     public void refreshLabelText() {
         getLblCard()
             .setText(String.format("Total card(s): %d", tblCard.getRowCount()));
+    }
+
+
+    /**
+     *
+     */
+    public void selectFirstRow() {
+        if (tblCard.getRowCount() > 0) {
+            //service.setRefreshing(true);
+            if (rdoShowBack.isSelected()) {
+                tblCard.setColumnSelectionInterval(1, 1);
+            } else {
+                tblCard.setColumnSelectionInterval(0, 0);
+            }
+            //service.setRefreshing(false);
+            tblCard.setRowSelectionInterval(0, 0);
+        }
+
+    }
+
+
+    /**
+     * @param text
+     */
+    public void setFrontCardValue(final String text) {
+        final int selectedRow = tblCard.getSelectedRow();
+        if (selectedRow > -1) {
+            final int modelRow = tblCard.convertRowIndexToModel(selectedRow);
+            final Card card = service.getCardModel().getCardAt(modelRow);
+            card.setFront(text);
+            service.getCardModel().fireTableCellUpdated(selectedRow, 0);
+        }
     }
 
 }

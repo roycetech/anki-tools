@@ -17,6 +17,7 @@ package ph.rye.anki.view;
 
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -54,6 +55,9 @@ public class PanelRight extends JPanel {
 
     private final transient JPanel panelCheckBox = new JPanel();
     private final transient JButton btnInverse = new JButton();
+    //    private final transient JToggleButton btnAny = new JToggleButton("Any");
+
+
     private final transient JCheckBox chkCheckAll = new JCheckBox();
 
     private final transient JTable tblTag = new JTable();
@@ -98,7 +102,10 @@ public class PanelRight extends JPanel {
         tblTag.getModel().addTableModelListener(p -> {
 
             if (service.isFileLoaded()) {
-                parent.getPanelBottom().filterCards();
+                if (!service.isRefreshing()) {
+                    parent.getPanelBottom().filterCards();
+                }
+                parent.getPanelBottom().selectFirstRow();
             }
 
         });
@@ -106,7 +113,9 @@ public class PanelRight extends JPanel {
         final ListSelectionModel tagSelectModel = tblTag.getSelectionModel();
         tagSelectModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        tagSelectModel.addListSelectionListener(p -> {
+        tagSelectModel.addListSelectionListener(p ->
+
+        {
             final int[] selectedRow = tblTag.getSelectedRows();
             btnDeleteTag.setEnabled(
                 selectedRow.length > 0
@@ -134,7 +143,7 @@ public class PanelRight extends JPanel {
         btnDeleteTag.setText("Delete");
         btnDeleteTag.setEnabled(false);
         btnDeleteTag.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        btnDeleteTag.addActionListener(evt -> btnDeleteTagActionPerformed(evt));
+        btnDeleteTag.addActionListener(evt -> btnDeleteTagActionPerformed());
         panelButton.add(btnDeleteTag);
 
         add(panelButton, new Constraint.Builder().gridx(0).gridy(2).build());
@@ -157,12 +166,19 @@ public class PanelRight extends JPanel {
 
     }
 
-    private void btnDeleteTagActionPerformed(final java.awt.event.ActionEvent evt) {}
+    private void btnDeleteTagActionPerformed() {
+        final String tagToDelete = service
+            .getTagModel()
+            .getTagAt(tblTag.getSelectedRow())
+            .getName();
+        service.getTagModel().deleteTag(tagToDelete);
+        service.getCardModel().deleteTag(tagToDelete);
+    }
 
 
-    private void chkCheckAllActionPerformed(final java.awt.event.ActionEvent evt) {
+    private void chkCheckAllActionPerformed(final ActionEvent event) {
         for (int i = 0; i < service.getTagModel().getRowCount(); i++) {
-            final JCheckBox checkBox = (JCheckBox) evt.getSource();
+            final JCheckBox checkBox = (JCheckBox) event.getSource();
             service.getTagModel().setValueAt(checkBox.isSelected(), i, 1);
         }
     }

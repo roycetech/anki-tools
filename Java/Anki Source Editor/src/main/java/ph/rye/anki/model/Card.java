@@ -5,9 +5,9 @@
  */
 package ph.rye.anki.model;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * @author royce
@@ -16,7 +16,7 @@ public class Card {
 
     private transient String front;
     private transient String back;
-    private final transient List<String> tags = new ArrayList<String>();
+    private final transient Set<String> tags = new LinkedHashSet<String>();
 
 
     public Card(final String front, final String back) {
@@ -67,7 +67,7 @@ public class Card {
     /**
      * @return the tags
      */
-    public List<String> getTags() {
+    public Set<String> getTags() {
         return tags;
     }
 

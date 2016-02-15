@@ -48,7 +48,7 @@ public class Tag {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + name + "," + checked + ")";
+        return getClass().getSimpleName() + "(" + checked + "," + name + ")";
     }
 
 }

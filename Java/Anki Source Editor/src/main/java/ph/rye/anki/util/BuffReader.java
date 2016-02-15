@@ -28,20 +28,24 @@ public class BuffReader {
     private final transient BufferedReader reader;
     private final transient LoopBody<String> body;
 
+    private transient int index;
+
 
     public BuffReader(final BufferedReader reader,
             final LoopBody<String> body) {
 
         this.reader = reader;
         this.body = body;
+        index = 0;
     }
 
     public void eachLine() {
         try {
             String line = reader.readLine();
             while (line != null) {
-                body.next(line);
+                body.next(index, line);
                 line = reader.readLine();
+                index++;
             }
 
         } catch (final IOException e) {

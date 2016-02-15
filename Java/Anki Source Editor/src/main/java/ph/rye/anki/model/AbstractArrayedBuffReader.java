@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ph.rye.anki.util;
+package ph.rye.anki.model;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,15 +23,16 @@ import java.lang.reflect.Array;
  * @author royce
  *
  */
-public abstract class AbstractBuffReader<T> {
+public abstract class AbstractArrayedBuffReader<T> {
 
 
     private final transient BufferedReader reader;
     private final transient T[] objects;
 
+
     @SuppressWarnings("unchecked")
-    public AbstractBuffReader(final BufferedReader reader, final Class<T> klass,
-            final T... objects) {
+    public AbstractArrayedBuffReader(final BufferedReader reader,
+            final Class<T> klass, final T... objects) {
         this.reader = reader;
 
         this.objects = (T[]) Array.newInstance(klass, objects.length);

@@ -15,7 +15,7 @@
  */
 package ph.rye.anki.util;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Some utilities for String manipulation.
@@ -29,7 +29,7 @@ public final class StringUtil {
     private StringUtil() {}
 
 
-    public static String join(final List<String> strings,
+    public static String join(final Set<String> strings,
                               final String delimeter) {
         final StringBuilder strBuilder = new StringBuilder();
         for (final String string : strings) {

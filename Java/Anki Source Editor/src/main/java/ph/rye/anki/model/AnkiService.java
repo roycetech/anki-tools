@@ -23,12 +23,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ph.rye.anki.AnkiMainGui;
-import ph.rye.anki.util.AbstractBuffReader;
 import ph.rye.anki.util.Ano;
 import ph.rye.anki.util.Counter;
 import ph.rye.anki.util.StringUtil;
@@ -49,7 +50,30 @@ public class AnkiService {
 
     private final transient TagModel tagModel = new TagModel();
     private final transient CardModel cardModel = new CardModel();
-    private final transient TagModel cardTagModel = new TagModel();
+    private final transient TagModel cardTagModel = new TagModel() {
+
+        /** */
+        private static final long serialVersionUID = 2465948892635976042L;
+
+        /* (non-Javadoc)
+         * @see ph.rye.anki.model.TagModel#setValueAt(java.lang.Object, int, int)
+         */
+        @Override
+        public void setValueAt(final Object aValue, final int rowIndex,
+                               final int columnIndex) {
+
+            final List<String> keyList = new ArrayList<>(tagMap.keySet());
+            final Tag tag = tagMap.get(keyList.get(rowIndex));
+
+            if (UNTAGGED.equals(tag.getName())) {
+                this.initWithTags(UNTAGGED);
+            } else {
+                this.untickTags(UNTAGGED);
+            }
+
+            super.setValueAt(aValue, rowIndex, columnIndex);
+        }
+    };
 
     private transient File file;
 
@@ -66,12 +90,12 @@ public class AnkiService {
 
             final Counter spaceCounter = new Counter(0);
 
-            new AbstractBuffReader<Object>(
+            new AbstractArrayedBuffReader<Object>(
                 buffReader,
                 Object.class,
-                new ArrayList<String>(),
-                new ArrayList<String>(),
-                new ArrayList<String>(),
+                new LinkedHashSet<String>(),
+                new LinkedHashSet<String>(),
+                new LinkedHashSet<String>(),
                 new Ano<Boolean>(false)) {
 
                 @SuppressWarnings("unchecked")
@@ -85,9 +109,9 @@ public class AnkiService {
                         final Ano<Boolean> isAnswer = (Ano<Boolean>) get(3);
 
                         if (spaceCounter.get() >= 2) {
-                            final List<String> front = (List<String>) get(0);
-                            final List<String> back = (List<String>) get(1);
-                            final List<String> tags = (List<String>) get(2);
+                            final Set<String> front = (Set<String>) get(0);
+                            final Set<String> back = (Set<String>) get(1);
+                            final Set<String> tags = (Set<String>) get(2);
 
                             isAnswer.set(false);
 
@@ -101,13 +125,13 @@ public class AnkiService {
                         }
 
                         if (isAnswer.get()) {
-                            final List<String> back = (List<String>) get(1);
+                            final Set<String> back = (Set<String>) get(1);
                             back.add(line);
 
                         } else {
 
                             if (line.startsWith(TAGS_MARKER)) {
-                                final List<String> tags = (List<String>) get(2);
+                                final Set<String> tags = (Set<String>) get(2);
                                 tags
                                     .addAll(
                                         Arrays
@@ -120,8 +144,7 @@ public class AnkiService {
                                                                     .length())
                                                             .split(","))));
                             } else {
-                                final List<String> front =
-                                        (List<String>) get(0);
+                                final Set<String> front = (Set<String>) get(0);
                                 front.add(StringUtil.rtrim(line));
                             }
 
@@ -144,8 +167,8 @@ public class AnkiService {
     }
 
     @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
-    public void registerCard(final List<String> front, final List<String> back,
-                             final List<String> tags) {
+    public void registerCard(final Set<String> front, final Set<String> back,
+                             final Set<String> tags) {
 
         final Card newCard = new Card(
             StringUtil.join(front, "\n"),

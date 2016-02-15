@@ -1,6 +1,7 @@
 package ph.rye.anki;
 
 
+import java.awt.EventQueue;
 import java.awt.Window;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -122,7 +123,7 @@ public class AnkiMainGui extends javax.swing.JFrame {
                 .fill(java.awt.GridBagConstraints.BOTH)
                 .anchor(java.awt.GridBagConstraints.SOUTH)
                 .weightx(1)
-                .weighty(3)
+                .weighty(2)
                 .insets(new java.awt.Insets(10, 10, 10, 10))
                 .build());
 
@@ -154,7 +155,7 @@ public class AnkiMainGui extends javax.swing.JFrame {
         }
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> {
+        EventQueue.invokeLater(() -> {
             final AnkiMainGui main = new AnkiMainGui();
             main.setLocationRelativeTo(null);
             main.setVisible(true);

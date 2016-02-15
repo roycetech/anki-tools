@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.swing.table.AbstractTableModel;
 
 import ph.rye.anki.util.Ano;
+import ph.rye.anki.util.Iter;
 import ph.rye.anki.util.Range;
 
 /**
@@ -36,8 +37,7 @@ public class TagModel extends AbstractTableModel {
     private static final long serialVersionUID = 1L;
 
 
-    //    private final transient List<Tag> tagList = new ArrayList<>();
-    private final transient Map<String, Tag> tagMap = new LinkedHashMap<>();
+    protected final transient Map<String, Tag> tagMap = new LinkedHashMap<>();
 
     public static final String UNTAGGED = "<untagged>";
 
@@ -92,7 +92,6 @@ public class TagModel extends AbstractTableModel {
      */
     @Override
     public int getRowCount() {
-        //return allTagNames.size();
         return tagMap.size();
     }
 
@@ -136,20 +135,13 @@ public class TagModel extends AbstractTableModel {
     public void setValueAt(final Object aValue, final int rowIndex,
                            final int columnIndex) {
 
-
         final List<String> keyList = new ArrayList<>(tagMap.keySet());
         final Tag tag = tagMap.get(keyList.get(rowIndex));
 
-        if (UNTAGGED.equals(tag.getName())) {
-            this.initWithTags(UNTAGGED);
-        } else {
-            this.untickTags(UNTAGGED);
-        }
 
         tag.setChecked((boolean) aValue);
-        super.fireTableCellUpdated(FIXED_TAGS.length - 1, columnIndex);
+        super.fireTableCellUpdated(FIXED_TAGS.length - 1, 1);
         super.fireTableCellUpdated(rowIndex, columnIndex);
-
     }
 
     /**
@@ -176,13 +168,20 @@ public class TagModel extends AbstractTableModel {
     }
 
     public void initWithTags(final String... tags) {
+        final List<String> tagList = new ArrayList<>();
+        if (tags.length > 0 && "".equals(tags[0])) {
+            tagList.add(UNTAGGED);
+        } else {
+            tagList.addAll(Arrays.asList(tags));
+        }
 
         final List<String> keyList = new ArrayList<>(tagMap.keySet());
-        new Range<Integer>(0, tagMap.size()).each((i) -> {
+        new Range<Integer>(0, tagMap.size()).each((i, next) -> {
             final Tag nextTag = tagMap.get(keyList.get(i));
-            nextTag.setChecked(Arrays.asList(tags).contains(nextTag.getName()));
-            fireTableCellUpdated(i, 1);
+            nextTag.setChecked(!tagList.contains(nextTag.getName()));
+            nextTag.setChecked(!nextTag.isChecked());
         });
+        fireTableDataChanged();
     }
 
     public String[] getSelectedTags() {
@@ -203,10 +202,12 @@ public class TagModel extends AbstractTableModel {
     }
 
     public void untickTags(final String... tags) {
-        for (final String string : tags) {
-            final Tag tag = tagMap.get(string);
+
+        new Iter<String>(String.class, tags).each((index, nextElement) -> {
+            final Tag tag = tagMap.get(nextElement);
             tag.setChecked(false);
-        }
+            fireTableCellUpdated(index, 1);
+        });
     }
 
     public void tickTags(final String... tags) {
@@ -214,7 +215,13 @@ public class TagModel extends AbstractTableModel {
             final Tag tag = tagMap.get(string);
             tag.setChecked(true);
         }
+    }
 
+    public void deleteTag(final String... tags) {
+        new Iter<String>(String.class, tags).each((index, nextElement) -> {
+            tagMap.remove(nextElement);
+            fireTableRowsDeleted(index, index);
+        });
     }
 
 }

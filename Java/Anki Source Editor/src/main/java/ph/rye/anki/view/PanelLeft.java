@@ -49,6 +49,9 @@ public class PanelLeft extends JPanel {
 
     private final transient AnkiService service;
 
+    //    private final transient PanelLeftHandler handler =
+    //            new PanelLeftHandler(this);
+
 
     private final JTextArea textArea = new JTextArea();;
     private final JTable tblCardTag = new JTable();
@@ -98,9 +101,15 @@ public class PanelLeft extends JPanel {
         textArea.setWrapStyleWord(true);
         textArea.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyPressed(final KeyEvent event) {
-                btnApply.setEnabled(true);
+            public void keyTyped(final KeyEvent event) {
+                parent.getPanelBottom().setFrontCardValue(
+                    textArea.getText().substring(0, textArea.getCaretPosition())
+                            + event.getKeyChar() + textArea.getText().substring(
+                                textArea.getCaretPosition()));
+                parent.setFileDirty();
+                parent.getMainMenu().enableSave();
             }
+
         });
         scrollPaneText.setViewportView(textArea);
 
@@ -138,10 +147,17 @@ public class PanelLeft extends JPanel {
         tblCardTag.getColumnModel().getColumn(1).setMaxWidth(100);
         tblCardTag.setEnabled(false);
 
-        tblCardTag.getModel().addTableModelListener(event -> {
-            if (service.isFileLoaded() && !service.isRefreshing()) {
+        tblCardTag.getModel().addTableModelListener(
+            event -> modelChangeActionPerformed());
 
-                final int row = event.getFirstRow();
+        scrollPaneCardTag.setViewportView(tblCardTag);
+    }
+
+    private void modelChangeActionPerformed() {
+        if (service.isFileLoaded() && !service.isRefreshing()) {
+
+            final int row = tblCardTag.getSelectedRow();
+            if (row > -1) {
                 final Tag cardTag = service.getCardTagModel().getTagAt(row);
 
                 final JTable tblCard = parent.getPanelBottom().getTblCard();
@@ -159,13 +175,13 @@ public class PanelLeft extends JPanel {
                 } else {
                     card.removeTags(cardTag.getName());
                 }
-                service.getCardModel().fireTableCellUpdated(selectedRow, 2);
+                service.getCardModel().fireTableCellUpdated(modelRow, 2);
 
                 btnApply.setEnabled(false);
+                parent.setFileDirty();
+                parent.getMainMenu().enableSave();
             }
-        });
-
-        scrollPaneCardTag.setViewportView(tblCardTag);
+        }
     }
 
     private void btnApplyActionPerformed() {
@@ -176,10 +192,6 @@ public class PanelLeft extends JPanel {
         final int selectedCol = tblCard.getSelectedColumn();
 
         if (selectedRow > -1 && selectedCol > -1) {
-
-            //            scrollPaneText.setVisible(selectedCol < 2);
-            //            scrollPaneCardTag.setVisible(selectedCol >= 2);
-
 
             final int modelRow = tblCard.convertRowIndexToModel(selectedRow);
 
@@ -208,19 +220,15 @@ public class PanelLeft extends JPanel {
 
     public void setTableEnabled(final boolean state) {
         tblCardTag.setEnabled(state);
+        service.setRefreshing(true);
+        tblCardTag.setRowSelectionInterval(0, 0);
+        tblCardTag.removeRowSelectionInterval(0, 0);
+        service.setRefreshing(false);
     }
 
     public void setApplyButtonEnabled(final boolean newState) {
         btnApply.setEnabled(newState);
     }
-
-    /**
-     * @return the btnApply
-     */
-    //    public JButton getBtnApply() {
-    //        return btnApply;
-    //    }
-
 
     /**
      * @return the textArea

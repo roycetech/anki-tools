@@ -15,6 +15,8 @@
  */
 package ph.rye.anki.view;
 
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 
@@ -68,18 +70,16 @@ public class MenuBar extends JMenuBar {
         mnuFile.setText("File");
 
         mnuOpen.setAccelerator(
-            javax.swing.KeyStroke.getKeyStroke(
-                java.awt.event.KeyEvent.VK_O,
-                java.awt.event.InputEvent.META_MASK));
+            javax.swing.KeyStroke
+                .getKeyStroke(KeyEvent.VK_O, InputEvent.META_MASK));
 
         mnuOpen.setText("Open...");
         mnuOpen.addActionListener(evt -> mnuOpenActionPerformed());
         mnuFile.add(mnuOpen);
 
         mnuSave.setAccelerator(
-            javax.swing.KeyStroke.getKeyStroke(
-                java.awt.event.KeyEvent.VK_S,
-                java.awt.event.InputEvent.META_MASK));
+            javax.swing.KeyStroke
+                .getKeyStroke(KeyEvent.VK_S, InputEvent.META_MASK));
 
         mnuSave.setText("Save");
         mnuSave.setEnabled(false);
@@ -91,17 +91,15 @@ public class MenuBar extends JMenuBar {
         mnuFile.add(mnuSaveAs);
 
         mnuExport.setAccelerator(
-            javax.swing.KeyStroke.getKeyStroke(
-                java.awt.event.KeyEvent.VK_E,
-                java.awt.event.InputEvent.META_MASK));
+            javax.swing.KeyStroke
+                .getKeyStroke(KeyEvent.VK_E, InputEvent.META_MASK));
         mnuExport.setText("Export");
         mnuExport.setEnabled(false);
         mnuFile.add(mnuExport);
 
         mnuExit.setAccelerator(
-            javax.swing.KeyStroke.getKeyStroke(
-                java.awt.event.KeyEvent.VK_Q,
-                java.awt.event.InputEvent.META_MASK));
+            javax.swing.KeyStroke
+                .getKeyStroke(KeyEvent.VK_Q, InputEvent.META_MASK));
         mnuExit.setText("Quit");
         mnuExit.addActionListener(event -> System.exit(0));
         mnuFile.add(mnuExit);
@@ -120,6 +118,7 @@ public class MenuBar extends JMenuBar {
                 "Save Error",
                 JOptionPane.ERROR_MESSAGE);
         }
+        mnuSave.setEnabled(false);
     }
 
     private void mnuOpenActionPerformed() {
@@ -161,9 +160,8 @@ public class MenuBar extends JMenuBar {
             parent.getPanelLeft().setApplyButtonEnabled(false);
             parent.getPanelLeft().getTextArea().setEditable(false);
             parent.getPanelLeft().getTextArea().setText("");
-            //            parent.getPanelLeft().getScrollPaneText().setVisible(true);
-            //            parent.getPanelLeft().getScrollPaneCardTag().setVisible(false);
             parent.getPanelBottom().refreshLabelText();
+            parent.getPanelBottom().selectFirstRow();
         }
 
     }

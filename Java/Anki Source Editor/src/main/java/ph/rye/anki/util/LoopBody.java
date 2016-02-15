@@ -18,21 +18,6 @@ package ph.rye.anki.util;
 /**
  * @author royce
  */
-public class Range<T> {
-
-    private final transient int start;
-    private final transient int end;
-
-    public Range(final int start, final int end) {
-        this.start = start;
-        this.end = end;
-    }
-
-
-    public void each(final LoopBody<T> rangeBody) {
-        for (int i = start; i < end; i++) {
-            rangeBody.next(i, null);
-        }
-    }
-
+public interface LoopBody<T> {
+    void next(int index, T nextElement);
 }

@@ -21,6 +21,7 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import ph.rye.anki.util.Ano2;
+import ph.rye.anki.util.Iter;
 import ph.rye.anki.util.StringUtil;
 
 /**
@@ -106,6 +107,15 @@ public class CardModel extends AbstractTableModel {
     public void reset() {
         cardList.clear();
         super.fireTableDataChanged();
+    }
+
+    public void deleteTag(final String tag) {
+
+        new Iter<Card>(cardList).each((index, nextElement) -> {
+            if (nextElement.getTags().remove(tag)) {
+                fireTableCellUpdated(index, 2);
+            }
+        });
     }
 
 
