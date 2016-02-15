@@ -1,6 +1,26 @@
+manifest.mf
+nbproject
+
+*.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# Files and Folders
 .classpath
 .project
 build
-manifest.mf
-nbproject
+target
+bin
+.DS_Store
+.eclipse-pmd
+>>>>>>> e1bdfe460001f3d8ec79cbcaa0cb25571ac83a4e
 
