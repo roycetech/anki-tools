@@ -137,6 +137,8 @@ public class AnkiMainGui extends javax.swing.JFrame {
         btnApply = new javax.swing.JButton();
         scrollPaneText = new javax.swing.JScrollPane();
         textArea = new javax.swing.JTextArea();
+        scrollPaneCardTag = new javax.swing.JScrollPane();
+        tblCardTag = new javax.swing.JTable();
         panelRight = new javax.swing.JPanel();
         panelCheckBox = new javax.swing.JPanel();
         chkCheckAll = new javax.swing.JCheckBox();
@@ -197,6 +199,25 @@ public class AnkiMainGui extends javax.swing.JFrame {
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         panelLeft.add(scrollPaneText, gridBagConstraints);
+
+        tblCardTag.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        scrollPaneCardTag.setViewportView(tblCardTag);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        panelLeft.add(scrollPaneCardTag, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -740,9 +761,11 @@ public class AnkiMainGui extends javax.swing.JFrame {
     private javax.swing.JRadioButton rdoShowBoth;
     private javax.swing.JRadioButton rdoShowFront;
     private javax.swing.JScrollPane scrollPaneCard;
+    private javax.swing.JScrollPane scrollPaneCardTag;
     private javax.swing.JScrollPane scrollPaneTag;
     private javax.swing.JScrollPane scrollPaneText;
     private javax.swing.JTable tblCard;
+    private javax.swing.JTable tblCardTag;
     private javax.swing.JTable tblTag;
     private javax.swing.JTextArea textArea;
     // End of variables declaration//GEN-END:variables
