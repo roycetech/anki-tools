@@ -15,6 +15,8 @@
  */
 package ph.rye.anki.util;
 
+import ph.rye.common.lang.Ano;
+
 /**
  * Another nice Object too.
  *
@@ -36,11 +38,6 @@ public class Ano2<T, U> extends Ano<T> {
         super(defaultValue1);
         value2 = defaultValue2;
 
-    }
-
-
-    public void set2(final U newValue) {
-        value2 = newValue;
     }
 
     public U get2() {

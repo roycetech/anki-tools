@@ -19,7 +19,7 @@ public class Card {
     private final transient Set<String> tags = new LinkedHashSet<String>();
 
 
-    public Card(final String front, final String back) {
+    Card(final String front, final String back) {
         this.front = front;
         this.back = back;
     }
@@ -76,7 +76,7 @@ public class Card {
         tags.addAll(Arrays.asList(newTags));
     }
 
-    public String toSource() {
+    String toSource() {
         final StringBuilder strBuilder = new StringBuilder();
         if (!getTags().isEmpty()) {
             strBuilder.append(AnkiService.TAGS_MARKER);

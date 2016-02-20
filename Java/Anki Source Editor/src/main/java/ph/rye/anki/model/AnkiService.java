@@ -15,24 +15,17 @@
  */
 package ph.rye.anki.model;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import ph.rye.anki.AnkiMainGui;
-import ph.rye.anki.util.Ano;
-import ph.rye.anki.util.Counter;
-import ph.rye.anki.util.StringUtil;
+import ph.rye.common.lang.StringUtil;
+
 
 /**
  * @author royce
@@ -41,7 +34,7 @@ import ph.rye.anki.util.StringUtil;
 public class AnkiService {
 
 
-    public static final String TAGS_MARKER = "@Tags: ";
+    static final String TAGS_MARKER = "@Tags: ";
 
 
     private transient boolean fileLoaded;
@@ -77,7 +70,7 @@ public class AnkiService {
 
     private transient File file;
 
-    public void openFile(final File file) {
+    public void openFile(final File file) throws FileNotFoundException {
         this.file = file;
 
         fileLoaded = false;
@@ -85,100 +78,18 @@ public class AnkiService {
         tagModel.reset(true);
         cardTagModel.reset(false);
 
-        try (final BufferedReader buffReader =
-                new BufferedReader(new FileReader(file))) {
+        new SourceReader(new FileReader(file))
+            .readSource(card -> registerCard(card));
 
-            final Counter spaceCounter = new Counter(0);
-
-            new AbstractArrayedBuffReader<Object>(
-                buffReader,
-                Object.class,
-                new LinkedHashSet<String>(),
-                new LinkedHashSet<String>(),
-                new LinkedHashSet<String>(),
-                new Ano<Boolean>(false)) {
-
-                @SuppressWarnings("unchecked")
-                @Override
-                public void next(final String line) {
-
-                    if ("".equals(line.trim())) {
-                        spaceCounter.inc();
-                    } else {
-
-                        final Ano<Boolean> isAnswer = (Ano<Boolean>) get(3);
-
-                        if (spaceCounter.get() >= 2) {
-                            final Set<String> front = (Set<String>) get(0);
-                            final Set<String> back = (Set<String>) get(1);
-                            final Set<String> tags = (Set<String>) get(2);
-
-                            isAnswer.set(false);
-
-                            registerCard(front, back, tags);
-
-                            front.clear();
-                            back.clear();
-                            tags.clear();
-                        } else if (spaceCounter.get() == 1) {
-                            isAnswer.set(true);
-                        }
-
-                        if (isAnswer.get()) {
-                            final Set<String> back = (Set<String>) get(1);
-                            back.add(line);
-
-                        } else {
-
-                            if (line.startsWith(TAGS_MARKER)) {
-                                final Set<String> tags = (Set<String>) get(2);
-                                tags
-                                    .addAll(
-                                        Arrays
-                                            .asList(
-                                                StringUtil
-                                                    .trimArray(
-                                                        line
-                                                            .substring(
-                                                                TAGS_MARKER
-                                                                    .length())
-                                                            .split(","))));
-                            } else {
-                                final Set<String> front = (Set<String>) get(0);
-                                front.add(StringUtil.rtrim(line));
-                            }
-
-                        }
-
-                        spaceCounter.reset();
-                    }
-
-                }
-            }.eachLine();
-
-        } catch (final IOException ex) {
-            Logger.getLogger(AnkiMainGui.class.getName()).log(
-                Level.SEVERE,
-                null,
-                ex);
-        }
         fileLoaded = true;
 
     }
 
-    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
-    public void registerCard(final Set<String> front, final Set<String> back,
-                             final Set<String> tags) {
-
-        final Card newCard = new Card(
-            StringUtil.join(front, "\n"),
-            StringUtil.join(back, "\n"));
-
-        newCard.addTags(tags.toArray(new String[tags.size()]));
+    private void registerCard(final Card newCard) {
 
         cardModel.addCard(newCard);
 
-        for (final String tag : tags) {
+        for (final String tag : newCard.getTags()) {
             final Tag tagOn = new Tag(tag, true);
             final Tag tagOff = new Tag(tag, false);
             tagModel.addTag(tagOn);
@@ -239,11 +150,7 @@ public class AnkiService {
         cardModel.fireTableCellUpdated(row, col);
     }
 
-    public void hideTag(final String... tags) {
-        tagModel.tickTags(tags);
-    }
-
-    public void showTags(final String... tags) {
+    private void showTags(final String... tags) {
         tagModel.untickTags(tags);
     }
 
@@ -264,8 +171,12 @@ public class AnkiService {
     /**
      * @throws IOException
      */
-    public void saveToFile() throws IOException {
-        final FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
+    public void saveToFile(final File file) throws IOException {
+
+        final FileWriter fileWriter = new FileWriter(
+            file == null ? this.file.getAbsolutePath()
+                    : file.getAbsolutePath());
+
         final BufferedWriter buffWriter = new BufferedWriter(fileWriter);
 
         for (int i = 0; i < cardModel.getRowCount(); i++) {

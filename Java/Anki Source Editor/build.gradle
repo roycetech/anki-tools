@@ -1,0 +1,14 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+
+dependencies {
+
+    testCompile "junit:junit-dep:$junitVersion"
+    testCompile "org.mockito:mockito-core:$mockitoVersion"
+    testCompile "org.hamcrest:hamcrest-library:$hamcrestVersion"
+}
+
+repositories {
+	mavenCentral()
+}

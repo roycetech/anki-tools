@@ -23,3 +23,5 @@ bin
 .DS_Store
 .eclipse-pmd
 .settings
+.gradle
+

@@ -21,8 +21,8 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import ph.rye.anki.util.Ano2;
-import ph.rye.anki.util.Iter;
-import ph.rye.anki.util.StringUtil;
+import ph.rye.common.lang.Iter;
+import ph.rye.common.lang.StringUtil;
 
 /**
  * @author royce
@@ -96,7 +96,7 @@ public class CardModel extends AbstractTableModel {
         return cardList.get(rowIndex);
     }
 
-    public void addCard(final Card card) {
+    void addCard(final Card card) {
         cardList.add(card);
         super.fireTableRowsInserted(cardList.size() - 1, cardList.size() - 1);
     }
@@ -104,7 +104,7 @@ public class CardModel extends AbstractTableModel {
     /**
      *
      */
-    public void reset() {
+    void reset() {
         cardList.clear();
         super.fireTableDataChanged();
     }

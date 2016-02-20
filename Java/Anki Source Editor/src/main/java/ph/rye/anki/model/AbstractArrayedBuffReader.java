@@ -17,32 +17,30 @@ package ph.rye.anki.model;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.lang.reflect.Array;
 
 /**
  * @author royce
  *
  */
-public abstract class AbstractArrayedBuffReader<T> {
+abstract class AbstractArrayedBuffReader<T> {
 
 
     private final transient BufferedReader reader;
-    private final transient T[] objects;
+    private final transient Object[] objects;
 
 
-    @SuppressWarnings("unchecked")
-    public AbstractArrayedBuffReader(final BufferedReader reader,
-            final Class<T> klass, final T... objects) {
+    AbstractArrayedBuffReader(final BufferedReader reader,
+            final Object... objects) {
         this.reader = reader;
 
-        this.objects = (T[]) Array.newInstance(klass, objects.length);
+        this.objects = new Object[objects.length];
         System.arraycopy(objects, 0, this.objects, 0, objects.length);
 
     }
 
     public abstract void next(String line);
 
-    protected T get(final int i) {
+    protected Object get(final int i) {
         return objects[i];
     }
 

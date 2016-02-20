@@ -13,11 +13,16 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ph.rye.anki.util;
+package ph.rye.anki;
 
 /**
  * @author royce
+ *
  */
-public interface LoopBody<T> {
-    void next(int index, T nextElement);
+public class AnkiAppException extends RuntimeException {
+
+    public AnkiAppException(final Throwable throwable) {
+        super(throwable);
+    }
+
 }

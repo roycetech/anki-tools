@@ -31,7 +31,7 @@ import ph.rye.anki.AnkiMainGui;
 import ph.rye.anki.model.AnkiService;
 import ph.rye.anki.model.Tag;
 import ph.rye.anki.model.TagModel;
-import ph.rye.anki.util.StringUtil;
+import ph.rye.common.lang.StringUtil;
 
 /**
  * @author royce

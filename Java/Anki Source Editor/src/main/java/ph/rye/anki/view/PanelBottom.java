@@ -31,8 +31,8 @@ import ph.rye.anki.controller.PanelBottomHandler;
 import ph.rye.anki.model.AnkiService;
 import ph.rye.anki.model.Card;
 import ph.rye.anki.model.CardModel;
-import ph.rye.anki.util.Ano;
-import ph.rye.anki.util.StringUtil;
+import ph.rye.common.lang.Ano;
+import ph.rye.common.lang.StringUtil;
 
 /**
  * @author royce
@@ -190,7 +190,7 @@ public class PanelBottom extends JPanel {
         }
     }
 
-    public void filterCards() {
+    void filterCards() {
 
         cardRowSorter.setRowFilter(new RowFilter<CardModel, Object>() {
 
@@ -242,7 +242,7 @@ public class PanelBottom extends JPanel {
     /**
      *
      */
-    public void refreshLabelText() {
+    void refreshLabelText() {
         getLblCard()
             .setText(String.format("Total card(s): %d", tblCard.getRowCount()));
     }
@@ -251,7 +251,7 @@ public class PanelBottom extends JPanel {
     /**
      *
      */
-    public void selectFirstRow() {
+    void selectFirstRow() {
         if (tblCard.getRowCount() > 0) {
             //service.setRefreshing(true);
             if (rdoShowBack.isSelected()) {

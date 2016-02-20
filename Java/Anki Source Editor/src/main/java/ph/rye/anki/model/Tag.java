@@ -35,13 +35,6 @@ public class Tag {
         return checked;
     }
 
-    /**
-     * @param checked the show to set
-     */
-    public void toggleState() {
-        checked = !checked;
-    }
-
     public void setChecked(final boolean state) {
         checked = state;
     }

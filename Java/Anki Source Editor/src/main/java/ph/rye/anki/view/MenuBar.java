@@ -18,6 +18,7 @@ package ph.rye.anki.view;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.swing.JFileChooser;
@@ -27,6 +28,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
+import ph.rye.anki.AnkiAppException;
 import ph.rye.anki.AnkiMainGui;
 import ph.rye.anki.model.AnkiService;
 
@@ -110,7 +112,7 @@ public class MenuBar extends JMenuBar {
     private void mnuSavePerformed() {
         parent.setFileClean();
         try {
-            service.saveToFile();
+            service.saveToFile(null);
         } catch (final IOException e) {
             JOptionPane.showMessageDialog(
                 parent,
@@ -153,7 +155,11 @@ public class MenuBar extends JMenuBar {
             }
 
             parent.setTitle(appTitle + SEP_TITLE + file.getName());
-            service.openFile(file);
+            try {
+                service.openFile(file);
+            } catch (final FileNotFoundException e) {
+                throw new AnkiAppException(e);
+            }
 
             mnuSaveAs.setEnabled(true);
             mnuExport.setEnabled(true);
@@ -169,7 +175,7 @@ public class MenuBar extends JMenuBar {
     /**
      *
      */
-    public void enableSave() {
+    void enableSave() {
         mnuSave.setEnabled(true);
     }
 

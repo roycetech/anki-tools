@@ -54,7 +54,7 @@ public class AnkiMainGui extends javax.swing.JFrame {
     @SuppressWarnings({
             "unchecked",
             "rawtypes" })
-    public static void enableOSXFullscreen(final Window window) {
+    private static void enableOSXFullscreen(final Window window) {
 
         try {
             final Class util =

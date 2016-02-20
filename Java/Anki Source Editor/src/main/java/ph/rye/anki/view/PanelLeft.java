@@ -49,9 +49,6 @@ public class PanelLeft extends JPanel {
 
     private final transient AnkiService service;
 
-    //    private final transient PanelLeftHandler handler =
-    //            new PanelLeftHandler(this);
-
 
     private final JTextArea textArea = new JTextArea();;
     private final JTable tblCardTag = new JTable();
@@ -263,7 +260,7 @@ public class PanelLeft extends JPanel {
 
 
     /** */
-    public void setAllEditable() {
+    void setAllEditable() {
         getTblCardTag().setEnabled(true);
         getTextArea().setEnabled(true);
         getTextArea().setEditable(true);

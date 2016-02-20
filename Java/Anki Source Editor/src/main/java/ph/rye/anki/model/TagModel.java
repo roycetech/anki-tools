@@ -23,9 +23,9 @@ import java.util.Map;
 
 import javax.swing.table.AbstractTableModel;
 
-import ph.rye.anki.util.Ano;
-import ph.rye.anki.util.Iter;
-import ph.rye.anki.util.Range;
+import ph.rye.common.lang.Ano;
+import ph.rye.common.lang.Iter;
+import ph.rye.common.lang.Range;
 
 /**
  * @author royce
@@ -167,7 +167,7 @@ public class TagModel extends AbstractTableModel {
 
     }
 
-    public void initWithTags(final String... tags) {
+    void initWithTags(final String... tags) {
         final List<String> tagList = new ArrayList<>();
         if (tags.length > 0 && "".equals(tags[0])) {
             tagList.add(UNTAGGED);
@@ -176,7 +176,7 @@ public class TagModel extends AbstractTableModel {
         }
 
         final List<String> keyList = new ArrayList<>(tagMap.keySet());
-        new Range<Integer>(0, tagMap.size()).each((i, next) -> {
+        new Range<Integer>(0, tagMap.size() - 1).each((i, next) -> {
             final Tag nextTag = tagMap.get(keyList.get(i));
             nextTag.setChecked(!tagList.contains(nextTag.getName()));
             nextTag.setChecked(!nextTag.isChecked());
@@ -195,13 +195,13 @@ public class TagModel extends AbstractTableModel {
     }
 
     /** */
-    public void reset(final boolean state) {
+    void reset(final boolean state) {
         tagMap.clear();
         initFixedTags(state);
         super.fireTableDataChanged();
     }
 
-    public void untickTags(final String... tags) {
+    void untickTags(final String... tags) {
 
         new Iter<String>(String.class, tags).each((index, nextElement) -> {
             final Tag tag = tagMap.get(nextElement);
@@ -210,12 +210,6 @@ public class TagModel extends AbstractTableModel {
         });
     }
 
-    public void tickTags(final String... tags) {
-        for (final String string : tags) {
-            final Tag tag = tagMap.get(string);
-            tag.setChecked(true);
-        }
-    }
 
     public void deleteTag(final String... tags) {
         new Iter<String>(String.class, tags).each((index, nextElement) -> {

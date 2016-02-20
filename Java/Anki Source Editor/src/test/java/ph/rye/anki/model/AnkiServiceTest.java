@@ -13,42 +13,34 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ph.rye.anki.util;
+package ph.rye.anki.model;
+
+import java.io.File;
+import java.io.IOException;
+
+import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
- * Another nice Object.
- *
- * Can be used to avoid re-assignment in the client code.
- *
  * @author royce
  */
-public class Ano<T> {
+public class AnkiServiceTest {
+
+    /**
+     * Test method for {@link ph.rye.anki.model.AnkiService#saveToFile()}.
+     */
+    @Test
+    public void testSaveToFile() {
+        final AnkiService sut = new AnkiService();
+
+        final File mockFile = Mockito.mock(File.class);
+        try {
+            sut.saveToFile(mockFile);
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
 
 
-    private transient T value;
-
-
-    public Ano() {
-        this(null);
-    }
-
-    public Ano(final T defaultValue) {
-        value = defaultValue;
-    }
-
-
-    public void set(final T newValue) {
-        value = newValue;
-    }
-
-    public T get() {
-        return value;
-    }
-
-
-    @Override
-    public String toString() {
-        return value == null ? "null" : value.toString();
     }
 
 }

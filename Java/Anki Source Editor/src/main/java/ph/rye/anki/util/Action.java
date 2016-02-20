@@ -19,8 +19,8 @@ package ph.rye.anki.util;
  * @author royce
  *
  */
-public interface Action {
+public interface Action<T> {
 
-    void execute();
+    void execute(T param);
 
 }

@@ -42,7 +42,7 @@ public class PanelBottomHandler {
 
 
     /** */
-    public void restoreColumnSize(final TableColumn column) {
+    private void restoreColumnSize(final TableColumn column) {
         column.setPreferredWidth(75);
         column.setMinWidth(15);
         column.setMaxWidth(Integer.MAX_VALUE);
@@ -53,7 +53,7 @@ public class PanelBottomHandler {
      *
      * @param column column to hide.
      */
-    public void shrinkColumnSize(final TableColumn column) {
+    private void shrinkColumnSize(final TableColumn column) {
         column.setPreferredWidth(0);
         column.setMinWidth(0);
         column.setMaxWidth(0);

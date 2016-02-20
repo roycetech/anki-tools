@@ -26,12 +26,7 @@ import javax.swing.table.TableCellRenderer;
  * @author royce
  *
  */
-//public class CardRenderer extends JTextPane implements TableCellRenderer {
-public class CardRenderer extends JTextArea implements TableCellRenderer {
-
-
-    /** */
-    private static final long serialVersionUID = -786811754824523691L;
+class CardRenderer extends JTextArea implements TableCellRenderer {
 
 
     public CardRenderer() {
