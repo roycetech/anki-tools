@@ -151,7 +151,7 @@ public class PanelRight extends JPanel {
 
     private void btnAddTagActionPerformed() {
 
-        final String newTag = (String) JOptionPane.showInputDialog(
+        final String newTagName = (String) JOptionPane.showInputDialog(
             this,
             "Tag Name",
             "Add New Tag",
@@ -160,8 +160,10 @@ public class PanelRight extends JPanel {
             null,
             null);
 
-        if (StringUtil.hasValue(newTag)) {
-            service.getTagModel().addTag(new Tag(newTag, true));
+        if (StringUtil.hasValue(newTagName)) {
+
+            service.getTagModel().addTag(new Tag(newTagName, true));
+            service.getCardTagModel().addTag(new Tag(newTagName, false));
         }
 
     }

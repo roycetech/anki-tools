@@ -116,7 +116,7 @@ public class PanelBottom extends JPanel {
 
         //        tblCard.getColumnModel().getSelectionModel().setSelectionMode(
         //            ListSelectionModel.SINGLE_SELECTION);
-        tblCard.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tblCard.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 
         add(
             scrollPaneCard,

@@ -49,70 +49,92 @@ class SourceReader {
     }
 
 
+    @SuppressWarnings("unchecked")
     public void readSource(final Action<Card> action) {
         try (final BufferedReader buffReader = new BufferedReader(reader)) {
 
             final Counter spaceCounter = new Counter(0);
 
-            new AbstractArrayedBuffReader<Object>(
-                buffReader,
-                new LinkedHashSet<String>(),
-                new LinkedHashSet<String>(),
-                new LinkedHashSet<String>(),
-                new Ano<Boolean>(false)) {
+            final Ano<Boolean> cardStart = new Ano<>(false);
+            final AbstractArrayedBuffReader aabr =
+                    new AbstractArrayedBuffReader<Object>(
+                        buffReader,
+                        new LinkedHashSet<String>(),
+                        new LinkedHashSet<String>(),
+                        new LinkedHashSet<String>(),
+                        new Ano<Boolean>(false)) {
 
-                @SuppressWarnings("unchecked")
-                @Override
-                public void next(final String line) {
+                        @SuppressWarnings("unchecked")
+                        @Override
+                        public void next(final String line) {
 
-                    if ("".equals(line.trim())) {
-                        spaceCounter.inc();
-                    } else {
+                            if (!cardStart.get() && (line.startsWith("#")
+                                    || "".equals(line))) {
+                                return;
+                            } else {
+                                cardStart.set(true);
+                            }
 
-                        final Ano<Boolean> isAnswer = (Ano<Boolean>) get(3);
-
-                        if (spaceCounter.get() >= 2) {
-                            final Set<String> front = (Set<String>) get(0);
-                            final Set<String> back = (Set<String>) get(1);
-                            final Set<String> tags = (Set<String>) get(2);
-
-                            isAnswer.set(false);
-
-                            action.execute(toCard(front, back, tags));
-
-                            front.clear();
-                            back.clear();
-                            tags.clear();
-
-                        } else if (spaceCounter.get() == 1) {
-                            isAnswer.set(true);
-                        }
-
-                        if (isAnswer.get()) {
-
-                            final Set<String> back = (Set<String>) get(1);
-                            back.add(line);
-
-                        } else {
-
-                            if (line.startsWith(TAGS_MARKER)) {
-
-                                extractTags(line, (Set<String>) get(2));
-
+                            if ("".equals(line.trim())) {
+                                spaceCounter.inc();
                             } else {
 
-                                final Set<String> front = (Set<String>) get(0);
-                                front.add(StringUtil.rtrim(line));
+                                final Ano<Boolean> isAnswer =
+                                        (Ano<Boolean>) get(3);
 
+                                if (spaceCounter.get() >= 2) {
+                                    final Set<String> front =
+                                            (Set<String>) get(0);
+                                    final Set<String> back =
+                                            (Set<String>) get(1);
+                                    final Set<String> tags =
+                                            (Set<String>) get(2);
+
+                                    isAnswer.set(false);
+
+                                    action.execute(toCard(front, back, tags));
+
+                                    front.clear();
+                                    back.clear();
+                                    tags.clear();
+
+                                } else if (spaceCounter.get() == 1) {
+                                    isAnswer.set(true);
+                                }
+
+                                if (isAnswer.get()) {
+
+                                    final Set<String> back =
+                                            (Set<String>) get(1);
+                                    back.add(line);
+
+                                } else {
+
+                                    if (line.startsWith(TAGS_MARKER)) {
+
+                                        extractTags(line, (Set<String>) get(2));
+
+                                    } else {
+
+                                        final Set<String> front =
+                                                (Set<String>) get(0);
+                                        front.add(StringUtil.rtrim(line));
+
+                                    }
+
+                                }
+
+                                spaceCounter.reset();
                             }
 
                         }
-
-                        spaceCounter.reset();
-                    }
-
-                }
-            }.eachLine();
+                    };
+            aabr.eachLine();
+            action.execute(
+                toCard(
+                    (Set<String>) aabr.get(0),
+                    (Set<String>) aabr.get(1),
+                    (Set<String>) aabr.get(2)));
 
         } catch (final IOException ex) {
             Logger.getLogger(AnkiMainGui.class.getName()).log(
