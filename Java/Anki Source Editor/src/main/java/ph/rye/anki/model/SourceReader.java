@@ -56,7 +56,7 @@ class SourceReader {
             final Counter spaceCounter = new Counter(0);
 
             final Ano<Boolean> cardStart = new Ano<>(false);
-            final AbstractArrayedBuffReader aabr =
+            final AbstractArrayedBuffReader<Object> aabr =
                     new AbstractArrayedBuffReader<Object>(
                         buffReader,
                         new LinkedHashSet<String>(),
@@ -64,7 +64,6 @@ class SourceReader {
                         new LinkedHashSet<String>(),
                         new Ano<Boolean>(false)) {
 
-                        @SuppressWarnings("unchecked")
                         @Override
                         public void next(final String line) {
 
