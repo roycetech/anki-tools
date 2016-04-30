@@ -22,8 +22,13 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import ph.rye.anki.util.CardIter;
+import ph.rye.common.lang.Ano;
 import ph.rye.common.lang.StringUtil;
 
 
@@ -32,6 +37,10 @@ import ph.rye.common.lang.StringUtil;
  *
  */
 public class AnkiService {
+
+
+    private final static Logger LOGGER =
+            Logger.getLogger(AnkiService.class.getName());
 
 
     static final String TAGS_MARKER = "@Tags: ";
@@ -188,6 +197,65 @@ public class AnkiService {
         }
 
         buffWriter.close();
+
+    }
+
+
+    boolean isCardSelected(final String[] selectedTags, final Card card) {
+        final Ano<Boolean> retval = new Ano<>(false);
+
+        for (final String selected : selectedTags) {
+            if (card.getTags().contains(selected)) {
+                retval.set(true);
+                break;
+            }
+        }
+        return retval.get();
+    }
+
+    /**
+     * @param selectedFile
+     */
+    public void exportSelected(final File selectedFile) {
+
+        final String filePath = selectedFile.getAbsolutePath();
+        final File file2 = new File(
+            selectedFile.getAbsolutePath().substring(0, filePath.indexOf('.'))
+                    + "-remnant.txt");
+
+        try {
+            file2.createNewFile();
+        } catch (final IOException e) {
+            LOGGER.log(Level.SEVERE, "File save failed!", e);
+        }
+
+        try (FileWriter fileWriter1 = new FileWriter(selectedFile);
+                FileWriter fileWriter2 = new FileWriter(file2);
+                final BufferedWriter buffWriter1 =
+                        new BufferedWriter(fileWriter1);
+                final BufferedWriter buffWriter2 =
+                        new BufferedWriter(fileWriter2);) {
+
+            for (final Card nextCard : new Iterable<Card>() {
+                @Override
+                public Iterator<Card> iterator() {
+                    return new CardIter(cardModel);
+                }
+            }) {
+                if (isCardSelected(tagModel.getSelectedTags(), nextCard)) {
+                    buffWriter1.write(nextCard.toSource());
+                    buffWriter1.newLine();
+                    buffWriter1.newLine();
+                } else {
+                    buffWriter2.write(nextCard.toSource());
+                    buffWriter2.newLine();
+                    buffWriter2.newLine();
+                }
+            }
+
+        } catch (final IOException ioe) {
+            LOGGER.log(Level.SEVERE, "File save failed!", ioe);
+        }
 
     }
 

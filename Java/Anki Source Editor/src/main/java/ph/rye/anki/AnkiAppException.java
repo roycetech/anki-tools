@@ -25,4 +25,8 @@ public class AnkiAppException extends RuntimeException {
         super(throwable);
     }
 
+    public AnkiAppException(final String message) {
+        super(message);
+    }
+
 }

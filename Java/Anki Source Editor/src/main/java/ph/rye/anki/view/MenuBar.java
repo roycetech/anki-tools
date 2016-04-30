@@ -97,6 +97,7 @@ public class MenuBar extends JMenuBar {
                 .getKeyStroke(KeyEvent.VK_E, InputEvent.META_MASK));
         mnuExport.setText("Export");
         mnuExport.setEnabled(false);
+        mnuExport.addActionListener(evt -> mnuExportClicked());
         mnuFile.add(mnuExport);
 
         mnuExit.setAccelerator(
@@ -107,6 +108,18 @@ public class MenuBar extends JMenuBar {
         mnuFile.add(mnuExit);
 
         add(mnuFile);
+    }
+
+    private void mnuExportClicked() {
+        final JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setCurrentDirectory(
+            new File("/Users/royce/Desktop/Anki Generated Sources"));
+        final int rVal = fileChooser.showSaveDialog(null);
+        if (rVal == JFileChooser.APPROVE_OPTION) {
+            service.exportSelected(fileChooser.getSelectedFile());
+        }
+
+        JOptionPane.showMessageDialog(parent, "Export completed!");
     }
 
     private void mnuSavePerformed() {
@@ -127,7 +140,7 @@ public class MenuBar extends JMenuBar {
         if (fileChooser == null) {
             fileChooser = new JFileChooser();
             fileChooser.setCurrentDirectory(
-                new File("/Users/royce/DropBox/Documents/Memorize/"));
+                new File("/Users/royce/DropBox/Documents/Reviewer/"));
             fileChooser.setFileFilter(new FileFilter() {
                 @Override
                 public boolean accept(final File pathname) {

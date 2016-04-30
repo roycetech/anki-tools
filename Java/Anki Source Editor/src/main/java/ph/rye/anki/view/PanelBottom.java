@@ -253,13 +253,11 @@ public class PanelBottom extends JPanel {
      */
     void selectFirstRow() {
         if (tblCard.getRowCount() > 0) {
-            //service.setRefreshing(true);
             if (rdoShowBack.isSelected()) {
                 tblCard.setColumnSelectionInterval(1, 1);
             } else {
                 tblCard.setColumnSelectionInterval(0, 0);
             }
-            //service.setRefreshing(false);
             tblCard.setRowSelectionInterval(0, 0);
         }
 
