@@ -33,7 +33,7 @@ import ph.rye.anki.model.AnkiService;
 import ph.rye.anki.model.Card;
 import ph.rye.anki.model.Tag;
 import ph.rye.anki.model.TagModel;
-import ph.rye.common.lang.Iter;
+import ph.rye.common.loop.Iter;
 
 /**
  * @author royce
@@ -163,8 +163,8 @@ public class PanelLeft extends JPanel {
                 final int[] modelRows =
                         new int[tblCard.getSelectedRows().length];
 
-                new Iter<Integer>(tblCard.getSelectedRows())
-                    .each((index, nextSelectedRow) -> {
+                Iter.<Integer> of(tblCard.getSelectedRows()).eachWithIndex(
+                    (index, nextSelectedRow) -> {
 
                         modelRows[index] =
                                 tblCard.convertRowIndexToModel(nextSelectedRow);
@@ -184,25 +184,9 @@ public class PanelLeft extends JPanel {
                     });
 
 
-                //                final int selectedRow = tblCard.getSelectedRow();
-                //                final int modelRow =
-                //                        tblCard.convertRowIndexToModel(selectedRow);
-
-                //                final Card card = service.getCardModel().getCardAt(modelRow);
-                //                if (cardTag.isChecked()) {
-                //                    if (TagModel.UNTAGGED.equals(cardTag.getName())) {
-                //                        card.setTags();
-                //                    } else {
-                //                        card.addTags(cardTag.getName());
-                //                    }
-                //                } else {
-                //                    card.removeTags(cardTag.getName());
-                //          }
                 for (final int i : modelRows) {
                     service.getCardModel().fireTableCellUpdated(i, 2);
                 }
-
-                //                service.getCardModel().fireTableCellUpdated(modelRow, 2);
 
                 btnApply.setEnabled(false);
                 parent.setFileDirty();

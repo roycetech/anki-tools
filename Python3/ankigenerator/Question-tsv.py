@@ -1,0 +1,192 @@
+from util.common import nvl2, nvl, to_html, from_html, array_to_string
+
+from datetime import datetime
+
+
+excluded_tags = {'Ignore'}
+
+filepath = ""
+# input("Please enter the complete source file path (blank to use hard coded): ")
+chosen_module = ""
+# input("Please choose a module (blank to use hard coded): ")
+outputFilename = ""
+# input("Please enter the output filename: ")
+
+# module = 'Function'
+filepath = nvl(filepath, '/Users/royce/Dropbox/Documents/Memorize/ruby/test.txt')
+
+source_filename = filepath[filepath.rfind('/') + 1: filepath.rfind('.')]
+simple_name = nvl(outputFilename, nvl2(chosen_module, source_filename, source_filename + '-' + chosen_module))
+today = datetime.now()
+
+outputFilename = '/Users/royce/Desktop/Anki Generated Sources/{} {}{}{}_{}{}' \
+                     .format(simple_name,
+                             today.year % 1000,
+                             str(today.month).zfill(2),
+                             str(today.day).zfill(2),
+                             str(today.time().hour).zfill(2),
+                             str(today.time().minute).zfill(2)) \
+                 + '.tsv'
+
+module_filename = nvl(chosen_module, 'beauty') + '.txt'
+
+
+with open(filepath, 'r') as f, \
+        open(outputFilename, 'w', newline='') as output, \
+        open('Remnant.txt', 'w', newline='') as remnant, \
+        open(module_filename, 'w', newline='') as beauty:
+
+    import csv
+
+    def write_question(p_question_count, p_skipped_count):
+
+        global untagged_count
+        l_question_count = p_question_count
+        l_skipped_count = p_skipped_count
+
+        is_module_selected = len(chosen_module) > 0 and chosen_module in set(tags)
+        ignored = len(tags) != len(set(tags) - excluded_tags)
+
+        if not ignored and (is_module_selected or len(chosen_module) == 0):
+            l_question_count = p_question_count + 1
+
+            # print(front[0])
+            # for l in back:
+            #     print(l)
+
+            answer_only_html = """<span style="font-weight: bold; background-color: #D9534F;
+color: white; border-radius: 5px; padding: 5px;">Answer Only</span>"""
+
+            if len(tags) > 0:
+                tag_html = """<div style="text-align: left;">{}</div>""".format(array_to_string(tags))
+            else:
+                tag_html = ''
+
+            front_only_tags = ['FB Only', 'Enum', 'Practical', 'Bool', 'Code', 'Abbr', 'Syntax', 'EnumU', 'EnumO']
+            is_front_only = len([val for val in tags if val in front_only_tags]) > 0
+
+            if is_front_only:
+                # if 'FB Only' in tags or 'Enum' in tags or 'Practical' in tags or 'Bool' in tags:
+                if is_unordered_list:
+                    lst = [tag_html + ''.join(front), answer_only_html + '<ul>' + to_html(''.join(back)) + '</ul>']
+                elif is_ordered_list:
+                    lst = [tag_html + ''.join(front), answer_only_html + '<ol>' + to_html(''.join(back)) + '</ol>']
+                else:
+                    lst = [tag_html + ''.join(front), answer_only_html + to_html(''.join(back))]
+
+            elif 'BF Only' in tags:
+                lst = [answer_only_html + ''.join(front), tag_html + ''.join(back)]
+            else:
+                lst = [tag_html + ''.join(front),  ''.join(back)]
+
+            # tags w/o control tags like BF Only, and FB Only
+            real_tags = [tag for tag in tags if tag not in ['FB Only', 'BF Only', 'Syntax']]
+
+            if len(real_tags) > 0:
+                lst.append(','.join(tags))
+            else:
+                lst.append('untagged')
+                # print('Untagged: {}'.format(front))
+                untagged_count += 1
+
+            print(lst[0], end='\n\n')
+            print(lst[1], end='\n')
+
+            if create_module:
+                beauty.write('@Tags: ' + ', '.join(tags) + '\n' + from_html(
+                        ''.join(front).lstrip(' ')) + '\n' + from_html(''.join(back).lstrip(' ')) + '\n\n')
+
+            tsv_writer.writerow(lst)
+
+        else:
+            l_skipped_count = p_skipped_count + 1
+            has_tag = len(tags) > 0
+            if has_tag:
+                remnant.write('@Tags: ' + ', '.join(tags) + '\n')
+
+            remnant.write(from_html(''.join(front).lstrip(' ') + '\n' + ''.join(back).lstrip(' ')) + '\n\n')
+
+        return l_question_count, l_skipped_count
+
+    tsv_writer = csv.writer(output, delimiter='\t')
+    create_module = True
+    space_counter = 0
+    is_question = True
+    is_unordered_list = False  # Marks if tagged as EnumU, will use <ol> or <ul> HTML tags.
+    is_ordered_list = False  # Marks if tagged as EnumO, will use <ol> HTML tag.
+
+    front, back, tags = [[], [], []]
+    front_count, ignored_count, untagged_count = 0, 0, 0
+
+    cardBegin = False  # Marks the start of the first card.
+
+    for line in f:
+
+        if not cardBegin and (line[0:1] == '#' or line.strip(' ') == '\n'):
+            continue
+        else:
+            cardBegin = True
+
+        if line.strip(' ') == "\n":
+            space_counter += 1
+        else:
+
+            if space_counter >= 2:
+                is_question = True
+
+                if 'EnumU' in tags or 'EnumO' in tags:
+
+                    multi_tag = 'Multi:{}'.format(len(back))
+
+                    if multi_tag not in tags:
+                        tags.append(multi_tag)
+
+                front_count, ignored_count = write_question(front_count, ignored_count)
+                is_unordered_list = False
+                is_ordered_list = False
+
+                front = []
+                back = []
+                tags = []
+
+            elif space_counter == 1:
+                is_question = False
+
+            if is_question:
+
+                if line[0:7] == '@Tags: ':
+                    tags = [x.strip(' ') for x in line[7:].split(',')]
+                    is_unordered_list = 'EnumU' in tags
+                    is_ordered_list = 'EnumO' in tags
+                elif 'Abbr' in tags:
+                    front.append(to_html(line.rstrip(' ') + ' abbreviation\n'))
+                else:
+                    front.append(to_html(line.rstrip(' ')))
+
+            else:
+                sentence_count = line.replace("e.g.", "").replace('...', '').count(".")
+                if sentence_count > 1:
+
+                    multi_tag = 'Multi:{}'.format(sentence_count)
+                    if multi_tag not in tags:
+                        tags.append(multi_tag)
+
+                if is_unordered_list or is_ordered_list:
+                    back.append('<li>' + line + '</li>')
+                    # back.append('<li>' + to_html(line) + '</li>')
+                else:
+                    back.append(line)
+                    # back.append(to_html(line))
+
+            space_counter = 0
+
+    else:
+
+        front_count, ignored_count = write_question(front_count, ignored_count)
+
+    print("Total questions: {}".format(front_count))
+    print("Skipped questions: {}".format(ignored_count))
+    print("Untagged Count: {}\n\n".format(untagged_count))
+    print("Output File: {}\n\n".format(outputFilename))
+
+    print("{}".format(outputFilename[outputFilename.rfind('/') + 1:outputFilename.find('.')]))

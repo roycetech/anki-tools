@@ -1,0 +1,7 @@
+.DS_Store
+.idea
+output.tsv
+ankigenerator.iml
+beauty.txt
+__pycache__
+

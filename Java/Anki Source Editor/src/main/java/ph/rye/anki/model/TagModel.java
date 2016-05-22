@@ -24,8 +24,8 @@ import java.util.Map;
 import javax.swing.table.AbstractTableModel;
 
 import ph.rye.common.lang.Ano;
-import ph.rye.common.lang.Iter;
-import ph.rye.common.lang.Range;
+import ph.rye.common.loop.Iter;
+import ph.rye.common.loop.Range;
 
 /**
  * @author royce
@@ -203,7 +203,7 @@ public class TagModel extends AbstractTableModel {
 
     void untickTags(final String... tags) {
 
-        new Iter<String>(String.class, tags).each((index, nextElement) -> {
+        Iter.string(tags).each((index, nextElement) -> {
             final Tag tag = tagMap.get(nextElement);
             tag.setChecked(false);
             fireTableCellUpdated(index, 1);
@@ -212,7 +212,7 @@ public class TagModel extends AbstractTableModel {
 
 
     public void deleteTag(final String... tags) {
-        new Iter<String>(String.class, tags).each((index, nextElement) -> {
+        Iter.string(tags).each((index, nextElement) -> {
             tagMap.remove(nextElement);
             fireTableRowsDeleted(index, index);
         });
