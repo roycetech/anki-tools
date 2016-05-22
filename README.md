@@ -21,18 +21,23 @@ This is a `GUI` written with `Java 8` `Swing`.  It allows you to easily set/remo
 
 Old TSV Geenrator
 =================
-It is the original commandline script for generating TSV file from a source text file.  This is written in Python3.
+It is the original commandline script for generating TSV file from a source text file.  This is written in [Python3](https://www.python.org/download/releases/3.0/).
 
 
 ### Source Syntax
 
 - Comments are preceded with hash `# this is a line comment.`
+- Source comment and directives are placed on top of the source file.
+- `# @lang=java` directive is used to indicate the source code formatting language for the entire source file.
+- Cards are separated by double newline.  
+- Front and back are separated with a single line.  
+- Back card can have blank lines in between.
 - Keywords can be wrapped by \` \`.
-- Code blocks are wrapped by `<well> </well>`.  This is to be improved similar to github `\`\`\` \`\`\``
+- Code blocks are wrapped by `<well> </well>`.
 
 
 ### Pending enhancement
-- Code 
+- [ ] well using pair of triple backticks.
 
 
 
