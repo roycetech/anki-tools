@@ -39,10 +39,24 @@ It is the original commandline script for generating TSV file from a source text
 - Back card can have blank lines in between.
 - Keywords can be wrapped by \` \`.
 - Code blocks are wrapped by `<well> </well>`.
+- Card can be tagged by preceding it with a line with `@Tag: ` followed by comma separated tags.
+- Card with multiple sentences will be automatically tagged with `Multi:#`
+- Eumeration cards will be automatically tagged with `Multi:#`
+
+### Tags: With special meanings
+
+- `FB Only` card is valid only if `Front` is shown first.
+- `BF Only` card is valid only if `Back` is shown first.
+- `EnumO` `Back` card will be an ordered list, implicitly `FB Only`
+- `EnumU` `Back` card will be an unordered list, implicitly `FB Only`
+- `Syntax` `Back` card will be highlighted as a code.
+- `Code(Front)` `Front` card will be highlighted as a code
+- `Abbr` `Front` card will be appended with `'Abbreviation'`, implicitly `FB Only`
+- `Command` `Front` card will be rendered as a command line, black background, white text, `Courier New` font.
 
 
 ### Pending enhancement
-- [ ] well using pair of triple backticks.
+- [ ] well using pair of triple backticks.  `Syntax` tag should no longer be necessary
 
 
 
