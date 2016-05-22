@@ -2,7 +2,7 @@
 Anki Card App Tools.  
 
 
-TSV Geenrator
+TSV Generator
 =============
 
 Written in [Ruby](https://www.ruby-lang.org) 2.x, it generates TSV file for upload to [Anki Nexus webapp](https://api.ankiapp.com/nexus/).
@@ -19,7 +19,7 @@ Source Analyzer
 This is a `GUI` written with `Java 8` `Swing`.  It allows you to easily set/remove tags, edit existing cards, filter cards, and export selected cards.
 
 
-Old TSV Geenrator
+Old TSV Generator
 =================
 It is the original commandline script for generating TSV file from a source text file.  This is written in [Python3](https://www.python.org/download/releases/3.0/).
 
