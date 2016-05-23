@@ -1,0 +1,8 @@
+# Files and Folders
+build
+target
+bin
+.DS_Store
+.gradle
+.idea
+
