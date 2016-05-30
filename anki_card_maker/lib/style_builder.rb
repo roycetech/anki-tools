@@ -16,12 +16,13 @@ class StyleBuilder
   def merge(style_builder)
     style_builder.each do |value|
       @values.push(value)
+      # $logger.debug value
     end
     return self
   end
 
   def select(selector)
-    @values.push (selector + ' {')
+    @values.push(selector + ' {')
     return self
   end
 
@@ -41,7 +42,8 @@ class StyleBuilder
 
   def style_e
     raise 'End style must originate from html builder only. ' if @html_builder.nil?
-    return @html_builder.merge(self)
+    @html_builder.merge(self)
+    return @html_builder
   end
 
   def value
@@ -55,6 +57,15 @@ class StyleBuilder
       result += value + "\n"
     end
   end
+
+
+  def display(param)
+    method_name = 'display'
+    @prop_hash[method_name] = param
+    @prop_names.push(method_name)
+    return self
+  end
+
 
   def method_missing(meth, *args, &block)
     if args.length == 1
@@ -74,10 +85,12 @@ class StyleBuilder
   end
 
   def to_s
-    return @values.inject("\n" + self.class.to_s + '------------------------------------' +
+    return @values.inject("\n" + 
+      self.class.to_s + 
+      '------------------------------------' + 
       "\n  HtmlBuilder[%s]" % (@html_builder ? 'Y' : 'n') + "\n") do
       |result, value|
-      result += '    ' + value + "\n"
+      result += "#{value}\n"
     end
   end
 

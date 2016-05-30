@@ -1,22 +1,24 @@
-require './lib/keyword_highlighter'
+require './lib/highlighter/keyword_highlighter'
 # NOTE: There are requires at the bottom of this file.
 
+# Almost Everything.
+# <([a-z]*)(?: [a-z]*=(["'])[\w:# ]*\2?)*>|<\/[a-z]*>|&nbsp;|[\w}();$="'{]+
 
 # Base class will handle keyword, and comment, provided sub class supply
 # keyword list and line comment markers.
 class BaseHighlighter 
 
 
-  COLOR_COMMENT = '#417E60'
-  COLOR_QUOTE = '#1324BF'
-  COLOR_IDENTIFIER = '#693E3F'
+  CLASS_COMMENT = 'comment'
+  CLASS_QUOTE = 'quote'
+  CLASS_IDENTIFIER = 'ident'
 
 
-  @@html_color = '<span style="color: %{color}">%{word}</span>'
-  class << @@html_color
-    def quote(string) self % {color: COLOR_QUOTE, word: string}; end
-    def comment(string) self % {color: COLOR_COMMENT, word: string}; end
-    def identifier(string) self % {color: COLOR_IDENTIFIER, word: string}; end
+  @@html_class = '<span class="%{klass}">%{word}</span>'
+  class << @@html_class
+    def quote(string) self % {klass: CLASS_QUOTE, word: string}; end
+    def comment(string) self % {klass: CLASS_COMMENT, word: string}; end
+    def identifier(string) self % {klass: CLASS_IDENTIFIER, word: string}; end
   end
 
 
@@ -26,10 +28,11 @@ class BaseHighlighter
   def self.cpp() return CppHighlighter.new; end
   def self.java() return JavaHighlighter.new; end
   def self.none() return NoHighlighter.new; end
+  def self.php() return PhpHighlighter.new; end
 
 
   def initialize
-    $logger.debug "Highlighter: #{__FILE__}" 
+    $logger.debug "Highlighter: #{self.class}" 
     @keyword_highlighter = KeywordHighlighter.new(get_keywords, comment_marker)
   end
   private :initialize
@@ -84,7 +87,7 @@ class BaseHighlighter
         tag = true;
         token
       else
-        @@html_color.quote($1)
+        @@html_class.quote($1)
       end
     end
 
@@ -112,7 +115,7 @@ class BaseHighlighter
         tag = true;
         token
       else
-        @@html_color.quote($1)
+        @@html_class.quote($1)
         # "*" + $1 + "*"
       end
     end
@@ -122,11 +125,19 @@ class BaseHighlighter
 
 
   def highlight_comment(input_string)
-    pattern = Regexp.new(comment_marker + '.*$')
-    # pattern = /# .*$/
-    if pattern =~ input_string
-      input_string.sub!(pattern, @@html_color.comment(input_string[pattern]) + '<br>')
+
+    # $logger.debug(input_string)
+    pattern = Regexp.new('(' + comment_marker + '.*)(?=<br>)|(\/\/.*)')
+
+    if input_string[pattern, 1]
+      input_string.sub!(pattern, @@html_class.comment(input_string[pattern, 1]))
+    else 
+      input_string.sub!(pattern, @@html_class.comment(input_string[pattern, 2]))
     end
+
+    # if pattern =~ input_string
+    #   input_string.sub!(pattern, @@html_class.comment(input_string[pattern]) + '<br>')
+    # end
     return input_string
   end
 
@@ -155,7 +166,7 @@ class BaseHighlighter
   def highlight_identifier(string)
     # pattern = %r{&lt;([a-zA-z0-9_ ]*)&gt;}
     pattern = %r{&lt;([\wa-zA-Z0-9_ ]*(?:\|[a-zA-Z0-9_ ]*)*)&gt;}
-    string.gsub!(pattern, '&lt;' + @@html_color.identifier('\1') + '&gt;')
+    string.gsub!(pattern, '&lt;' + @@html_class.identifier('\1') + '&gt;')
     return string
   end
 
@@ -173,12 +184,13 @@ class BaseHighlighter
 end
 
 
-require './lib/highlighter_ruby'
-require './lib/highlighter_js'
-require './lib/highlighter_cpp'
-require './lib/highlighter_java'
-require './lib/highlighter_swift'
+require './lib/highlighter/highlighter_ruby'
+require './lib/highlighter/highlighter_js'
+require './lib/highlighter/highlighter_cpp'
+require './lib/highlighter/highlighter_java'
+require './lib/highlighter/highlighter_swift'
 # require './lib/highlighter_sql'
-require './lib/highlighter_plsql'
-require './lib/highlighter_none'
+require './lib/highlighter/highlighter_plsql'
+require './lib/highlighter/highlighter_none'
+require './lib/highlighter/highlighter_php'
 

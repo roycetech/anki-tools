@@ -40,11 +40,13 @@ class HtmlBuilder
     return_value
   end
 
-  def style
-    raise 'You cannot style twice!' if @styled
-    @styled = true
-    return StyleBuilder.new(self)
-  end
+
+  # def style
+  #   raise 'You cannot style twice!' if @styled
+  #   @styled = true
+  #   return StyleBuilder.new(self)
+  # end
+
 
   # Accepts html another HtmlBuilder or StyleBuilder.
   # Style should come first! :)
@@ -62,6 +64,7 @@ class HtmlBuilder
         @values.push(builder.value)
         @styled = true
       end
+      # return self
       return StyleBuilder.new(self)
 
     elsif builder.is_a? HtmlBuilder
@@ -78,7 +81,7 @@ class HtmlBuilder
         @tags.push(tag)
         @values.push(value)
       end
-      return self
+      return builder
     end 
   end
 
@@ -144,7 +147,7 @@ class HtmlBuilder
 
     return return_value
   end
-
+  
 
   # Will handle tag and tag_e only.
   def method_missing(meth, *args, &block)

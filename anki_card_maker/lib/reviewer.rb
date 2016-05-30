@@ -39,7 +39,7 @@ class Reviewer
       |total, element|
         total +=
             element.downcase
-              .gsub('.h', 'h')  # c header.
+              .gsub('.h', 'h')
               .gsub('e.g.', 'eg')
               .gsub(/(?:[a-zA-Z]*)(?:\.[a-zA-Z]+)+/, 'javapackage')
               .gsub('i.e', 'ie')

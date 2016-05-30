@@ -4,6 +4,11 @@ class SourceReader
     @file = file
   end
 
+  # def strip_array(array) 
+  #   return array.map do |element|
+  #     element.str
+  #   end
+  # end
 
   def each_card(&block)
 
