@@ -1,14 +1,12 @@
+
+# TODO: Remove reliance to TagHelper?
 class SourceReader
+
 
   def initialize(file)
     @file = file
   end
 
-  # def strip_array(array) 
-  #   return array.map do |element|
-  #     element.str
-  #   end
-  # end
 
   def each_card(&block)
 
@@ -54,7 +52,8 @@ class SourceReader
 
           # Check for mistyped @TagS
           if line[0, 7].downcase == '@tags: ' and line[0, 7] != '@Tags: '
-            $logger.warn('Misspelled @Tags: @Line' || __LINE__)
+            $logger.warn("ERROR: Misspelled #{line[0, 7]}: @Line #{__LINE__}")
+            exit
           end
 
           if line[0, 7] == '@Tags: '

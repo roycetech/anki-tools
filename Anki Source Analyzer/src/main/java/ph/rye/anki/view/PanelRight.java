@@ -35,13 +35,12 @@ import ph.rye.common.lang.StringUtil;
 
 /**
  * @author royce
- *
  */
 public class PanelRight extends JPanel {
 
 
     /** */
-    private static final long serialVersionUID = 4749453698226021946L;
+    private static final long serialVersionUID = 1L;
 
 
     @SuppressWarnings({
@@ -73,7 +72,7 @@ public class PanelRight extends JPanel {
     }
 
     public void initComponents() {
-        setMaximumSize(new Dimension(2147483647, 218));
+        setMaximumSize(new Dimension(Integer.MAX_VALUE, 218));
         setMinimumSize(new Dimension(200, 106));
         setLayout(new GridBagLayout());
 

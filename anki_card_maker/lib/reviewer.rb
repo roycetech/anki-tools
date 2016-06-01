@@ -37,17 +37,19 @@ class Reviewer
     else
       sentence_count = back_array.inject(0) do
       |total, element|
-        total +=
-            element.downcase
+
+        translated = element.downcase
               .gsub('.h', 'h')
               .gsub('e.g.', 'eg')
-              .gsub(/(?:[a-zA-Z]*)(?:\.[a-zA-Z]+)+/, 'javapackage')
+              .gsub(/(\d+)(?:(\.)(\d*))/, '\1_\3')
+              .gsub(/(?:[a-zA-Z_]*)(?:\.[a-zA-Z_]+)+/, 'javapackage')
               .gsub('i.e', 'ie')
               .gsub('...', '')
               .gsub('..', '')
               .gsub('node.js', 'nodejs')
               .gsub('package.json', 'packagejson')
-              .count('.')
+
+        total += translated.count('.')
       end
     end
 

@@ -14,11 +14,7 @@ class Code
 
 
   def execute(html_builder, string_array)
-      $logger.info('Creating card type: CODE')
-
       if string_array.length == 1
-        $logger.info('Single')
-
         text = highlight_code(string_array)
         html_builder.br if text.lstrip =~ /\w/ and html_builder.build.strip.end_with? '/span>'
 
@@ -27,9 +23,6 @@ class Code
         .lf
 
       else
-        $logger.info('Multiple')
-
-
         highlighted_string = highlight_code(string_array)
         re = /<div class="well"><code>([\d\D]*)<\/code><\/div>/
         if highlighted_string =~ re
@@ -51,20 +44,11 @@ class Code
     inside_well = false
     return_value = string_array.inject('') do |result, element|
 
-      # $logger.debug("IN [#{inside_well}] #{element}")
-
       result += "\n" unless result.empty?
 
       if inside_well
         text = @highlighter.highlight_all(element)
       else
-        # inline highlighting already applied?!
-        # re = /<code(?: \w*=(["'])\w*\1)*>(.*?)<\/code>/  # all within inline code
-        # text = element.gsub(re) do |token|
-        #   $logger.debug("Token: #{token}, inline code: [#{$1}]")
-        #   @highlighter.highlight_all($1)
-        # end
-
         text = element
       end
 
@@ -86,8 +70,6 @@ class Code
       result
     end
 
-    # $logger.debug return_value
-    # exit
     return_value
   end
 
@@ -96,6 +78,11 @@ class Code
     detect_wells(string_list)
     inline = Inline.new(@highlighter)
     string_list.collect! do |line|
+
+      # $logger.debug line
+      escape_unknown_tags(line)
+      # $logger.debug line
+
       line = inline.execute(line.chomp)
       line.gsub('  ', HtmlBuilder::ESP * 2)
     end
@@ -117,6 +104,29 @@ class Code
 
     string_list.replace(string_block.lines.collect {|element| element.rstrip})
     return string_list
+  end
+
+  # escape unknown
+  def escape_unknown_tags(input_string)
+    @htmlcustom_words = get_html_keywords unless @htmlcustom_words
+    re = /<(\/?([a-zA-Z]*)(?: [a-zA-Z]*=(['"])[\d\D]*?\3)*)>/
+
+    return_value = input_string.gsub(re) do |token|
+      if @htmlcustom_words.include? $2
+        token
+      else
+        '&lt;' + $1 + '&gt;'
+      end
+    end
+
+    input_string.replace(return_value)
+    return_value
+  end
+
+  def get_html_keywords
+    return File.read('./data/keywords_customhtml.txt').lines.collect do |line|
+      line.chomp
+    end
   end
 
 

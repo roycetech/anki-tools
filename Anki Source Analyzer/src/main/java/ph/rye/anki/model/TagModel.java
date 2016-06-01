@@ -53,7 +53,8 @@ public class TagModel extends AbstractTableModel {
 
     private static final String[] COL_NAMES = new String[] {
             "Tag",
-            "Show" };
+            "Show",
+            "Count" };
 
 
     public TagModel() {
@@ -73,9 +74,7 @@ public class TagModel extends AbstractTableModel {
     }
 
 
-    /* (non-Javadoc)
-     * @see javax.swing.table.AbstractTableModel#getColumnName(int)
-     */
+    /** {@inheritDoc} */
     @Override
     public String getColumnName(final int column) {
         return COL_NAMES[column];
@@ -87,32 +86,35 @@ public class TagModel extends AbstractTableModel {
     }
 
 
-    /* (non-Javadoc)
-     * @see javax.swing.table.TableModel#getRowCount()
-     */
+    /** {@inheritDoc} */
     @Override
     public int getRowCount() {
         return tagMap.size();
     }
 
-    /* (non-Javadoc)
-     * @see javax.swing.table.TableModel#getColumnCount()
-     */
+    /** {@inheritDoc} */
     @Override
     public int getColumnCount() {
-        return 2;
+        return COL_NAMES.length;
     }
 
+    int addCount;
+
     public void addTag(final Tag tag) {
-        if (!tagMap.keySet().contains(tag.getName())) {
+        //        System.out
+        //            .printf("Tag Name %s, count: %d\n", tag.getName(), tag.getCount());
+
+        if (tagMap.containsKey(tag.getName())) {
+            final Tag oldTag = tagMap.get(tag.getName());
+            oldTag.incrementCount();
+        } else {
+            tag.incrementCount();
             tagMap.put(tag.getName(), tag);
             super.fireTableRowsInserted(tagMap.size() - 1, tagMap.size() - 1);
         }
     }
 
-    /* (non-Javadoc)
-     * @see javax.swing.table.TableModel#getValueAt(int, int)
-     */
+    /** {@inheritDoc} */
     @Override
     public Object getValueAt(final int rowIndex, final int columnIndex) {
 
@@ -123,14 +125,15 @@ public class TagModel extends AbstractTableModel {
         } else if (columnIndex == 1) {
             final Tag tag = getTagAt(rowIndex);
             retval.set(tag.isChecked());
+        } else if (columnIndex == 2) {
+            final Tag tag = getTagAt(rowIndex);
+            retval.set(tag.getCount());
         }
 
         return retval.get();
     }
 
-    /* (non-Javadoc)
-     * @see javax.swing.table.AbstractTableModel#setValueAt(java.lang.Object, int, int)
-     */
+    /** {@inheritDoc} */
     @Override
     public void setValueAt(final Object aValue, final int rowIndex,
                            final int columnIndex) {

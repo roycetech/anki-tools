@@ -2,7 +2,7 @@ class TagHelper
 
 
   HIDDEN = %w(FB\ Only BF\ Only Code(Front))
-  FRONT_ONLY = %w[FB\ Only Enum Practical Bool Code Abbr Syntax EnumU EnumO]
+  FRONT_ONLY = %w[FB\ Only Enum Practical Bool Abbr Syntax EnumU EnumO Terimnology]
 
 
   def initialize(tags)
@@ -64,20 +64,12 @@ class TagHelper
     @tags.include? 'Figure ☖'
   end
 
-  def code_front?
-    @tags.include?'Code(Front)'
-  end
-
   def ol?
     @tags.include?('EnumO')
   end
 
   def ul?
     @tags.include?('EnumU')
-  end
-
-  def code_back?
-    @tags.include?('Syntax') or @tags.include?('Code')
   end
 
   def untagged?

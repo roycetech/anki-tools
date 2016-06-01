@@ -26,13 +26,12 @@ class RubyHighlighter < BaseHighlighter
   end
 
 
-
   # highlight instance and class variables
   def highlight_variable(input_string)
     pattern = /@[@a-z_A-Z]*\s/
     if pattern =~ input_string
-      input_string.sub!(pattern, '<span style="color: %s">' %  COLOR_CLASS_VAR +
-      input_string[pattern] + '</span>')
+      input_string.gsub!(pattern, 
+        "<span class=\"var\">#{input_string[pattern]}</span>")
     end
     return input_string
   end

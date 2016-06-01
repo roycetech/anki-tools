@@ -13,30 +13,25 @@ class TestSingle < Test::Unit::TestCase
   RE_OUTER_DIV = /<div class="main">[\d\D]*<\/div>/  # outer most div, won't validate mispaired divs.
 
 
-  # TEST 10 - Test no extra space between the code and the answer only.
-  def test_backcard_single_code_fb
+  # TEST 12 - Test to wrap html attributes with span with class
+  def test_web_script_attribute
     front = ['front'];
-    back = ['`null`']
-
-    tags = ['Practical'];
+    back = ['```', '<script src="2" checked test="12"></script>', '```']
+    tags = [];
     tag_helper = TagHelper.new(tags);
-    html = HtmlHelper.new(BaseHighlighter.php, tag_helper, front, back);
+    html = HtmlHelper.new(BaseHighlighter.web, tag_helper, front, back);
+
 
     # Assert #1
-    assert_equal(%Q(
-<div class="main">
-  <span class="tag">Practical</span><br>
-  front
-</div>
-).strip, html.front_html[RE_OUTER_DIV]);
-
-    # Assert #2
     assert_equal(%Q'
 <div class="main">
-  <code class="inline">null</code><br>
-  <span class="answer_only">Answer Only</span>
+  <div class="well"><code>
+<span class="html">&lt;script</span> <span class="attr">src</span>=<span class="quote">"2"</span> <span class="attr">checked</span> <span class="attr">test</span>=<span class="quote">"12"</span>&gt;<span class="html">&lt;/script&gt;</span>
+  </code></div>
 </div>
 '.strip, html.back_html[RE_OUTER_DIV].gsub('&nbsp;', ' '));
   end
 
 end
+
+# &lt;script src=<span class="quote">"<i>filename.js</i>"</span>&gt;&lt;/script&gt;

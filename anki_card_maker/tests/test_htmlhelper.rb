@@ -327,4 +327,46 @@ to back
   end
 
 
+    # TEST 11 - Test no extra space between the code and the answer only.
+  def test_web_script_tag_bug
+    front = ['front'];
+    back = ['```', '<script src="ífilename.jsí"></script>', '```']
+
+    tags = ['Practical'];
+    tag_helper = TagHelper.new(tags);
+    html = HtmlHelper.new(BaseHighlighter.web, tag_helper, front, back);
+
+
+    # Assert #1
+    assert_equal(%Q'
+<div class="main">
+  <div class="well"><code>
+<span class="html">&lt;script</span> <span class="attr">src</span>=<span class="quote">"<i>filename.js</i>"</span>&gt;<span class="html">&lt;/script&gt;</span>
+  </code></div>
+  <span class="answer_only">Answer Only</span>
+</div>
+'.strip, html.back_html[RE_OUTER_DIV].gsub('&nbsp;', ' '));
+  end
+
+
+  # TEST 12 - Test to wrap html attributes with span with class
+  def test_web_script_attribute
+    front = ['front'];
+    back = ['```', '<script src="2" checked test="12"></script>', '```']
+    tags = [];
+    tag_helper = TagHelper.new(tags);
+    html = HtmlHelper.new(BaseHighlighter.web, tag_helper, front, back);
+
+
+    # Assert #1
+    assert_equal(%Q'
+<div class="main">
+  <div class="well"><code>
+<span class="html">&lt;script</span> <span class="attr">src</span>=<span class="quote">"2"</span> <span class="attr">checked</span> <span class="attr">test</span>=<span class="quote">"12"</span>&gt;<span class="html">&lt;/script&gt;</span>
+  </code></div>
+</div>
+'.strip, html.back_html[RE_OUTER_DIV].gsub('&nbsp;', ' '));
+  end
+
+
 end

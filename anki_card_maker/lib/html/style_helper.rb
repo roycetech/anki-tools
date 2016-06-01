@@ -9,7 +9,7 @@ class StyleHelper
     @style_common = StyleBuilder.new
       .select('.main')
         .text_align('left')
-        .font_size('small')
+        .font_size('x-small')
       .select_e
       .select('i')
         .color('#777777')
@@ -30,7 +30,7 @@ class StyleHelper
           .background_color('#5BC0DE')
           .color('white')
           .border_radius('5px')
-          .padding('5px')
+          .padding('2px')
           .font_size('smaller')
         .select_e
     end
@@ -100,6 +100,12 @@ class StyleHelper
       .select_e
       .select('span.var')
         .color('#426F9C')
+      .select_e
+      .select('span.html')
+        .color('#446FBD')
+      .select_e
+      .select('span.attr')
+        .color('#6D8600')
       .select_e
   end
 

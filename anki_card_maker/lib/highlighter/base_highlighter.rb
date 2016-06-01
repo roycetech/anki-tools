@@ -29,6 +29,7 @@ class BaseHighlighter
   def self.java() return JavaHighlighter.new; end
   def self.none() return NoHighlighter.new; end
   def self.php() return PhpHighlighter.new; end
+  def self.web() return WebHighlighter.new; end
 
 
   def initialize
@@ -172,9 +173,9 @@ class BaseHighlighter
 
 
   def highlight_all(input_string)
+    highlight_lang_specific(input_string)
     highlight_string(input_string)
     highlight_keywords(input_string)
-    highlight_lang_specific(input_string)
     highlight_identifier(input_string)
     highlight_comment(input_string)
     space_to_nbsp(input_string)
@@ -193,4 +194,5 @@ require './lib/highlighter/highlighter_swift'
 require './lib/highlighter/highlighter_plsql'
 require './lib/highlighter/highlighter_none'
 require './lib/highlighter/highlighter_php'
+require './lib/highlighter/highlighter_web'
 

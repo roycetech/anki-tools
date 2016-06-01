@@ -13,6 +13,7 @@ public class Tag {
 
     private final String name;
     private transient boolean checked;
+    private transient int count;
 
     public Tag(final String name, final boolean checked) {
         assert name != null;
@@ -37,6 +38,20 @@ public class Tag {
 
     public void setChecked(final boolean state) {
         checked = state;
+    }
+
+    /**
+     * @return the count
+     */
+    public int getCount() {
+        return count;
+    }
+
+    /**
+     * @param count the count to set
+     */
+    public void incrementCount() {
+        count++;
     }
 
     @Override
