@@ -17,6 +17,10 @@ task :run do
   ruby './bin/main_class.rb'
 end
 
+task :tag do
+  ruby './bin/api_source_tagger.rb'
+end
+
 
 task :stat do
     ruby "./bin/card_counter.rb"  

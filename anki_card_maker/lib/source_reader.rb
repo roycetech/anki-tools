@@ -74,7 +74,7 @@ class SourceReader
       end
     end
     
-    yield tags, front, back
+    yield tags, front, back unless front.empty? or front[0].strip.empty?
 
   end
 
