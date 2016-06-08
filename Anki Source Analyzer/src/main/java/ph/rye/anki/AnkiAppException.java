@@ -21,6 +21,11 @@ package ph.rye.anki;
  */
 public class AnkiAppException extends RuntimeException {
 
+
+    /** */
+    private static final long serialVersionUID = 1L;
+
+
     public AnkiAppException(final Throwable throwable) {
         super(throwable);
     }

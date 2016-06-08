@@ -7,9 +7,9 @@ class StyleHelper
     @tag_helper = tag_helper
 
     @style_common = StyleBuilder.new
-      .select('.main')
+      .select('div.main')
         .text_align('left')
-        .font_size('x-small')
+        .font_size('medium')
       .select_e
       .select('i')
         .color('#777777')
@@ -31,7 +31,6 @@ class StyleHelper
           .color('white')
           .border_radius('5px')
           .padding('2px')
-          .font_size('smaller')
         .select_e
     end
 

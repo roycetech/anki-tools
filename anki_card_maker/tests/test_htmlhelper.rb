@@ -239,6 +239,7 @@ end
     assert_equal(%Q'
 <div class="main">
   back<br>
+<br>
   <span class="answer_only">Answer Only</span>
 </div>
 '.strip, html.back_html[RE_OUTER_DIV].gsub('&nbsp;', ' '));
@@ -321,6 +322,7 @@ to back
     assert_equal(%Q'
 <div class="main">
   <code class="inline">null</code><br>
+<br>
   <span class="answer_only">Answer Only</span>
 </div>
 '.strip, html.back_html[RE_OUTER_DIV].gsub('&nbsp;', ' '));
@@ -367,6 +369,56 @@ to back
 </div>
 '.strip, html.back_html[RE_OUTER_DIV].gsub('&nbsp;', ' '));
   end
+
+
+  # TEST 13 - Code, Multiline
+  def test_multiline_code
+    front = ['`trace` → `nil`', '`trace2` → `nil`'];
+    back = ['back']
+    tags = [];
+    tag_helper = TagHelper.new(tags);
+
+    html = HtmlHelper.new(BaseHighlighter.ruby, tag_helper, front, back);
+
+    # Assert #1
+    assert_equal(%Q'
+<div class="main">
+  <code class="inline">trace</code> → <code class="inline"><span class="keyword">nil</span></code><br>
+<code class="inline">trace2</code> → <code class="inline"><span class="keyword">nil</span></code>
+</div>
+'.strip, html.front_html[RE_OUTER_DIV].gsub('&nbsp;', ' '));
+
+    # Assert #2
+    assert_equal(%Q(<div class="main">
+  back
+</div>), html.back_html[RE_OUTER_DIV]);
+  end
+
+    # TEST 14 - Code Front with tag newline bug
+  def test_code_front_with_tag_bug
+    front = ['`trace` → `nil`', '`trace2` → `nil`'];
+    back = ['back']
+    tags = ['Multi:2'];
+    tag_helper = TagHelper.new(tags);
+
+    html = HtmlHelper.new(BaseHighlighter.ruby, tag_helper, front, back);
+
+    # Assert #1
+    assert_equal(%Q'
+<div class="main">
+  <span class="tag">Multi:2</span><br>
+  <code class="inline">trace</code> → <code class="inline"><span class="keyword">nil</span></code><br>
+<code class="inline">trace2</code> → <code class="inline"><span class="keyword">nil</span></code>
+</div>
+'.strip, html.front_html[RE_OUTER_DIV].gsub('&nbsp;', ' '));
+
+    # Assert #2
+    assert_equal(%Q(<div class="main">
+  <span class="tag">Multi:2</span><br>
+  back
+</div>), html.back_html[RE_OUTER_DIV]);
+  end
+
 
 
 end

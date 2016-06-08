@@ -25,17 +25,19 @@ class MainClass
   end
 
 
-  @@highlighter = BaseHighlighter
-  @@untagged_count = 0
 
 
   # Initialize source file name.
   def initialize(opts={})
+
+    @@highlighter = BaseHighlighter
+    @@untagged_count = 0
+
     @reviewer = Reviewer.new
 
     hash = {
-      # :source_file => '/Users/royce/Dropbox/Documents/Reviewer/@test.txt'
-      :source_file => '/Users/royce/Dropbox/Documents/Reviewer/spring/Spring-Backend-II.txt'
+      :source_file => '/Users/royce/Dropbox/Documents/Reviewer/@test.txt'
+      # :source_file => '/Users/royce/Dropbox/Documents/Reviewer/spring/Spring-Backend-II.txt'
     }.merge(opts);  
 
     @@filepath = hash[:source_file]
@@ -124,7 +126,7 @@ class MainClass
       # $logger.debug("Back: \n" + lst[1] + "\n\n")
 
       # $logger.debug("Front: \n" + lst[0][re_div_only] + "\n\n")
-      $logger.debug("Back: \n" + lst[1][re_div_only] + "\n\n")
+      # $logger.debug("Back: \n" + lst[1][re_div_only] + "\n\n")
 
 
       # $logger.debug("Tag: \n" + lst[2] + "\n\n")
@@ -138,7 +140,25 @@ class MainClass
 end
 
 
+# - Generate a single file
 path = '/Users/royce/Dropbox/Documents/Reviewer'
-main = MainClass.new({:source_file => LatestFileFinder.new(path).find})
-# main.test
+# main = MainClass.new({:source_file => LatestFileFinder.new(path).find})
+# main.execute
+
+
+# - Remove all files inside a folder, DANGER!!!
+output_path = '/Users/royce/Desktop/Anki Generated Sources'
+$logger.info("Deleting all files inside the output folder: #{output_path}")
+Dir[File.join(output_path, '*.tsv')].each do |filename|
+  File.delete(filename)
+end
+
+
+# - Generate for all files in a folder
+Dir[File.join(File.join(path + '/javascript'), '*.txt')].each do |filename|
+  # puts filename
+
+main = MainClass.new({:source_file => filename})
 main.execute
+
+end

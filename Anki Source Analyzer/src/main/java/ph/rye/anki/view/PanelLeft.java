@@ -125,7 +125,7 @@ public class PanelLeft extends JPanel {
         scrollPaneCardTag.setVisible(true);
         scrollPaneCardTag.setMinimumSize(new Dimension(150, Integer.MAX_VALUE));
         scrollPaneCardTag
-            .setPreferredSize(new Dimension(200, Integer.MAX_VALUE));
+            .setPreferredSize(new Dimension(300, Integer.MAX_VALUE));
         scrollPaneCardTag.setMaximumSize(new Dimension(600, Integer.MAX_VALUE));
 
         add(

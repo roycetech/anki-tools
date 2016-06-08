@@ -73,7 +73,7 @@ public class PanelRight extends JPanel {
 
     public void initComponents() {
         setMaximumSize(new Dimension(Integer.MAX_VALUE, 218));
-        setMinimumSize(new Dimension(200, 106));
+        setMinimumSize(new Dimension(300, 106));
         setLayout(new GridBagLayout());
 
         chkCheckAll.setSelected(true);

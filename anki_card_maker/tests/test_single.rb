@@ -13,25 +13,31 @@ class TestSingle < Test::Unit::TestCase
   RE_OUTER_DIV = /<div class="main">[\d\D]*<\/div>/  # outer most div, won't validate mispaired divs.
 
 
-  # TEST 12 - Test to wrap html attributes with span with class
-  def test_web_script_attribute
-    front = ['front'];
-    back = ['```', '<script src="2" checked test="12"></script>', '```']
-    tags = [];
+  # TEST 14 - Code Front with tag newline bug
+  def test_code_front_with_tag_bug
+    front = ['`trace` → `nil`', '`trace2` → `nil`'];
+    back = ['back']
+    tags = ['Multi:2'];
     tag_helper = TagHelper.new(tags);
-    html = HtmlHelper.new(BaseHighlighter.web, tag_helper, front, back);
 
+    html = HtmlHelper.new(BaseHighlighter.ruby, tag_helper, front, back);
 
     # Assert #1
     assert_equal(%Q'
 <div class="main">
-  <div class="well"><code>
-<span class="html">&lt;script</span> <span class="attr">src</span>=<span class="quote">"2"</span> <span class="attr">checked</span> <span class="attr">test</span>=<span class="quote">"12"</span>&gt;<span class="html">&lt;/script&gt;</span>
-  </code></div>
+  <span class="tag">Multi:2</span><br>
+  <code class="inline">trace</code> → <code class="inline"><span class="keyword">nil</span></code><br>
+<code class="inline">trace2</code> → <code class="inline"><span class="keyword">nil</span></code>
 </div>
-'.strip, html.back_html[RE_OUTER_DIV].gsub('&nbsp;', ' '));
+'.strip, html.front_html[RE_OUTER_DIV].gsub('&nbsp;', ' '));
+
+    # Assert #2
+    assert_equal(%Q(<div class="main">
+  <span class="tag">Multi:2</span><br>
+  back
+</div>), html.back_html[RE_OUTER_DIV]);
   end
+
 
 end
 
-# &lt;script src=<span class="quote">"<i>filename.js</i>"</span>&gt;&lt;/script&gt;

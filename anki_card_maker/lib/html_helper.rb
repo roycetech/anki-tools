@@ -187,6 +187,7 @@ class HtmlHelper
     end
   end
 
+
   # escape angles, and spaces
   def to_html_nbsp(string)
     return line_to_html_raw(string)
@@ -194,5 +195,6 @@ class HtmlHelper
     .gsub(HtmlBuilder::ESP + ' ', HtmlBuilder::ESP * 2)
     .gsub("\n", HtmlBuilder::BR)
   end
+
 
 end

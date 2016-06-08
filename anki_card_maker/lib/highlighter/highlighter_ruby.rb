@@ -20,7 +20,8 @@ class RubyHighlighter < BaseHighlighter
   def highlight_block_param(input_string)
     pattern = Regexp.new %Q{\\|[^"\\\r\n]*(?:\\.[^"\\\r\n]*)*\\|}
     if pattern =~ input_string
-      input_string.sub!(pattern, @@html_color.identifier(input_string[pattern]))
+      input_string.gsub!(pattern, 
+        "<span class=\"ident\">#{input_string[pattern]}</span>")
     end
     return input_string
   end

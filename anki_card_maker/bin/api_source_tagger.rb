@@ -1,9 +1,11 @@
 require './lib/source_reader'
+require './lib/latest_file_finder'
+require './lib/tag_helper'
 
 
 RE_TOKENS = /([a-z\?!]+)|\$\/|[+-]?\d/
 EXCLUDE_FRONT = %w(or)
-EXCLUDE_BACK = %w(Ruby)
+EXCLUDE_BACK = %w(Ruby e.g)
 BODY_TAGS = %w(true catch false nil yield to_int to_s eval to_i padstr regexp each_char obj at_exit callcc)
 
 # RE_WORDS = Regexp.quote(BODY_TAGS.join('|') + '|')
@@ -13,19 +15,18 @@ R = [ '%x{...}',                # Command
       'begin\.\.\.end',         # begin ...end
       '-[a-z](?:\/-[a-z])+',    # -a/-b
       '[\w\.]+ ==? [\w\.]+\.?',
-      '[$A-Za-z_]+(?:\.[A-Za-z_]+(?:\([\d\D]*\))?[!\?]?)+',   # Method call
+      '[$A-Za-z_]+(?:\.[A-Za-z_=~]+(?:\([\d\D]*?\)+)?[!\?]?)+',   # Method call
       '\(?[$_\w]+(\.\w+\)?!?)+',
       '__\w+__',                # __FILE__
-      '\[\]',                   # []
       '\w(?:[+*/-]\w)+\b;?',    # x+y.  Arithmetic
-      '(?<= )-?\w+\d',                  # File0.  Numbered words
-      '\w*#[\w=<>_]+[\?!]?',    # this#hello. method
+      '(?<= )-?\w+\d',          # File0.  Numbered words
+      '\w*#[\[\]\w=<>_]+[\?!]?',    # this#hello. method
       '\b[A-Z][a-z]*([A-Z][a-z]*)+\b',                # DoubleWords
       '\+?\w+(?:\(\d*\))\+?',             # function(asdf), optionally wrapped by +
-      '\\n{3}',                 # \nnn
+      '\\\\n{3}',                  # \nnn
       '0x\d*',                  # hex
        '0b[01]*',               # binary
-      '\(?\$(?:[\/_!\*:\\\\,\?])\)?',     # special global $_. $! etc.
+      '\$(?:[\/_!\*:\\\\,\?])',     # special global $_. $! etc.
       '“.+?”',                  # quoted
       '‘.+?’',                  # quoted
       "'.+'",                   # quoted
@@ -37,9 +38,13 @@ R = [ '%x{...}',                # Command
       '\b(?:' + RE_WORDS + ')\b',
       '(?:(?:from|to|match|new)_)?str\b',
       # '\b[+-]?\d+\b',              # digits
-      '(?<!^|\. |\.  )[A-Z][a-z]+',  # proper nouns
+      '(?<!^|\. |\.  |— |—)(?:[A-Z][a-z]+)(?! —)(?= |,|;)',  # proper nouns
       '[a-z]+\?',
-      '\w+:+\w+:?'   # custom.  line:file pr line:file:
+      '\w+:+\w+:?',   # custom.  line:file pr line:file:
+      '\[\]',                   # []
+      '=~',   # =~
+      '\\\\r\\\\n',   #
+      '\\\\[rn]\b'
     ]
 
       # 
@@ -65,7 +70,18 @@ class TagApiSource
 
         tag_front(file_output, front)
         file_output << "\n" if $write
-        tag_back(file_output, back)
+        
+        # bs for skip back, fs for front skip
+        if tags.include?'bs'
+          if $write
+            back.each do |element|
+              file_output << "#{element}" 
+            end
+            file_output << "\n" 
+          end
+        else 
+          tag_back(file_output, back)
+        end
         if $write
           file_output << "\n\n" 
         end
@@ -90,13 +106,21 @@ class TagApiSource
         end
       end
 
-      if !!line[/(.+?) +(?=[→=])/]
+      if !!line[/(.+) +(?=[→=])/]
 
         #  left of  =→>
-        line.gsub!(/(.+?) +(?=[→=])/, '`\1` ') 
+        line.gsub!(/(.+) +(?=[→=])/) do |token|
+          "`#{token.strip}` "
+        end
         
         #  right of =→>
-        line.gsub!(/ [→=] (.+)/) do |token1|
+        if !!line[/ → (.+)/]
+          re = / → (.+)/
+        else
+          re = / = (.+)/
+        end
+
+        line.gsub!(re) do |token1|
             token1.gsub(/[\w\$]+|\d+ \.{2,3} \d+/) do |token2|
               if not EXCLUDE_FRONT.include? token2
                 "`#{token2}`"
@@ -124,6 +148,8 @@ class TagApiSource
 
         if !!line[/ See/]
           line = line[0, line.index(/ See/)]
+        elsif !!line[/\(see/]
+          line[/ \(see.*?\)/] = '';
         elsif !!line[/ Also see/]
           line = line[0, line.index(/ Also see/)]
         elsif !!line[/ For examples/]
@@ -149,21 +175,17 @@ class TagApiSource
             "`#{token}`"
           end
 
-
-          if line.include? 'Transfers control to the end'
-            puts re
-            puts line
-          end
-
           @words = []
         end
 
-        # puts back
-        file_output << back  if $write
-        file_output << "\n" if $write
+        if $write
+          file_output << back  
+          file_output << "\n"
+        end
       end
     end
   end          
 end
 
-TagApiSource.new.execute('/Users/royce/Dropbox/Documents/Reviewer/ruby/Ruby-API-Kernel.api')
+latest_api = LatestFileFinder.new('/Users/royce/Dropbox/Documents/Reviewer/', '*.api').find
+TagApiSource.new.execute(latest_api)
