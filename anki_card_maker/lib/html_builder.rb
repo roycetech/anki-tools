@@ -41,13 +41,6 @@ class HtmlBuilder
   end
 
 
-  # def style
-  #   raise 'You cannot style twice!' if @styled
-  #   @styled = true
-  #   return StyleBuilder.new(self)
-  # end
-
-
   # Accepts html another HtmlBuilder or StyleBuilder.
   # Style should come first! :)
   def merge(builder)
@@ -112,9 +105,7 @@ class HtmlBuilder
         return_value += ' ' * (2 * level)
       end
       
-      # puts 'lf: [%s], prev: %6s, tag: %-7s, level: %s, %5s, indent: [%5s], value: %13s' % 
-      #   [last_lfed ? 'Y': 'n', last_tag, tag, level, is_open_tag ? 'Open' : 'Close', do_indent, value]
-
+      
       case tag
       when 'space' then
         return_value += ESP

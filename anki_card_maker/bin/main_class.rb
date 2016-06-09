@@ -10,6 +10,8 @@ require './lib/latest_file_finder'
 require 'logger'
 require 'CSV'
 
+require './bin/upload'
+
 
 class MainClass
 
@@ -23,8 +25,6 @@ class MainClass
     source = line[line.rindex('/', -1)+1 .. -1]
     "#{severity} #{source} - #{msg}\n"
   end
-
-
 
 
   # Initialize source file name.
@@ -125,8 +125,8 @@ class MainClass
       # $logger.debug("Front: \n" + lst[0] + "\n\n")
       # $logger.debug("Back: \n" + lst[1] + "\n\n")
 
-      # $logger.debug("Front: \n" + lst[0][re_div_only] + "\n\n")
-      # $logger.debug("Back: \n" + lst[1][re_div_only] + "\n\n")
+      $logger.debug("Front: \n" + lst[0][re_div_only] + "\n\n")
+      $logger.debug("Back: \n" + lst[1][re_div_only] + "\n\n")
 
 
       # $logger.debug("Tag: \n" + lst[2] + "\n\n")
@@ -140,25 +140,29 @@ class MainClass
 end
 
 
-# - Generate a single file
 path = '/Users/royce/Dropbox/Documents/Reviewer'
-# main = MainClass.new({:source_file => LatestFileFinder.new(path).find})
-# main.execute
+
+
+# - Generate a single file
+main = MainClass.new({:source_file => LatestFileFinder.new(path).find})
+main.execute
+RunSelenium.execute
+
 
 
 # - Remove all files inside a folder, DANGER!!!
-output_path = '/Users/royce/Desktop/Anki Generated Sources'
-$logger.info("Deleting all files inside the output folder: #{output_path}")
-Dir[File.join(output_path, '*.tsv')].each do |filename|
-  File.delete(filename)
-end
+# output_path = '/Users/royce/Desktop/Anki Generated Sources'
+# $logger.info("Deleting all files inside the output folder: #{output_path}")
+# Dir[File.join(output_path, '*.tsv')].each do |filename|
+#   File.delete(filename)
+# end
 
 
 # - Generate for all files in a folder
-Dir[File.join(File.join(path + '/javascript'), '*.txt')].each do |filename|
-  # puts filename
+# Dir[File.join(File.join(path + '/javascript'), '*.txt')].each do |filename|
+#   # puts filename
 
-main = MainClass.new({:source_file => filename})
-main.execute
+# main = MainClass.new({:source_file => filename})
+# main.execute
 
-end
+# end

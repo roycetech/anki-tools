@@ -5,8 +5,8 @@ require 'logger'
 
 # path = '/Users/royce/Dropbox/Documents/Reviewer/java/EJB'
 # path = '/Users/royce/Dropbox/Documents/Reviewer/ruby/API'
-path = '/Users/royce/Dropbox/Documents/Reviewer/jQuery'
-
+# path = '/Users/royce/Dropbox/Documents/Reviewer/jQuery'
+path = '/Users/royce/Dropbox/Documents/Reviewer/javascript'
 
 
 $logger = Logger.new(STDOUT)

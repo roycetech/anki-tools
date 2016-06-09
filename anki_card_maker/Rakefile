@@ -26,3 +26,7 @@ task :stat do
     ruby "./bin/card_counter.rb"  
 end
 
+
+task :upload do
+    ruby "./bin/upload.rb"  
+end

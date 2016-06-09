@@ -87,6 +87,7 @@ class StyleHelper
         .border('1px solid #e3e3e3')
         .border_radius('4px')
         .box_shadow('inset 0 1px 1px rgba(0, 0, 0, 0.05)')
+        .font_size('medium')
       .select_e
       .select('span.keyword')
         .color('#7E0854')

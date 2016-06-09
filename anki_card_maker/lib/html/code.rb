@@ -32,10 +32,6 @@ class Code
           assert !highlighted_string[re, 1].empty?, "Highlight must not be empty!"
         end
 
-        # $logger.debug html_builder.build
-        # $logger.debug highlighted_string.lstrip
-        # exit
-
         html_builder.br if highlighted_string.lstrip =~ /\w|<code/ and html_builder.build.strip.end_with? '/span>'
         html_builder.text(highlighted_string).lf
 
@@ -70,7 +66,7 @@ class Code
           not result.strip().empty?
         result.chomp!
         result += "<br>\n" + text
-      else
+      else 
         result += text
       end
       re = />( *)</
@@ -91,9 +87,7 @@ class Code
     inline = Inline.new(@highlighter)
     string_list.collect! do |line|
 
-      # $logger.debug line
       escape_unknown_tags(line)
-      # $logger.debug line
 
       line = inline.execute(line.chomp)
       line.gsub('  ', HtmlBuilder::ESP * 2)
@@ -118,6 +112,7 @@ class Code
     return string_list
   end
 
+
   # escape unknown
   def escape_unknown_tags(input_string)
     @htmlcustom_words = get_html_keywords unless @htmlcustom_words
@@ -134,6 +129,7 @@ class Code
     input_string.replace(return_value)
     return_value
   end
+
 
   def get_html_keywords
     return File.read('./data/keywords_customhtml.txt').lines.collect do |line|
