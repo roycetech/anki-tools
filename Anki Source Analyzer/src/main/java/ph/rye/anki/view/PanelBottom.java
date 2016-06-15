@@ -99,10 +99,6 @@ public class PanelBottom extends JPanel {
 
         cardRowSorter = new TableRowSorter<>(service.getCardModel());
         tblCard.setRowSorter(cardRowSorter);
-
-        //        final ListSelectionModel colSelectionModel =
-        //                tblCard.getColumnModel().getSelectionModel();
-
         final ListSelectionModel rowSelectionModel =
                 tblCard.getSelectionModel();
 
@@ -114,8 +110,6 @@ public class PanelBottom extends JPanel {
 
         scrollPaneCard.setViewportView(tblCard);
 
-        //        tblCard.getColumnModel().getSelectionModel().setSelectionMode(
-        //            ListSelectionModel.SINGLE_SELECTION);
         tblCard.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 
         add(

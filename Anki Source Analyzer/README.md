@@ -11,3 +11,14 @@ Features
 - Create, set, remove tag
 - Filter cards by tag
 - Export selected cards
+
+
+Notable Code
+------------
+- Latest File Finder
+- File Open Dialog
+- Gradle Runnable
+- File read/write
+- Checkbox table column
+- OS X Full screen mode
+
