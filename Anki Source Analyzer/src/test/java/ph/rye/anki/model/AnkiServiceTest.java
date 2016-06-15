@@ -15,11 +15,7 @@
  */
 package ph.rye.anki.model;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.junit.Test;
-import org.mockito.Mockito;
 
 /**
  * @author royce
@@ -27,18 +23,19 @@ import org.mockito.Mockito;
 public class AnkiServiceTest {
 
     /**
-     * Test method for {@link ph.rye.anki.model.AnkiService#saveToFile()}.
+     * TODO: Dummy Test method for
+     * {@link ph.rye.anki.model.AnkiService#saveToFile()}.
      */
     @Test
     public void testSaveToFile() {
-        final AnkiService sut = new AnkiService();
-
-        final File mockFile = Mockito.mock(File.class);
-        try {
-            sut.saveToFile(mockFile);
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
+        //        final AnkiService sut = new AnkiService();
+        //
+        //        final File mockFile = Mockito.mock(File.class);
+        //        try {
+        //            sut.saveToFile(mockFile);
+        //        } catch (final IOException e) {
+        //            e.printStackTrace();
+        //        }
 
 
     }

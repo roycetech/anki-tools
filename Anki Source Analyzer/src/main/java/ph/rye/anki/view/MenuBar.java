@@ -158,31 +158,34 @@ public class MenuBar extends JMenuBar {
         final int returnVal = fileChooser.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             final File file = fileChooser.getSelectedFile();
-
-            String appTitle;
-            final int sepIndex = parent.getTitle().indexOf(SEP_TITLE);
-            if (sepIndex > -1) {
-                appTitle = parent.getTitle().substring(0, sepIndex);
-            } else {
-                appTitle = parent.getTitle();
-            }
-
-            parent.setTitle(appTitle + SEP_TITLE + file.getName());
-            try {
-                service.openFile(file);
-            } catch (final FileNotFoundException e) {
-                throw new AnkiAppException(e);
-            }
-
-            mnuSaveAs.setEnabled(true);
-            mnuExport.setEnabled(true);
-            parent.getPanelLeft().setApplyButtonEnabled(false);
-            parent.getPanelLeft().getTextArea().setEditable(false);
-            parent.getPanelLeft().getTextArea().setText("");
-            parent.getPanelBottom().refreshLabelText();
-            parent.getPanelBottom().selectFirstRow();
+            selectFile(file);
         }
 
+    }
+
+    public void selectFile(final File file) {
+        String appTitle;
+        final int sepIndex = parent.getTitle().indexOf(SEP_TITLE);
+        if (sepIndex > -1) {
+            appTitle = parent.getTitle().substring(0, sepIndex);
+        } else {
+            appTitle = parent.getTitle();
+        }
+
+        parent.setTitle(appTitle + SEP_TITLE + file.getName());
+        try {
+            service.openFile(file);
+        } catch (final FileNotFoundException e) {
+            throw new AnkiAppException(e);
+        }
+
+        mnuSaveAs.setEnabled(true);
+        mnuExport.setEnabled(true);
+        parent.getPanelLeft().setApplyButtonEnabled(false);
+        parent.getPanelLeft().getTextArea().setEditable(false);
+        parent.getPanelLeft().getTextArea().setText("");
+        parent.getPanelBottom().refreshLabelText();
+        parent.getPanelBottom().selectFirstRow();
     }
 
     /**
