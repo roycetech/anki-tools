@@ -98,11 +98,7 @@ public class TagModel extends AbstractTableModel {
         return COL_NAMES.length;
     }
 
-    int addCount;
-
     public void addTag(final Tag tag) {
-        //        System.out
-        //            .printf("Tag Name %s, count: %d\n", tag.getName(), tag.getCount());
 
         if (tagMap.containsKey(tag.getName())) {
             final Tag oldTag = tagMap.get(tag.getName());

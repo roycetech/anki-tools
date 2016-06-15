@@ -96,4 +96,10 @@ public class Card {
         return strBuilder.toString();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return toSource();
+    }
+
 }

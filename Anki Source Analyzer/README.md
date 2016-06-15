@@ -22,3 +22,9 @@ Notable Code
 - Checkbox table column
 - OS X Full screen mode
 
+
+Changelog:
+----------
+
+- June 15, 2016
+  - Untagged cards handling.

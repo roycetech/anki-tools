@@ -98,11 +98,18 @@ public class AnkiService {
 
         cardModel.addCard(newCard);
 
-        for (final String tag : newCard.getTags()) {
-            final Tag tagOn = new Tag(tag, true);
-            final Tag tagOff = new Tag(tag, false);
+        if (newCard.getTags().isEmpty()) {
+            final Tag tagOn = new Tag(TagModel.UNTAGGED, true);
+            final Tag tagOff = new Tag(TagModel.UNTAGGED, false);
             tagModel.addTag(tagOn);
             cardTagModel.addTag(tagOff);
+        } else {
+            for (final String tag : newCard.getTags()) {
+                final Tag tagOn = new Tag(tag, true);
+                final Tag tagOff = new Tag(tag, false);
+                tagModel.addTag(tagOn);
+                cardTagModel.addTag(tagOff);
+            }
         }
     }
 
@@ -205,7 +212,9 @@ public class AnkiService {
         final Ano<Boolean> retval = new Ano<>(false);
 
         for (final String selected : selectedTags) {
-            if (card.getTags().contains(selected)) {
+            if (card.getTags().contains(selected)
+                    || TagModel.UNTAGGED.equals(selected)
+                            && card.getTags().isEmpty()) {
                 retval.set(true);
                 break;
             }

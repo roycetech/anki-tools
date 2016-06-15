@@ -61,6 +61,8 @@ public class MenuBar extends JMenuBar {
     private final transient JMenuItem mnuExport = new JMenuItem();
     private final transient JMenuItem mnuExit = new JMenuItem();
 
+    private transient File openFile;
+
 
     public MenuBar(final AnkiMainGui parent, final AnkiService service) {
         this.parent = parent;
@@ -112,14 +114,17 @@ public class MenuBar extends JMenuBar {
 
     private void mnuExportClicked() {
         final JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogType(JFileChooser.CUSTOM_DIALOG);
         fileChooser.setCurrentDirectory(
             new File("/Users/royce/Desktop/Anki Generated Sources"));
-        final int rVal = fileChooser.showSaveDialog(null);
+        fileChooser.setSelectedFile(new File(openFile.getName()));
+        fileChooser.setApproveButtonToolTipText("Export");
+        final int rVal = fileChooser.showDialog(parent, "Export");
         if (rVal == JFileChooser.APPROVE_OPTION) {
             service.exportSelected(fileChooser.getSelectedFile());
+            JOptionPane.showMessageDialog(parent, "Export completed!");
         }
 
-        JOptionPane.showMessageDialog(parent, "Export completed!");
     }
 
     private void mnuSavePerformed() {
@@ -164,6 +169,8 @@ public class MenuBar extends JMenuBar {
     }
 
     public void selectFile(final File file) {
+        openFile = file;
+
         String appTitle;
         final int sepIndex = parent.getTitle().indexOf(SEP_TITLE);
         if (sepIndex > -1) {
