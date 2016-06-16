@@ -43,11 +43,10 @@ public class PanelLeft extends JPanel {
 
 
     /** */
-    private static final long serialVersionUID = 656112677535078290L;
+    private static final long serialVersionUID = 1L;
 
 
     private final transient AnkiMainGui parent;
-
     private final transient AnkiService service;
 
 

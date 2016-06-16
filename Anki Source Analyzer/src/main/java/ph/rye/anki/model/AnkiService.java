@@ -54,12 +54,12 @@ public class AnkiService {
     private final transient CardModel cardModel = new CardModel();
     private final transient TagModel cardTagModel = new TagModel() {
 
-        /** */
-        private static final long serialVersionUID = 2465948892635976042L;
 
-        /* (non-Javadoc)
-         * @see ph.rye.anki.model.TagModel#setValueAt(java.lang.Object, int, int)
-         */
+        /** */
+        private static final long serialVersionUID = 1L;
+
+
+        /** {@inheritDoc} */
         @Override
         public void setValueAt(final Object aValue, final int rowIndex,
                                final int columnIndex) {
@@ -75,6 +75,19 @@ public class AnkiService {
 
             super.setValueAt(aValue, rowIndex, columnIndex);
         }
+
+
+        /** {@inheritDoc} */
+        @Override
+        public String getColumnName(final int column) {
+            if (column == 1) {
+                return "Toggled";
+            } else {
+                return super.getColumnName(column);
+            }
+        }
+
+
     };
 
     private transient File file;

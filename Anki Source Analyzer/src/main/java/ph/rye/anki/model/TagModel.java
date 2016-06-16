@@ -98,6 +98,11 @@ public class TagModel extends AbstractTableModel {
         return COL_NAMES.length;
     }
 
+    public void registerTag(final Tag tag) {
+        tagMap.put(tag.getName(), tag);
+        super.fireTableRowsInserted(tagMap.size() - 1, tagMap.size() - 1);
+    }
+
     public void addTag(final Tag tag) {
 
         if (tagMap.containsKey(tag.getName())) {
@@ -105,8 +110,7 @@ public class TagModel extends AbstractTableModel {
             oldTag.incrementCount();
         } else {
             tag.incrementCount();
-            tagMap.put(tag.getName(), tag);
-            super.fireTableRowsInserted(tagMap.size() - 1, tagMap.size() - 1);
+            registerTag(tag);
         }
     }
 

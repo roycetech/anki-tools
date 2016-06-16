@@ -161,8 +161,8 @@ public class PanelRight extends JPanel {
 
         if (StringUtil.hasValue(newTagName)) {
 
-            service.getTagModel().addTag(new Tag(newTagName, true));
-            service.getCardTagModel().addTag(new Tag(newTagName, false));
+            service.getTagModel().registerTag(new Tag(newTagName, true));
+            service.getCardTagModel().registerTag(new Tag(newTagName, false));
         }
 
     }
