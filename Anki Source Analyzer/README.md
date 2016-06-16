@@ -21,6 +21,7 @@ Notable Code
 - File read/write
 - Checkbox table column
 - OS X Full screen mode
+- Gradle dependency to local classes folder.
 
 
 Changelog:
