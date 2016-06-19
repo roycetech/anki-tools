@@ -30,6 +30,8 @@ class BaseHighlighter
   def self.none() return NoHighlighter.new; end
   def self.php() return PhpHighlighter.new; end
   def self.web() return WebHighlighter.new; end
+  def self.objc() return WebHighlighter.new; end
+  def self.jquery() return JQueryHighlighter.new; end
 
 
   def initialize
@@ -126,8 +128,6 @@ class BaseHighlighter
 
 
   def highlight_comment(input_string)
-
-    # $logger.debug(input_string)
     pattern = Regexp.new('(' + comment_marker + '.*)(?=<br>)|(\/\/.*)')
 
     if input_string[pattern, 1]
@@ -136,9 +136,6 @@ class BaseHighlighter
       input_string.sub!(pattern, @@html_class.comment(input_string[pattern, 2]))
     end
 
-    # if pattern =~ input_string
-    #   input_string.sub!(pattern, @@html_class.comment(input_string[pattern]) + '<br>')
-    # end
     return input_string
   end
 
@@ -195,4 +192,6 @@ require './lib/highlighter/highlighter_plsql'
 require './lib/highlighter/highlighter_none'
 require './lib/highlighter/highlighter_php'
 require './lib/highlighter/highlighter_web'
+require './lib/highlighter/highlighter_objc'
+require './lib/highlighter/highlighter_jquery'
 

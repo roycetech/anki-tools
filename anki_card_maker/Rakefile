@@ -28,5 +28,5 @@ end
 
 
 task :upload do
-    ruby "./bin/upload.rb"  
+    ruby "./bin/upload.rb"
 end

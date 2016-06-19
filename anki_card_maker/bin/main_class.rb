@@ -10,8 +10,6 @@ require './lib/latest_file_finder'
 require 'logger'
 require 'CSV'
 
-require './bin/upload'
-
 
 class MainClass
 
@@ -146,7 +144,7 @@ path = '/Users/royce/Dropbox/Documents/Reviewer'
 # - Generate a single file
 main = MainClass.new({:source_file => LatestFileFinder.new(path).find})
 main.execute
-RunSelenium.execute
+
 
 
 

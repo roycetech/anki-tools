@@ -112,8 +112,8 @@ class HtmlHelper
 
     if tag_helper.is_back_only?
 
-      builder_back.br.br if builder_back.last_element == 'text' and not builder_back.build.chomp.end_with?('</code></div>')
-      builder_back.merge(answerHtml)
+      builder_front.br.br if builder_front.last_element == 'text' and not builder_front.build.chomp.end_with?('</code></div>')
+      builder_front.merge(answerHtml)
     end
 
 

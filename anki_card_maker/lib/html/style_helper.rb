@@ -9,7 +9,7 @@ class StyleHelper
     @style_common = StyleBuilder.new
       .select('div.main')
         .text_align('left')
-        .font_size('medium')
+        .font_size('16pt')
       .select_e
       .select('i')
         .color('#777777')
@@ -87,9 +87,9 @@ class StyleHelper
         .border('1px solid #e3e3e3')
         .border_radius('4px')
         .box_shadow('inset 0 1px 1px rgba(0, 0, 0, 0.05)')
-        .font_size('medium')
+        .font_size('14pt')
       .select_e
-      .select('span.keyword')
+      .select('span.keyword, span.pseudo')
         .color('#7E0854')
       .select_e
       .select('span.comment')
@@ -107,6 +107,12 @@ class StyleHelper
       .select('span.attr')
         .color('#6D8600')
       .select_e
+      .select('span.cls')
+        .color('#6D8600')
+      .select_e
+      .select('span.num')
+        .font_weight('bold')
+        .color('#812050')
+      .select_e
   end
-
 end

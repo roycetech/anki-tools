@@ -41,13 +41,21 @@ class RunSelenium
 
     driver.find_element(:xpath, '//form/div/div/div[2]/div').click
 
-    alert = driver.switch_to.alert
-    alert.accept
+
+    begin
+        alert = driver.switch_to.alert
+        alert.accept
+    rescue
+        puts('WARNING: Did not find alert')
+    end
+
 
     puts 'Success!'
-    driver.quit
+    # driver.quit
   end
   
 
 end
 
+
+RunSelenium.execute

@@ -1,0 +1,97 @@
+
+
+class JQueryHighlighter < BaseHighlighter
+
+
+  def initialize() super; end
+  def keywords_file() return 'keywords_js.txt'; end
+  def comment_marker() return '// '; end
+  def highlight_string(input_string) return highlight_quoted(input_string); end
+
+
+  def highlight_lang_specific(string_input)
+    string_input.gsub!(/(\/\*[\d\D]\*\/)/, '<span class="comment">\1</span>')
+    return string_input    
+  end
+
+
+  def highlight_all(string_input)
+
+    re_jq = /\$\("(.+)"\)/
+    
+    if string_input[re_jq]
+    
+      string_input.gsub!(re_jq) do
+
+        jq_inside = $1
+
+        if jq_inside[/('.+')|(\.[\w\-]+)/, 1]
+          highlight_inner_quote(jq_inside)
+        else
+          highlight_classes(jq_inside)
+        end
+
+        highlight_pseudo(jq_inside)
+        highlight_num(jq_inside)
+        '$("' + jq_inside + '")'
+      end
+
+    # elsif string_input[/\$\((.+)\)/]
+    #     highlight_pseudo(string_input)
+    else 
+      highlight_nonjq_quote(string_input)    
+    end
+
+   highlight_attr(string_input)
+   highlight_html(string_input)
+   highlight_pseudo(string_input)
+
+    return string_input
+  end
+
+
+  def highlight_inner_quote(string_input)    
+    string_input.gsub!(/('.*?')/, '<span class="quote">\1</span>')
+  end
+
+
+  def highlight_nonjq_quote(string_input)
+    # string_input.gsub!(/\b(?<!\$\()(".+?")\b/, '<span class="quote">\1</span>')
+    string_input.gsub!(/((["']).+?\2)/, '<span class="quote">\1</span>')
+  end
+
+
+  # .class or #id 
+  def highlight_classes(string_input)
+    string_input.gsub!(/([\.|#][\w-]+)/, '<span class="cls">\1</span>')
+  end
+
+
+  def highlight_pseudo(string_input)
+    string_input.gsub!(/(:[\w-]+|\bthis\b)/, '<span class="pseudo">\1</span>')
+  end
+
+
+  def highlight_num(string_input)
+    string_input.gsub!(/(?:\()(\d+)(?:\))/, '(<span class="num">\1</span>)')
+  end
+
+
+  def highlight_html(string_input)
+    $logger.debug(string_input)
+    tags = %w(li ul p tr h1 h2 h3 h4 h5 h6 table input div)
+    re = Regexp.new('\b(' + tags.join('|') + ')\b')
+    string_input.gsub!(re, '<span class="html">\1</span>')
+    $logger.debug(string_input)
+  end
+
+
+  def highlight_attr(string_input)
+    re = /(?:\[)(\w+)\b/
+    string_input.gsub!(re, '[<span class="attr">\1</span>')
+  end
+
+
+
+
+end

@@ -16,9 +16,11 @@ class SourceReader
     front, back, tags = [[], [], []]
     card_began = false # Marks the start of the first card.
 
+    line_number = 0
 
     while line = @file.gets
-
+      line_number += 1
+      
       line.rstrip!
 
       unless card_began
@@ -52,7 +54,7 @@ class SourceReader
 
           # Check for mistyped @TagS
           if line[0, 7].downcase == '@tags: ' and line[0, 7] != '@Tags: '
-            $logger.warn("ERROR: Misspelled #{line[0, 7]}: @Line #{__LINE__}")
+            $logger.warn("ERROR: Misspelled #{line[0, 7]}: @Line #{line_number}")
             exit
           end
 

@@ -7,6 +7,7 @@ class LatestFileFinder
     @root_path = root_path
     @file_mask = file_mask
     @last_modified_file = nil
+    @last_modified_folder = nil
     @last_modified_filedate = nil
   end
 
@@ -22,6 +23,7 @@ class LatestFileFinder
     Dir[File.join(path, @file_mask)].each do |filename|
       if @last_modified_file.nil? or File.mtime(filename) > @last_modified_filedate
         @last_modified_file = filename
+        @last_modified_folder = path
         @last_modified_filedate = File.mtime(filename)
       end
     end
@@ -36,6 +38,11 @@ class LatestFileFinder
     dirs = Dir.entries(path).select do |entry| 
       File.directory? File.join(path, entry) and !(entry =='.' || entry == '..') 
     end
+  end
+
+
+  def latest_folder
+    @last_modified_folder
   end
 
   private :recurse_find
