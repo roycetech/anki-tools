@@ -2,6 +2,7 @@ require './lib/latest_file_finder'
 require './lib/config'
 require 'selenium-webdriver'
 
+
 class RunSelenium 
 
   def self.execute
@@ -51,11 +52,8 @@ class RunSelenium
 
 
     puts 'Success!'
-    # driver.quit
+    driver.quit
   end
   
 
 end
-
-
-RunSelenium.execute

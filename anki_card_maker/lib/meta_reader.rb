@@ -1,4 +1,7 @@
 
+
+# Reads the meta data on top of the source file.  Will rewind file reading, 
+# to make the pointer as if the file is freshly opened.
 class MetaReader 
 
   def self.read(file)

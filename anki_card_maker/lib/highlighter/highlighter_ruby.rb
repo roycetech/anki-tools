@@ -5,8 +5,8 @@ class RubyHighlighter < BaseHighlighter
 
   def initialize() super; end
   def keywords_file() return 'keywords_ruby.txt'; end
-  def comment_marker() return '# '; end
-  def highlight_string(input_string) return highlight_quoted(input_string); end
+  def comment_regex() /#.*/ end
+  def string_regex() quote_double_regex end
 
 
   def highlight_lang_specific(input_string)

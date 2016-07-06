@@ -16,7 +16,8 @@ class StyleHelper
       .select_e
       .select('code.inline')
         .border('1px solid #DDD')
-        .font_family("'Courier New'")
+        .font_family("monaco, courier")
+        .font_size('13pt')
         .background_color('#F1F1F1')
         .border_radius('5px')
         .padding_left('2px')
@@ -82,6 +83,7 @@ class StyleHelper
       .select('div.well')
         .min_height('20px')
         .padding('19px')
+        .font_family('monaco, courier')
         .margin_bottom('20px')
         .background_color('#F1F1F1')
         .border('1px solid #e3e3e3')

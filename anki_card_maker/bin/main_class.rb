@@ -1,11 +1,17 @@
 #!/usr/bin/env ruby
 
+require 'simplecov'
+SimpleCov.start
+
 require './lib/tag_helper'
 require './lib/html_helper'
 require './lib/reviewer'
 require './lib/source_reader'
 require './lib/meta_reader'
 require './lib/latest_file_finder'
+require './lib/source_parser'
+
+require './bin/upload' unless $unit_test
 
 require 'logger'
 require 'CSV'
@@ -141,11 +147,33 @@ end
 path = '/Users/royce/Dropbox/Documents/Reviewer'
 
 
-# - Generate a single file
-main = MainClass.new({:source_file => LatestFileFinder.new(path).find})
-main.execute
+if not $unit_test
+  if ARGV.empty? or 'upload' === ARGV[0]
+    # - Generate a single file
+    main = MainClass.new({:source_file => LatestFileFinder.new(path, '*.md').find})
+    main.execute
+
+    RunSelenium.execute if not ARGV.empty? and 'upload' === ARGV[0].downcase
+
+  else
+    # - Generate multiple file
+    finder = LatestFileFinder.new(path)
+    finder.find
+    last_updated_folder = finder.latest_folder
+    generate_multi(last_updated_folder, ARGV[0])
+  end
+end
 
 
+# - Generate for all files in a folder
+def generate_multi(folder, file_wild_card)
+  Dir[File.join(File.join(folder), file_wild_card)].each do |filename|
+    $logger.info filename
+    main = MainClass.new({:source_file => filename})
+    main.execute
+    RunSelenium.execute
+  end
+end
 
 
 # - Remove all files inside a folder, DANGER!!!
@@ -153,14 +181,4 @@ main.execute
 # $logger.info("Deleting all files inside the output folder: #{output_path}")
 # Dir[File.join(output_path, '*.tsv')].each do |filename|
 #   File.delete(filename)
-# end
-
-
-# - Generate for all files in a folder
-# Dir[File.join(File.join(path + '/javascript'), '*.txt')].each do |filename|
-#   # puts filename
-
-# main = MainClass.new({:source_file => filename})
-# main.execute
-
 # end

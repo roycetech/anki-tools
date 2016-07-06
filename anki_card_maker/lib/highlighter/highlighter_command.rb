@@ -2,7 +2,7 @@ require './lib/file_reader'
 
 
 # Include angular directives ng-*.
-class WebHighlighter < JsHighlighter
+class CommandHighlighter < BaseHighlighter
 
   
   @@html_tags = nil
@@ -15,7 +15,6 @@ class WebHighlighter < JsHighlighter
 
 
   def comment_regex
-    /\/\/ .*|\/\*.*\*\/|&lt;!--.*--&gt;/
   end
 
 

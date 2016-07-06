@@ -101,10 +101,6 @@ class HtmlHelper
 
     if tag_helper.is_front_only?
 
-      # $logger.debug builder_back.last_element
-      # $logger.debug builder_back.build
-      # exit
-
       builder_back.br.br if builder_back.last_element == 'text' and not builder_back.build.chomp.end_with?('</code></div>')
       builder_back.merge(answerHtml)
 
@@ -138,24 +134,6 @@ class HtmlHelper
   end
 
 
-  # escape unknown
-  def escape_unknown_tags(input_string)
-    @htmlcustom_words = get_html_keywords unless @htmlcustom_words
-    re = /<\/?([a-zA-Z]+)>/
-
-    return_value = input_string.gsub(re) do |token|
-      if @htmlcustom_words.include? $1
-        token
-      else
-        '&lt;' + $1 + '&gt;'
-      end
-    end
-
-    input_string.replace(return_value)
-    return_value
-  end
-
-
   def detect_inlinecodes(string_line)
     re = /([`])((?:\\\1|[^\1])*?)(\1)/
     return_value = string_line.gsub(re) do |token|
@@ -172,7 +150,7 @@ class HtmlHelper
 
     detect_inlinecodes(param_string)
 
-    return_value = escape_unknown_tags(param_string)
+    return_value = HtmlUtil.escape(param_string)
     param_string
       .gsub(/í([a-zA-Z ]*)í/, '<i>\1</i>')
       .gsub(/(?: <(=?) )/, ' ' + HEC_LT + '\1 ')

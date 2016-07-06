@@ -7,6 +7,7 @@ class Inline
     @highlighter = highlighter;
   end
 
+
   def execute(string_line)
     return_value = string_line.gsub(RE_PATTERN) do |token|
       inline_code = token[RE_PATTERN,2].gsub('\`', '`')

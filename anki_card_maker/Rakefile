@@ -12,10 +12,21 @@ end
 task :default => [:run]
 
 
-task :run do
-  # ruby './bin/temp_class.rb'
-  ruby './bin/main_class.rb'
+task :run do 
+  ruby "./bin/main_class.rb"
 end
+
+
+task :runpload do
+  ruby "./bin/main_class.rb upload"
+end
+
+
+task :multi, [:wildcard] do |t, args|
+  puts "Args were: #{args}"
+  ruby "./bin/main_class.rb #{args[:wildcard]}";
+end
+
 
 task :tag do
   ruby './bin/api_source_tagger.rb'

@@ -23,7 +23,8 @@ end
 path = '/Users/royce/Dropbox/Documents/Reviewer/javascript'
 
 # Use folder of last modified file
-finder = LatestFileFinder.new('/Users/royce/Dropbox/Documents/Reviewer')
+file_mask = '*.md'
+finder = LatestFileFinder.new('/Users/royce/Dropbox/Documents/Reviewer', file_mask)
 finder.find
 path = finder.latest_folder
 $logger.debug("Path: #{path}")
@@ -33,8 +34,8 @@ total_cards = 0
 total_files = 0
 total_api = 0
 
-Dir[File.join(path, '*.txt')].each do |filename|
-  if filename.end_with? '.txt' or filename.end_with? '.api'
+Dir[File.join(path, file_mask)].each do |filename|
+  if filename.end_with? '.md' or filename.end_with? '.api'
     total_files += 1
     File.open(filename, 'r') do |file|
       card_count = 0

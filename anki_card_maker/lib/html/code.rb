@@ -1,4 +1,5 @@
 require './lib/assert'
+require './lib/html/html_util'
 
 class Code
 
@@ -87,7 +88,7 @@ class Code
     inline = Inline.new(@highlighter)
     string_list.collect! do |line|
 
-      escape_unknown_tags(line)
+      HtmlUtil.escape(line)
 
       line = inline.execute(line.chomp)
       line.gsub('  ', HtmlBuilder::ESP * 2)
@@ -111,31 +112,5 @@ class Code
     string_list.replace(string_block.lines.collect {|element| element.rstrip})
     return string_list
   end
-
-
-  # escape unknown
-  def escape_unknown_tags(input_string)
-    @htmlcustom_words = get_html_keywords unless @htmlcustom_words
-    re = /<(\/?([a-zA-Z]*)(?: [a-zA-Z]*=(['"])[\d\D]*?\3)*)>/
-
-    return_value = input_string.gsub(re) do |token|
-      if @htmlcustom_words.include? $2
-        token
-      else
-        '&lt;' + $1 + '&gt;'
-      end
-    end
-
-    input_string.replace(return_value)
-    return_value
-  end
-
-
-  def get_html_keywords
-    return File.read('./data/keywords_customhtml.txt').lines.collect do |line|
-      line.chomp
-    end
-  end
-
 
 end
