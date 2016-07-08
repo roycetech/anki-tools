@@ -1,6 +1,6 @@
 
 
-class ListBuilder
+class List
 
 
   def initialize(highlighter)
@@ -12,17 +12,8 @@ class ListBuilder
     html_builder.send(ordered ? :ol : :ul).lf
 
     array.each do |element|
-      # if tag_helper.code_back?
-        # html_builder
-        # .li
-        # .code.text(@highlighter.highlight_all(to_html_nbsp(element))).code_e
-        # .li_e.lf
-      # else
-
       text = detect_inlinecodes(element)
-      re = />( *)</
-      text.gsub!(re) { |token| '>' + '&nbsp;' * token[re,1].length + '<'}
-
+      HtmlUtil.escape_spaces_between_angle!(text)
       html_builder.li.text(text).li_e.lf
       # end
     end

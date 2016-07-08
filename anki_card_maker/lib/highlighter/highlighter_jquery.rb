@@ -5,8 +5,16 @@ class JQueryHighlighter < BaseHighlighter
 
   def initialize() super; end
   def keywords_file() return 'keywords_js.txt'; end
-  def comment_marker() return '// '; end
-  def highlight_string(input_string) return highlight_quoted(input_string); end
+  
+
+  def comment_regex
+    /\/\/ .*|\/\*.*\*\/|&lt;!--.*--&gt;/
+  end
+
+  def string_regex() quote_both_regex end
+
+
+  
 
 
   def highlight_lang_specific(string_input)
@@ -36,8 +44,6 @@ class JQueryHighlighter < BaseHighlighter
         '$("' + jq_inside + '")'
       end
 
-    # elsif string_input[/\$\((.+)\)/]
-    #     highlight_pseudo(string_input)
     else 
       highlight_nonjq_quote(string_input)    
     end
@@ -56,7 +62,6 @@ class JQueryHighlighter < BaseHighlighter
 
 
   def highlight_nonjq_quote(string_input)
-    # string_input.gsub!(/\b(?<!\$\()(".+?")\b/, '<span class="quote">\1</span>')
     string_input.gsub!(/((["']).+?\2)/, '<span class="quote">\1</span>')
   end
 
@@ -68,7 +73,7 @@ class JQueryHighlighter < BaseHighlighter
 
 
   def highlight_pseudo(string_input)
-    string_input.gsub!(/(:[\w-]+|\bthis\b)/, '<span class="pseudo">\1</span>')
+    string_input.gsub!(/(:[\w-]+(?:\(\))?|\bthis\b)/, '<span class="pseudo">\1</span>')
   end
 
 

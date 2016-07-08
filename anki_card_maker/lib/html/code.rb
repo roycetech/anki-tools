@@ -1,6 +1,9 @@
 require './lib/assert'
 require './lib/html/html_util'
 
+# It detects code wells, 
+# appends some needed <br>'s ?
+# Escapes some spaces with &nbsp; ?
 class Code
 
   include Assert

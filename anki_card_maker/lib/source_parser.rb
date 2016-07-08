@@ -1,10 +1,10 @@
 # require './assert'
 
 
-# This class is designed to parse a string token only once until no more regex
+# This class is designed to parse a string token only once until no more regexp
 # can parse it.
 #
-# regex name will serve as better ID for readability.
+# regexp name will serve as better ID for readability.
 class SourceParser
 
   include Assert
@@ -12,16 +12,16 @@ class SourceParser
 
   def initialize
 
-    @regex_lambda = {}
-    @regex_name = {}
+    @regexp_lambda = {}
+    @regexp_name = {}
 
   end
 
 
-  # Register a regex
-  def regexter(name, regex, lambda)
-    @regex_name[regex] = name
-    @regex_lambda[regex] = lambda
+  # Register a regexp
+  def regexter(name, regexp, lambda)
+    @regexp_name[regexp] = name
+    @regexp_lambda[regexp] = lambda
   end
 
 
@@ -29,7 +29,7 @@ class SourceParser
 
     # $logger.debug(text)
 
-    assert !@regex_name.empty?, 'You must regexter a lambda to handle a regex match'
+    assert !@regexp_name.empty?, 'You must regexter a lambda to handle a regexp match'
 
     processed_array = [text]
     processedflag_array = [false]
@@ -47,8 +47,9 @@ class SourceParser
 
           unless partition_missed(partition)
             lambda = map[:lambda]
-            regex_name = map[:regex_name]
-            processed = lambda.call(partition[1], regex_name)
+            # regexp_name = map[:regexp_name]
+            regexp = map[:regexp]
+            processed = lambda.call(partition[1], regexp)
             found = true
             if partition_begin(partition)
               processed_array[index] = partition[2]
@@ -94,18 +95,19 @@ class SourceParser
   def check_pattern(string)
 
     return_value = Hash.new
-    @regex_lambda.each do |pattern, proc|
+    @regexp_lambda.each do |pattern, proc|
       return_value[:partition] = string.partition(pattern)
       return_value[:lambda] = proc
-      return_value[:regex_name] = @regex_name[pattern]
+      return_value[:regexp_name] = @regexp_name[pattern]
+      return_value[:regexp] = pattern
       break unless partition_missed(return_value[:partition])
     end
 
     return_value.delete(:lambda) if partition_missed(return_value[:partition])
     # if return_value[:lambda]
-    #   $logger.debug("Pattern Found: #{return_value[:regex_name]}, String: #{string}")
+    #   $logger.debug("Pattern Found: #{return_value[:regexp_name]}, String: #{string}")
     # else
-    #   $logger.debug("Pattern Not Found: #{return_value[:regex_name]}, String: #{string}")
+    #   $logger.debug("Pattern Not Found: #{return_value[:regexp_name]}, String: #{string}")
     # end
 
     return_value
@@ -137,8 +139,8 @@ end
 
 
 # parser = SourceParser.new
-# parser.regexter('all', /one two three four/, lambda{ |token, regex| "(#{token})" })
-# # parser.regexter('four', /four/, lambda{ |token, regex| "<#{token}>" })
+# parser.regexter('all', /one two three four/, lambda{ |token, regexp| "(#{token})" })
+# parser.regexter('four', /four/, lambda{ |token, regexp| "<#{token}>" })
 # puts(parser.parse('one two three four'))
 # test.print_result
 

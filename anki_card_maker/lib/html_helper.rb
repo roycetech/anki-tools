@@ -7,6 +7,7 @@ require './lib/html/inline'
 
 require './lib/html/style_helper'
 require './lib/code_detector'
+require './lib/markdown'
 
 
 class HtmlHelper
@@ -118,7 +119,7 @@ class HtmlHelper
   end
 
 
-  private
+  # protected
 
   # build the tags html. <span>tag1</span>&nbsp;<span>tag2</span>...
   def build_tags(card)
@@ -134,21 +135,39 @@ class HtmlHelper
   end
 
 
-  def detect_inlinecodes(string_line)
-    re = /([`])((?:\\\1|[^\1])*?)(\1)/
-    return_value = string_line.gsub(re) do |token|
-      inline_code = token[re,2].gsub('\`', '`')
-      '<code class="inline">' + @highlighter.highlight_all(inline_code) + '</code>'
-    end
-    string_line.replace(return_value
-      .gsub(/í(.*?)í/, '<i>\1</i>'))
-    return string_line
-  end
+  # # 1. Find quoted codes and highlight.
+
+  # def detect_inlinecodes(string_line)
+  #   re = /([`])((?:\\\1|[^\1])*?)\1/
+  #   return_value = string_line.gsub(re) do |token|
+  #     inline_code = token[re,2].gsub('\`', '`')
+  #     '<code class="inline">' + @highlighter.highlight_all(inline_code) + '</code>'
+  #   end
+
+  #   string_line.replace(return_value
+  #     .gsub(/í(.*?)í/, '<i>\1</i>'))
+  #   return string_line
+
+  # end
 
 
+  # 1. Find quoted codes and highlight.
+  # 2. Find bold markdowns **bold** or __bold__
+  # 3. Find italicized markdowns _italic_ or *italic*
   def line_to_html_raw(param_string)
 
-    detect_inlinecodes(param_string)
+    parser = SourceParser.new
+
+    code_lambda = lambda { |token, regexp|
+      inline_code = token[regexp,2].gsub('\`', '`')
+      '<code class="inline">' + @highlighter.highlight_all(inline_code) + '</code>'
+    }
+    parser.regexter('code', /([`])((?:\\\1|[^\1])*?)\1/, code_lambda);
+
+    parser.regexter('bold', Markdown::BOLD[:regexp], Markdown::BOLD[:lambda]);
+    parser.regexter('italic', Markdown::ITALIC[:regexp], Markdown::ITALIC[:lambda]);
+
+    param_string = parser.parse(param_string)
 
     return_value = HtmlUtil.escape(param_string)
     param_string
@@ -163,15 +182,6 @@ class HtmlHelper
     else
       return_value
     end
-  end
-
-
-  # escape angles, and spaces
-  def to_html_nbsp(string)
-    return line_to_html_raw(string)
-    .gsub('  ', HtmlBuilder::ESP * 2)
-    .gsub(HtmlBuilder::ESP + ' ', HtmlBuilder::ESP * 2)
-    .gsub("\n", HtmlBuilder::BR)
   end
 
 

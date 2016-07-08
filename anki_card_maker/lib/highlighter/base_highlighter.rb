@@ -32,12 +32,17 @@ class BaseHighlighter
 
   def initialize
     $logger.debug "Highlighter: #{self.class}" 
-    @keyworder = KeywordHighlighter.new(keywords_file)
 
     @parser = SourceParser.new
 
-    comment_lambda = lambda{ |token, regex_name| @@html_class.comment(token) }
+    comment_lambda = lambda{ |token, regexp| @@html_class.comment(token) }
     @parser.regexter('comment', comment_regex, comment_lambda)
+
+    bold_lambda = lambda{ |token, regexp| "<b>#{token[regexp, 2]}</b>" }
+    @parser.regexter('bold', /(_{2}|\*{2})(.*?)\1/, bold_lambda)
+
+    italic_lambda = lambda{ |token, regexp| "<i>#{token[regexp, 2]}</i>" }
+    @parser.regexter('italic', /(_|\*)(.*?)\1/, italic_lambda)
     
     regexter_blocks(@parser)
 
@@ -48,8 +53,11 @@ class BaseHighlighter
     user_lambda = lambda{ |token, regex_name| @@html_class.user(token) }
     @parser.regexter('<user>', /&lt;[\w ]*?&gt;/, user_lambda)
 
-    keyword_lambda = lambda{ |token, regex_name| @@html_class.keyword(token) }
-    @parser.regexter('keyword', @keyworder.keyword_regex, keyword_lambda)
+    if keywords_file
+      @keyworder = KeywordHighlighter.new(keywords_file)
+      keyword_lambda = lambda{ |token, regex_name| @@html_class.keyword(token) }
+      @parser.regexter('keyword', @keyworder.keyword_regex, keyword_lambda)
+    end
 
     regexter_singles(@parser)
   end
@@ -62,8 +70,9 @@ class BaseHighlighter
   def regexter_singles(parser) end
 
 
+  # Abstract 
   def keywords_file
-    raise NotImplementedError, 'You must implement the keywords_file method'
+    # raise NotImplementedError, 'You must implement the keywords_file method'
   end
 
 
