@@ -6,7 +6,11 @@ class TagHelper
 
 
   def initialize(tags)
-    @tags = tags
+    @tags = tags.clone
+
+    @enum = @tags.select do |tag|
+      ['EnumO', 'EnumU'].include? tag
+    end.first()
 
     @front_only = @tags.select do |tag|
       FRONT_ONLY.include? tag
@@ -23,9 +27,16 @@ class TagHelper
 
   def find_multi(card)
     if has_enum?
-      multi_tag = 'Multi:%s' % card.size
+
+      if ol?
+        multi_tag = 'EnumO:%s' % card.size
+      elsif ul?
+        multi_tag = 'EnumU:%s' % card.size
+      end
+          
       if !@tags.include? multi_tag
         @tags.push(multi_tag)
+        @tags.delete(@enum)
       end
     end
   end
@@ -65,11 +76,11 @@ class TagHelper
   end
 
   def ol?
-    @tags.include?('EnumO')
+    @enum == 'EnumO'
   end
 
   def ul?
-    @tags.include?('EnumU')
+    @enum == 'EnumU'
   end
 
   def untagged?

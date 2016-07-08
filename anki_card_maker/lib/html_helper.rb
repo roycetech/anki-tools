@@ -80,7 +80,7 @@ class HtmlHelper
     end
 
     if tag_helper.has_enum?
-      ListBuilder.new(@highlighter).execute(builder_back, back_array, tag_helper.ol?)
+      List.new(@highlighter).execute(builder_back, back_array, tag_helper.ol?)
     elsif tag_helper.figure?
       builder_back
         .pre('fig').lf

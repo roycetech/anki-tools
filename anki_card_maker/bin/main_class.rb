@@ -102,8 +102,8 @@ class MainClass
   end
 
   def write_card(csv, front, back, tags)
-
     tag_helper = TagHelper.new(tags)
+
     back.pop if back[-1] == ''
     tag_helper.find_multi(back)
 
