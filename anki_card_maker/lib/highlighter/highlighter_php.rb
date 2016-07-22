@@ -22,7 +22,7 @@ class PhpHighlighter < BaseHighlighter
     tags_lambda = lambda do |token, regex| 
       "<span class=\"phptag\">#{token}</span>" 
     end
-    parser.regexter('php_tags', /<\?=|<\?php|\?>/, tags_lambda)
+    parser.regexter('php_tags', /<\?=|<\?(?:php)?|\?>/, tags_lambda)
 
     var_lambda = lambda do |token, regex| 
       "<span class=\"var\">#{token}</span>"
