@@ -3,7 +3,10 @@ class RubyHighlighter < BaseHighlighter
 
   COLOR_CLASS_VAR = '#426F9C'
 
-  def initialize() super; end
+  def initialize
+    super(HighlightersEnum::RUBY)
+  end
+
   def keywords_file() return 'keywords_ruby.txt'; end
   def comment_regex() /#.*/ end
   def string_regex() quote_double_regex end

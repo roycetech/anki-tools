@@ -24,7 +24,7 @@ class HtmlHelper
     @tag_helper = tag_helper
     @highlighter = highlighter
 
-    style_helper = StyleHelper.new(tag_helper)
+    style_helper = StyleHelper.new(tag_helper, @highlighter.type)
 
     builder_front = HtmlBuilder.new
     builder_back = HtmlBuilder.new
@@ -104,13 +104,16 @@ class HtmlHelper
 
       builder_back.br.br if builder_back.last_element == 'text' and not builder_back.build.chomp.end_with?('</code></div>')
       builder_back.merge(answerHtml)
-
+    # else
+    #   builder_back.br.textarea.textarea_e
     end
 
     if tag_helper.is_back_only?
 
       builder_front.br.br if builder_front.last_element == 'text' and not builder_front.build.chomp.end_with?('</code></div>')
       builder_front.merge(answerHtml)
+    # else
+    #   builder_front.br.input
     end
 
 
@@ -133,22 +136,6 @@ class HtmlHelper
     end
     tags_html.lf
   end
-
-
-  # # 1. Find quoted codes and highlight.
-
-  # def detect_inlinecodes(string_line)
-  #   re = /([`])((?:\\\1|[^\1])*?)\1/
-  #   return_value = string_line.gsub(re) do |token|
-  #     inline_code = token[re,2].gsub('\`', '`')
-  #     '<code class="inline">' + @highlighter.highlight_all(inline_code) + '</code>'
-  #   end
-
-  #   string_line.replace(return_value
-  #     .gsub(/í(.*?)í/, '<i>\1</i>'))
-  #   return string_line
-
-  # end
 
 
   # 1. Find quoted codes and highlight.

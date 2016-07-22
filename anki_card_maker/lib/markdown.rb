@@ -10,7 +10,7 @@ module Markdown
   }
 
   ITALIC = {
-    :regexp => /(_|\*)(?!\1)((?:\\\1|[^\1])+?)\1/,
+    :regexp => /\b([_\*í])(?!\1)((?:\\\1|[^\1])+?)\1/,
     :lambda => lambda{ |token, regexp| "<i>#{token[regexp, 2]}</i>" }
   }
 

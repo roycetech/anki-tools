@@ -31,4 +31,20 @@ describe Code do
     end
   end
 
+
+  describe '#highlight_code' do
+
+    input_array = ['called __type use__.']
+    context "given '#{input_array}'" do
+      expected = 'called <b>type use</b>.'
+      it "returns '#{expected}'" do
+        sut = Code.new nil
+        expect(sut.highlight_code(input_array)).to eq(expected)
+      end
+
+    end
+
+  end
+
+
 end

@@ -3,7 +3,10 @@
 class JQueryHighlighter < BaseHighlighter
 
 
-  def initialize() super; end
+  def initialize
+    super(HighlightersEnum::JQUERY)
+  end
+
   def keywords_file() return 'keywords_js.txt'; end
   
 
@@ -12,9 +15,6 @@ class JQueryHighlighter < BaseHighlighter
   end
 
   def string_regex() quote_both_regex end
-
-
-  
 
 
   def highlight_lang_specific(string_input)

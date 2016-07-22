@@ -9,9 +9,9 @@ module HtmlUtil
   # end
 
 
-  # def self.span(classname, text)
-  #   "<span class=\"#{classname}\">#{text}</span>"
-  # end
+  def self.span(classname, text)
+    "<span class=\"#{classname}\">#{text}</span>"
+  end
 
 
   # "</span> <span>" will become </span>&nbsp;<span>
@@ -19,6 +19,25 @@ module HtmlUtil
     re = />( *)</
     string.gsub!(re) { |token| '>' + '&nbsp;' * token[re,1].length + '<'}
   end
+
+  # Some spaces adjacent to tags need to be converted because it is not honored by
+  # <pre> tag.
+  def self.space_to_nbsp(input_string)
+
+    pattern_between_tag = /> +</
+    while pattern_between_tag =~ input_string
+      lost_spaces = input_string[pattern_between_tag]
+      input_string.sub!(pattern_between_tag, '>' + (HtmlBuilder::ESP * (lost_spaces.length - 2)) + '<')
+    end
+
+    pattern_before_tag = /^\s+</
+    if pattern_before_tag =~ input_string
+      lost_spaces = input_string[pattern_before_tag]
+      input_string.sub!(pattern_before_tag, (HtmlBuilder::ESP * (lost_spaces.length - 1)) + '<')
+    end
+    return input_string
+  end
+
 
 
   # Will escape unknown tags only.

@@ -3,7 +3,9 @@
 # Do bunch of apply, then invoke end_apply to close the style tag
 class StyleHelper
 
-  def initialize(tag_helper)
+  def initialize(tag_helper, lang='none')
+    @lang = lang
+
     @tag_helper = tag_helper
 
     @style_common = StyleBuilder.new
@@ -11,8 +13,8 @@ class StyleHelper
         .text_align('left')
         .font_size('16pt')
       .select_e
-      .select('i')
-        .color('#777777')
+      .select('input')
+        .width('100%')
       .select_e
       .select('code.inline')
         .border('1px solid #DDD')
@@ -79,7 +81,7 @@ class StyleHelper
 
 
   def apply_code(html_builder)
-    html_builder.merge StyleBuilder.new
+     style = StyleBuilder.new
       .select('div.well')
         .min_height('20px')
         .padding('19px')
@@ -116,5 +118,17 @@ class StyleHelper
         .font_weight('bold')
         .color('#812050')
       .select_e
+      .select('span.ann')
+        .color('#426F9C')
+      .select_e
+      
+      if @lang == HighlightersEnum::PHP
+        style = style.select('span.phptag')
+          .color('#FC0D1B')
+        .select_e
+      end
+
+      html_builder.merge style
   end
+
 end

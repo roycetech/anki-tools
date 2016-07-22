@@ -3,37 +3,32 @@ class PhpHighlighter < BaseHighlighter
 
   COLOR_CLASS_VAR = '#426F9C'
 
-  def initialize() super; end
+  def initialize
+    super(HighlightersEnum::PHP)     
+  end
+
   def keywords_file() return 'keywords_php.txt'; end
   def comment_marker() return '// '; end
 
-
-  def highlight_all(input_string)
-    highlight_keywords(input_string)
-    highlight_tags(input_string)
-    highlight_vars(input_string)  
-    highlight_comment(input_string)
-    highlight_quoted(input_string)
-    highlight_dblquoted(input_string)
+  def comment_regex
+    # /\/\/.*|\/\*.*\*\/|#.*/
+    RegextrationStore::CommentBuilder.new.perl.c.build
   end
 
-  def highlight_vars(input_string)
-    re = /(\$[\w]*)/
-    input_string.gsub!(re) do |token|
+  def string_regex() quote_both_regex; end
+
+  
+  def regexter_singles(parser) 
+    tags_lambda = lambda do |token, regex| 
+      "<span class=\"phptag\">#{token}</span>" 
+    end
+    parser.regexter('php_tags', /<\?=|<\?php|\?>/, tags_lambda)
+
+    var_lambda = lambda do |token, regex| 
       "<span class=\"var\">#{token}</span>"
     end
-    return input_string
+    parser.regexter('php_vars', /(\$[\w]+)/, var_lambda)
+
   end
-
-  def highlight_tags(input_string)
-    re = /<\?=|<\?php|\?>/
-
-    input_string.gsub!(re) do |token|
-      "<span class=\"phptag\">#{token}</span>"
-    end
-    return input_string
-  end
-
-
 
 end

@@ -56,7 +56,10 @@ class Code
       if inside_well
         text = @highlighter.highlight_all(element)
       else
-        text = element
+        parser = SourceParser.new
+        parser.regexter('bold', Markdown::BOLD[:regexp], Markdown::BOLD[:lambda]);
+        parser.regexter('italic', Markdown::ITALIC[:regexp], Markdown::ITALIC[:lambda]);
+        text = parser.parse(element)
       end
 
       if result.end_with? "</span>\n" and text.start_with?('<span')

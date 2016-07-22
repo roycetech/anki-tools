@@ -107,6 +107,8 @@ class HtmlBuilder
       
       
       case tag
+      when 'input' then
+        return_value += '<input type="text">' + LF
       when 'space' then
         return_value += ESP
       when 'lf' then

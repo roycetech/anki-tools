@@ -1,5 +1,6 @@
 require './lib/highlighter/keyword_highlighter'
-# NOTE: There are requires at the bottom of this file.
+require './lib/regextration_store'
+# NOTE: Highlighter implementing classes "requires" at the bottom of this file.
 
 
 # Base class will handle keyword, and comment, provided sub class supply
@@ -29,33 +30,32 @@ class BaseHighlighter
   def self.jquery() return JQueryHighlighter.new; end
   def self.command() return CommandHighlighter.new; end
 
+  attr_reader :type
 
-  def initialize
+  def initialize(type)
     $logger.debug "Highlighter: #{self.class}" 
 
     @parser = SourceParser.new
+    @type = type  # initialized by subclass
 
     comment_lambda = lambda{ |token, regexp| @@html_class.comment(token) }
     @parser.regexter('comment', comment_regex, comment_lambda)
 
-    bold_lambda = lambda{ |token, regexp| "<b>#{token[regexp, 2]}</b>" }
-    @parser.regexter('bold', /(_{2}|\*{2})(.*?)\1/, bold_lambda)
+    @parser.regexter('bold', Markdown::BOLD[:regexp], Markdown::BOLD[:lambda]);
+    @parser.regexter('italic', Markdown::ITALIC[:regexp], Markdown::ITALIC[:lambda]);
 
-    italic_lambda = lambda{ |token, regexp| "<i>#{token[regexp, 2]}</i>" }
-    @parser.regexter('italic', /(_|\*)(.*?)\1/, italic_lambda)
-    
     regexter_blocks(@parser)
 
-    string_lambda = lambda{ |token, regex_name| @@html_class.quote(token) }
+    string_lambda = lambda{ |token, regexp| @@html_class.quote(token) }
     @parser.regexter('strings', string_regex, string_lambda)
 
     
-    user_lambda = lambda{ |token, regex_name| @@html_class.user(token) }
+    user_lambda = lambda{ |token, regexp| @@html_class.user(token) }
     @parser.regexter('<user>', /&lt;[\w ]*?&gt;/, user_lambda)
 
     if keywords_file
       @keyworder = KeywordHighlighter.new(keywords_file)
-      keyword_lambda = lambda{ |token, regex_name| @@html_class.keyword(token) }
+      keyword_lambda = lambda{ |token, regexp| @@html_class.keyword(token) }
       @parser.regexter('keyword', @keyworder.keyword_regex, keyword_lambda)
     end
 
@@ -65,7 +65,6 @@ class BaseHighlighter
 
 
   # Override to register specific blocks
-  # 
   def regexter_blocks(parser) end
   def regexter_singles(parser) end
 
@@ -89,45 +88,17 @@ class BaseHighlighter
 
 
   def quote_single_regex() /'(?:(?:\\')|[^'])*?'/ end
-  def quote_double_regex() /"(?:(?:\\")|[^""])*?"/ end
+  def quote_double_regex() /"(?:(?:\\")|[^"])*?"/ end
 
   def quote_both_regex() 
     /(["'])(?:(?:\\\1)|[^\1])*?\1/
   end
 
 
-  # Some spaces adjacent to tags need to be converted because it is not honored by
-  # <pre> tag.
-  def space_to_nbsp(input_string)
-
-    pattern_between_tag = /> +</
-    while pattern_between_tag =~ input_string
-      lost_spaces = input_string[pattern_between_tag]
-      input_string.sub!(pattern_between_tag, '>' + (HtmlBuilder::ESP * (lost_spaces.length - 2)) + '<')
-    end
-
-    pattern_before_tag = /^\s+</
-    if pattern_before_tag =~ input_string
-      lost_spaces = input_string[pattern_before_tag]
-      input_string.sub!(pattern_before_tag, (HtmlBuilder::ESP * (lost_spaces.length - 1)) + '<')
-    end
-    return input_string
-  end
-
-
-  # # This method is not effective on fewer language that use <> and [] in its 
-  # # syntax like C++, so disable on those.
-  # def highlight_identifier(string)
-  #   pattern = %r{&lt;([\wa-zA-Z0-9_ ]*(?:\|[a-zA-Z0-9_ ]*)*)&gt;}
-  #   string.gsub!(pattern, '&lt;' + @@html_class.identifier('\1') + '&gt;')
-  #   return string
-  # end
-
-
   def highlight_all(input_string)
     input_string.replace(@parser.parse(input_string))
   
-    space_to_nbsp(input_string)
+    HtmlUtil.space_to_nbsp(input_string)
     return input_string
   end
 

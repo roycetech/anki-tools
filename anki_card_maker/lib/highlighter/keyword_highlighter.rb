@@ -30,7 +30,10 @@ class KeywordHighlighter
       result += keyword
     end
 
-    return Regexp.new("\\b(?<!\\.|-)(?:#{kw_re_str})(?!=\\w|_)")
+    return Regexp.new("(?<!\\.|-|(?:[\\w]))(?:#{kw_re_str})\\b")
+                       # (?<!\.|-|(?:[\w]))(?:@interface|interface|var|global)\b
+
+    # return Regexp.new("(?<!\\.|-)\\b(?:#{kw_re_str})\\b")
   end
 
 

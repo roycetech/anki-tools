@@ -76,6 +76,13 @@ describe HtmlHelper do
       end
     end
 
+    context 'given "íhelloí"' do
+      input_string = 'íhelloí'
+      
+      it 'return "<i>hello</i>"' do
+        expect(sut.line_to_html_raw(input_string)).to eq('<i>hello</i>')
+      end
+    end
 
   end
 

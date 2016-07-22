@@ -1,6 +1,3 @@
-# require './assert'
-
-
 # This class is designed to parse a string token only once until no more regexp
 # can parse it.
 #

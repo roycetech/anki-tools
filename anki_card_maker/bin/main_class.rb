@@ -3,6 +3,7 @@
 require 'simplecov'
 SimpleCov.start
 
+require './lib/class_extensions'
 require './lib/tag_helper'
 require './lib/html_helper'
 require './lib/reviewer'
@@ -10,6 +11,10 @@ require './lib/source_reader'
 require './lib/meta_reader'
 require './lib/latest_file_finder'
 require './lib/source_parser'
+require './lib/tag_counter'
+
+require './lib/highlighter/highlighters_enum'
+
 
 require './bin/upload' unless $unit_test
 
@@ -73,7 +78,9 @@ class MainClass
     $logger.info 'Program Start. Unit Test: %s' % ($unit_test ? 'Y' : 'n')
     return if $unit_test
 
+
     File.open(@@filepath, 'r') do |file|
+      @tag_count_map = TagCounter.count_tags(file)
       CSV.open(@@outputFilename, 'w', {:col_sep => "\t"}) do |csv|
 
         meta_map = MetaReader.read(file)
@@ -85,7 +92,7 @@ class MainClass
           @@highlighter = BaseHighlighter.none
         end
 
-        SourceReader.new(file).each_card do|tags, front, back|
+        SourceReader.new(file).each_card do |tags, front, back|
             write_card(csv, front, back, tags)
         end
 
@@ -119,18 +126,28 @@ class MainClass
     if tag_helper.untagged?
       lst.push 'untagged'
     else
-      lst.push tags.join(',')
+
+      tags_numbered = tags.map do |tag|
+        count = @tag_count_map[tag]
+        if count == 1
+          tag
+        else
+          "#{tag}(#{count})"
+        end
+      end
+
+      lst.push tags_numbered.join(',')
     end
 
     if $logger.debug?
 
-      re_div_only = /<div[\d\D]*/m
+      re_styleless = /<div[\d\D]*/m
 
-      # $logger.debug("Front: \n" + lst[0] + "\n\n")
-      # $logger.debug("Back: \n" + lst[1] + "\n\n")
+      $logger.debug("Front: \n" + lst[0] + "\n\n")
+      $logger.debug("Back: \n" + lst[1] + "\n\n")
 
-      $logger.debug("Front: \n" + lst[0][re_div_only] + "\n\n")
-      $logger.debug("Back: \n" + lst[1][re_div_only] + "\n\n")
+      # $logger.debug("Front: \n" + lst[0][re_styleless] + "\n\n")
+      # $logger.debug("Back: \n" + lst[1][re_styleless] + "\n\n")
 
 
       # $logger.debug("Tag: \n" + lst[2] + "\n\n")
