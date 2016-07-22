@@ -44,6 +44,30 @@ describe HtmlHelper do
 
     end
 
+
+    context 'given PHP bugged ["```", if (true):", "// stmts", "endif;", "```"]' do
+      input_array = ['```', 'if (true):', '// stmts', 'endif;', '```']
+
+      sut = HtmlHelper.new(BaseHighlighter.php, TagHelper.new([]), ['front'], 
+        input_array)
+
+      expected_back = [
+        '<div class="main">',
+        '  <div class="well"><code>',
+        '<span class="keyword">if</span> (true):<br>',
+        '<span class="comment">// stmts</span>',
+        '<br><span class="keyword">endif</span>;',
+        '&nbsp;&nbsp;</code></div>',
+        '</div>'
+      ]
+
+      it 'should return "%s"' % expected_back.join("\n").strip do
+        expect(sut.back_html[re_div_only].strip).to eq(expected_back.join("\n"))
+      end
+    end
+
+
+
   end
 
 

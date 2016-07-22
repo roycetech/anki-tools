@@ -8,10 +8,8 @@ class PhpHighlighter < BaseHighlighter
   end
 
   def keywords_file() return 'keywords_php.txt'; end
-  def comment_marker() return '// '; end
 
   def comment_regex
-    # /\/\/.*|\/\*.*\*\/|#.*/
     RegextrationStore::CommentBuilder.new.perl.c.build
   end
 
@@ -20,7 +18,7 @@ class PhpHighlighter < BaseHighlighter
   
   def regexter_singles(parser) 
     tags_lambda = lambda do |token, regex| 
-      "<span class=\"phptag\">#{token}</span>" 
+      "<span class=\"phptag\">#{token.sub('<', '&lt;').sub('>', '&gt;')}</span>" 
     end
     parser.regexter('php_tags', /<\?=|<\?(?:php)?|\?>/, tags_lambda)
 

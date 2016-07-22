@@ -42,7 +42,7 @@ describe PhpHighlighter do
     context 'given "<?php"' do
       input_string = '<?php'
 
-      expected = '<span class="phptag"><?php</span>'
+      expected = '<span class="phptag">&lt;?php</span>'
       it 'should return "%s"' % expected do
         expect(@sut.highlight_all(input_string)).to eq(expected)
       end
@@ -52,13 +52,22 @@ describe PhpHighlighter do
     context 'given "<?"' do
       input_string = '<?'
 
-      expected = '<span class="phptag"><?</span>'
+      expected = '<span class="phptag">&lt;?</span>'
       it 'should return "%s"' % expected do
         expect(@sut.highlight_all(input_string)).to eq(expected)
       end
 
     end
 
+    context 'given "?>"' do
+      input_string = '?>'
+
+      expected = '<span class="phptag">?&gt;</span>'
+      it 'should return "%s"' % expected do
+        expect(@sut.highlight_all(input_string)).to eq(expected)
+      end
+
+    end
 
 
   end

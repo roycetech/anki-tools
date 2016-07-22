@@ -38,7 +38,9 @@ class BaseHighlighter
     @parser = SourceParser.new
     @type = type  # initialized by subclass
 
-    comment_lambda = lambda{ |token, regexp| @@html_class.comment(token) }
+    comment_lambda = lambda{ |token, regexp| 
+      @@html_class.comment(token.sub(HtmlBuilder::BR, '')) 
+    }
     @parser.regexter('comment', comment_regex, comment_lambda)
 
     @parser.regexter('bold', Markdown::BOLD[:regexp], Markdown::BOLD[:lambda]);
