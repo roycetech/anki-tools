@@ -118,13 +118,14 @@ class StyleHelper
         .font_weight('bold')
         .color('#812050')
       .select_e
-      .select('span.ann')
-        .color('#426F9C')
-      .select_e
       
       if @lang == HighlightersEnum::PHP
         style = style.select('span.phptag')
           .color('#FC0D1B')
+        .select_e
+      elsif @lang == HighlightersEnum::JAVA
+        style = style.select('span.ann')
+          .color('#426F9C')
         .select_e
       end
 
