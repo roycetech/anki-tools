@@ -19,14 +19,16 @@ package ph.rye.anki.model;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ph.rye.anki.AnkiMainGui;
-import ph.rye.anki.util.Action;
 import ph.rye.anki.util.Counter;
 import ph.rye.common.lang.Ano;
 import ph.rye.common.lang.StringUtil;
@@ -50,7 +52,7 @@ class SourceReader {
 
 
     @SuppressWarnings("unchecked")
-    public void readSource(final Action<Card> action) {
+    public void readSource(final Consumer<Card> consumer) {
         try (final BufferedReader buffReader = new BufferedReader(reader)) {
 
             final Counter spaceCounter = new Counter(0);
@@ -59,8 +61,8 @@ class SourceReader {
             final AbstractArrayedBuffReader<Object> aabr =
                     new AbstractArrayedBuffReader<Object>(
                         buffReader,
-                        new LinkedHashSet<String>(),
-                        new LinkedHashSet<String>(),
+                        new ArrayList<String>(),
+                        new ArrayList<String>(),
                         new LinkedHashSet<String>(),
                         new Ano<Boolean>(false)) {
 
@@ -82,16 +84,16 @@ class SourceReader {
                                         (Ano<Boolean>) get(3);
 
                                 if (spaceCounter.get() >= 2) {
-                                    final Set<String> front =
-                                            (Set<String>) get(0);
-                                    final Set<String> back =
-                                            (Set<String>) get(1);
+                                    final List<String> front =
+                                            (List<String>) get(0);
+                                    final List<String> back =
+                                            (List<String>) get(1);
                                     final Set<String> tags =
                                             (Set<String>) get(2);
 
                                     isAnswer.set(false);
 
-                                    action.execute(toCard(front, back, tags));
+                                    consumer.accept(toCard(front, back, tags));
 
                                     front.clear();
                                     back.clear();
@@ -103,8 +105,8 @@ class SourceReader {
 
                                 if (isAnswer.get()) {
 
-                                    final Set<String> back =
-                                            (Set<String>) get(1);
+                                    final List<String> back =
+                                            (List<String>) get(1);
                                     back.add(line);
 
                                 } else {
@@ -115,8 +117,8 @@ class SourceReader {
 
                                     } else {
 
-                                        final Set<String> front =
-                                                (Set<String>) get(0);
+                                        final List<String> front =
+                                                (List<String>) get(0);
                                         front.add(StringUtil.rtrim(line));
 
                                     }
@@ -129,10 +131,10 @@ class SourceReader {
                         }
                     };
             aabr.eachLine();
-            action.execute(
+            consumer.accept(
                 toCard(
-                    (Set<String>) aabr.get(0),
-                    (Set<String>) aabr.get(1),
+                    (List<String>) aabr.get(0),
+                    (List<String>) aabr.get(1),
                     (Set<String>) aabr.get(2)));
 
         } catch (final IOException ex) {
@@ -153,7 +155,7 @@ class SourceReader {
     }
 
 
-    private Card toCard(final Set<String> front, final Set<String> back,
+    private Card toCard(final List<String> front, final List<String> back,
                         final Set<String> tags) {
 
         final Card newCard = new Card(

@@ -241,42 +241,56 @@ public class AnkiService {
     public void exportSelected(final File selectedFile) {
 
         final String filePath = selectedFile.getAbsolutePath();
-        final File file2 = new File(
+        final File outputFile = new File(
             selectedFile.getAbsolutePath().substring(0, filePath.indexOf('.'))
                     + "-remnant.txt");
 
         try {
-            file2.createNewFile();
+            outputFile.createNewFile();
         } catch (final IOException e) {
             LOGGER.log(Level.SEVERE, "File save failed!", e);
         }
 
         try (FileWriter fileWriter1 = new FileWriter(selectedFile);
-                FileWriter fileWriter2 = new FileWriter(file2);
+                FileWriter fileWriter2 = new FileWriter(outputFile);
                 final BufferedWriter buffWriter1 =
                         new BufferedWriter(fileWriter1);
                 final BufferedWriter buffWriter2 =
                         new BufferedWriter(fileWriter2);) {
 
+            final Ano<Boolean> firstCard1 = new Ano<>(true);
+            final Ano<Boolean> firstCard2 = new Ano<>(true);
             for (final Card nextCard : new Iterable<Card>() {
                 @Override
                 public Iterator<Card> iterator() {
                     return new CardIter(cardModel);
                 }
             }) {
+
                 if (isCardSelected(tagModel.getSelectedTags(), nextCard)) {
+                    writeSeparatorIfNot(buffWriter1, firstCard1);
                     buffWriter1.write(nextCard.toSource());
-                    buffWriter1.newLine();
-                    buffWriter1.newLine();
+                    firstCard1.set(false);
                 } else {
+                    writeSeparatorIfNot(buffWriter2, firstCard2);
                     buffWriter2.write(nextCard.toSource());
-                    buffWriter2.newLine();
-                    buffWriter2.newLine();
+                    firstCard2.set(false);
                 }
             }
 
         } catch (final IOException ioe) {
             LOGGER.log(Level.SEVERE, "File save failed!", ioe);
+        }
+
+    }
+
+    private void writeSeparatorIfNot(final BufferedWriter buffWriter,
+                                     final Ano<Boolean> flag)
+            throws IOException {
+
+        if (!flag.get()) {
+            buffWriter.newLine();
+            buffWriter.newLine();
         }
 
     }

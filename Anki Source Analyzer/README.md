@@ -27,5 +27,8 @@ Notable Code
 Changelog:
 ----------
 
+- June 23, 2016
+  - Fix critical bug, card lines should not be expected to be unique.
+  
 - June 15, 2016
   - Untagged cards handling.

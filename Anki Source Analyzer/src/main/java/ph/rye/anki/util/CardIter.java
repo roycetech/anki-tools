@@ -23,7 +23,6 @@ import ph.rye.anki.model.CardModel;
 
 /**
  * @author royce
- *
  */
 public class CardIter implements Iterator<Card> {
 
@@ -43,18 +42,14 @@ public class CardIter implements Iterator<Card> {
     }
 
 
-    /* (non-Javadoc)
-     * @see java.util.Iterator#hasNext()
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean hasNext() {
         return counter < length;
     }
 
 
-    /* (non-Javadoc)
-     * @see java.util.Iterator#next()
-     */
+    /** {@inheritDoc} */
     @Override
     public Card next() {
         if (counter >= length) {

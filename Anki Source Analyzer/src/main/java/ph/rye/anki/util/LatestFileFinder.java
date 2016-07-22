@@ -27,14 +27,14 @@ import java.util.Locale;
 public class LatestFileFinder {
 
     private transient File rootPath;
-    private transient String fileMask = "*.txt";
+    private transient String fileMask = "*.md";
     private transient File lastModifiedFile;
     private transient File lastModifiedFolder;
     private transient long lastModifiedFiledate;
 
 
     public LatestFileFinder(final String rootPath) {
-        this(rootPath, "*.txt");
+        this(rootPath, "*.md");
     }
 
     public LatestFileFinder(final String rootPath, final String fileMask) {
