@@ -5,7 +5,7 @@ apply plugin: 'application'
 
 dependencies {
 
-    compile files("/Users/royce/git/github/rye-common/target/classes")
+    compile files("/Users/royce/github/rye-common/target/classes")
 
     testCompile "junit:junit-dep:$junitVersion"
     testCompile "org.mockito:mockito-core:$mockitoVersion"
