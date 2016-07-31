@@ -141,6 +141,8 @@ class HtmlHelper
 
     parser = SourceParser.new
 
+    # parser.regexter('`\`', /\\/, );
+
     code_lambda = lambda { |token, regexp|
       inline_code = token[regexp,2].gsub('\`', '`')
       '<code class="inline">' + @highlighter.highlight_all(inline_code) + '</code>'

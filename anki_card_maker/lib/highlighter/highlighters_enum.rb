@@ -6,5 +6,6 @@ module HighlightersEnum
   JQUERY = 'jquery'
   JS = 'js'
   RUBY = 'ruby'
+  PYTHON = 'python'
 
 end

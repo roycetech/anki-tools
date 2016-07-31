@@ -14,4 +14,9 @@ module Markdown
     :lambda => lambda{ |token, regexp| "<i>#{token[regexp, 2]}</i>" }
   }
 
+  NUMBER = {               
+    :regexp => /(?<=\s|\()[+-]?[1-9]\d*(?:\.\d+)?(?!-|\.|\d|,\d)/,
+    :lambda => lambda{ |token, regexp| HtmlUtil.span('num', token) }
+  }
+
 end
