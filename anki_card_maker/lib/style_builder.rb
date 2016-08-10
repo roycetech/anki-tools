@@ -3,12 +3,15 @@
 class StyleBuilder
 
 
-  def initialize(html_builder = nil)
+  # Colorizer is an object that determines the actual color to use 
+  def initialize(html_builder = nil, colorizer=nil)
     @html_builder = html_builder
+    @colorizer = colorizer
 
     # these two used per selectors
     @prop_hash  = {}
     @prop_names  = []
+    @current_selector = nil
 
     @values = []  # holds all the styles
   end
@@ -16,17 +19,18 @@ class StyleBuilder
   def merge(style_builder)
     style_builder.each do |value|
       @values.push(value)
-      # $logger.debug value
     end
     return self
   end
 
   def select(selector)
+    @current_selector = selector
     @values.push(selector + ' {')
     return self
   end
 
   def select_e
+    @current_selector = nil
     @prop_names.sort!
     @prop_names.each do |name|
       value = @prop_hash[name]
@@ -70,8 +74,14 @@ class StyleBuilder
   def method_missing(meth, *args, &block)
     if args.length == 1
       name = meth.to_s.gsub('_', '-')
-      @prop_hash[name] = args[0]
+
       @prop_names.push(name)
+      if @colorizer 
+        @prop_hash[name] = @colorizer.convert(@current_selector, name, args[0])
+      else
+        @prop_hash[name] = args[0]
+      end
+
       return self
     else
       super
@@ -95,15 +105,3 @@ class StyleBuilder
   end
 
 end
-
-# red = StyleBuilder.new
-#   .select('.tag')
-#     .background_color('red')
-#   .select_e
-
-# puts StyleBuilder.new(nil)
-#   .select('span')
-#     .color('black')
-#   .select_e
-#   .merge_style(red).to_s
-# .build

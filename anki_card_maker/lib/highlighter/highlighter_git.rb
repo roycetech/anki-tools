@@ -7,7 +7,10 @@ class GitHighlighter < BaseHighlighter
   def string_regex() quote_double_regex; end
 
   def regexter_singles(parser)
+      # /b results in no match. 
+      parser.regexter('optional', /\[.+?\]/, lambda { |token, regexp| HtmlUtil.span('opt', token)})
       parser.regexter('option', /-[a-z-]+\b/, lambda { |token, regexp| HtmlUtil.span('opt', token)})
+      parser.regexter('git', /\bgit\b/, lambda { |token, regexp| HtmlUtil.span('cmd', token)})
   end
 
 end

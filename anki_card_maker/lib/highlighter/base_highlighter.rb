@@ -73,7 +73,7 @@ class BaseHighlighter
   def regexter_singles(parser) end
 
 
-  # Abstract 
+  # @Abstract 
   def keywords_file
     # raise NotImplementedError, 'You must implement the keywords_file method'
   end

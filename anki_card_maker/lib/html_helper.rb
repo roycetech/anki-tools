@@ -6,6 +6,8 @@ require './lib/html/code'
 require './lib/html/inline'
 
 require './lib/html/style_helper'
+require './lib/html/colorizer_template'
+
 require './lib/code_detector'
 require './lib/markdown'
 

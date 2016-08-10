@@ -4,11 +4,17 @@
 class StyleHelper
 
   def initialize(tag_helper, lang='none')
+    if lang == 'git'
+      @colorizer = DarkColorizer.new
+    else 
+      @colorizer = LightColorizer.new
+    end
+
     @lang = lang
 
     @tag_helper = tag_helper
 
-    @style_common = StyleBuilder.new
+    @style_common = StyleBuilder.new(nil, @colorizer)
       .select('div.main')
         .text_align('left')
         .font_size('16pt')
@@ -21,6 +27,7 @@ class StyleHelper
         .font_family("monaco, courier")
         .font_size('13pt')
         .background_color('#F1F1F1')
+        .color('black')
         .border_radius('5px')
         .padding_left('2px')
         .padding_right('2px')
@@ -48,7 +55,7 @@ class StyleHelper
 
   def apply_figure(html_builder)
     html_builder.merge(
-      StyleBuilder.new
+      StyleBuilder.new(nil, @colorizer)
       .select('.fig')
         .line_height('70%')
       .select_e)
@@ -56,7 +63,7 @@ class StyleHelper
 
 
   def apply_command(html_builder)
-    html_builder.merge(StyleBuilder.new
+    html_builder.merge(StyleBuilder.new(nil, @colorizer)
       .select('code.command')
         .color('white')
         .background_color('black')
@@ -65,7 +72,7 @@ class StyleHelper
 
 
   def apply_answer_only(html_builder)
-    answer_only_style = StyleBuilder.new
+    answer_only_style = StyleBuilder.new(nil, @colorizer)
       .select('span.answer_only')
         .font_weight('bold')
         .background_color('#D9534F')
@@ -81,10 +88,11 @@ class StyleHelper
 
 
   def apply_code(html_builder)
-     style = StyleBuilder.new
+     style = StyleBuilder.new(nil, @colorizer)
       .select('div.well')
         .min_height('20px')
         .padding('19px')
+        .color('black')
         .font_family('monaco, courier')
         .margin_bottom('20px')
         .background_color('#F1F1F1')
@@ -93,7 +101,10 @@ class StyleHelper
         .box_shadow('inset 0 1px 1px rgba(0, 0, 0, 0.05)')
         .font_size('14pt')
       .select_e
-      .select('span.keyword, span.pseudo')
+      .select('span.keyword')
+        .color('#7E0854')
+      .select_e
+      .select('span.keyword')
         .color('#7E0854')
       .select_e
       .select('span.comment')
@@ -126,6 +137,13 @@ class StyleHelper
       elsif @lang == HighlightersEnum::JAVA
         style = style.select('span.ann')
           .color('#426F9C')
+        .select_e
+      elsif @lang == HighlightersEnum::GIT
+        style = style.select('span.opt')
+          .color('black')
+        .select_e
+        style = style.select('span.cmd')
+          .color('#FFFF9B')
         .select_e
       end
 
