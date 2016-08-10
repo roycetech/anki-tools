@@ -7,5 +7,6 @@ module HighlightersEnum
   JS = 'js'
   RUBY = 'ruby'
   PYTHON = 'python'
+  GIT = 'git'
 
 end

@@ -14,6 +14,11 @@ class List
     array.each do |element|
       text = detect_inlinecodes(element)
       HtmlUtil.escape_spaces_between_angle!(text)
+
+      parser = SourceParser.new
+      parser.regexter('bold', Markdown::BOLD[:regexp], Markdown::BOLD[:lambda]);
+      parser.regexter('italic', Markdown::ITALIC[:regexp], Markdown::ITALIC[:lambda]);
+      text.replace(parser.parse(text))
       html_builder.li.text(text).li_e.lf
       # end
     end

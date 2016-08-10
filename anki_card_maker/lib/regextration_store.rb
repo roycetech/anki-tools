@@ -6,15 +6,17 @@ module RegextrationStore
 
     RE_COMMENT_C = /\/\/.*|\/\*.*\*\//
     RE_COMMENT_PERL = /#.*/
-
+    RE_COMMENT_NONE = /(?!.*)/
 
     def initialize
       @regexp = nil      
       @c = nil
       @perl = nil
+      @none = nil
     end
 
 
+    def none() comment('@none', RE_COMMENT_NONE); end
     def c() comment('@c', RE_COMMENT_C); end
     def perl() comment('@perl', RE_COMMENT_PERL); end
 
