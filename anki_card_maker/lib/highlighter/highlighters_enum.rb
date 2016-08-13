@@ -9,5 +9,6 @@ module HighlightersEnum
   PYTHON = 'python'
   GIT = 'git'
   SPRING = 'spring'
+  SQL = 'sql'
 
 end

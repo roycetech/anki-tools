@@ -17,7 +17,7 @@ class SourceParser
 
   # Register a regexp
   def regexter(name, regexp, lambda)
-    $logger.debug("name: #{name}, regexp: #{regexp}")
+    # $logger.debug("name: #{name}, regexp: #{regexp}")
 
     @regexp_name[regexp] = name
     @regexp_lambda[regexp] = lambda

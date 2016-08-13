@@ -8,9 +8,7 @@ class JavaHighlighter < BaseHighlighter
   end
   
   def keywords_file() return 'keywords_java.txt'; end
-  def highlight_string(input_string) return highlight_dblquoted(input_string); end
-
-
+  
   def comment_regex
     RegextrationStore::CommentBuilder.new.c.build
   end
