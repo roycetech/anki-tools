@@ -8,5 +8,6 @@ module HighlightersEnum
   RUBY = 'ruby'
   PYTHON = 'python'
   GIT = 'git'
+  SPRING = 'spring'
 
 end

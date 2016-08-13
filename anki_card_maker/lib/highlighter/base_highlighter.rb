@@ -31,6 +31,7 @@ class BaseHighlighter
   def self.command() return CommandHighlighter.new; end
   def self.python() return PythonHighlighter.new; end
   def self.git() return GitHighlighter.new; end
+  def self.spring() return SpringHighlighter.new; end
 
   attr_reader :type
 
@@ -123,4 +124,5 @@ require './lib/highlighter/highlighter_objc'
 require './lib/highlighter/highlighter_jquery'
 require './lib/highlighter/highlighter_python'
 require './lib/highlighter/highlighter_git'
+require './lib/highlighter/highlighter_spring'
 

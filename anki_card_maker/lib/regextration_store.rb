@@ -4,6 +4,7 @@ module RegextrationStore
   class CommentBuilder
 
 
+    RE_COMMENT_HTML = /&lt;!--.*--&gt;/
     RE_COMMENT_C = /\/\/.*|\/\*.*\*\//
     RE_COMMENT_PERL = /#.*/
     RE_COMMENT_NONE = /(?!.*)/
@@ -12,6 +13,7 @@ module RegextrationStore
       @regexp = nil      
       @c = nil
       @perl = nil
+      @html = nil
       @none = nil
     end
 
@@ -19,6 +21,7 @@ module RegextrationStore
     def none() comment('@none', RE_COMMENT_NONE); end
     def c() comment('@c', RE_COMMENT_C); end
     def perl() comment('@perl', RE_COMMENT_PERL); end
+    def html() comment('@html', RE_COMMENT_HTML); end
 
 
     def build
