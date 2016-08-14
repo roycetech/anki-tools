@@ -1,4 +1,5 @@
 require 'simplecov'
+
 SimpleCov.start
 
 $unit_test = true

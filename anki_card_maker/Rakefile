@@ -41,3 +41,7 @@ end
 task :upload do
     ruby "./bin/upload.rb"
 end
+
+task :collect do
+    ruby "./bin/collect_important_api.rb"
+end

@@ -45,12 +45,15 @@ class RunSelenium
 
 
     begin
+        sleep 5
         alert = driver.switch_to.alert
         alert.accept
     rescue
         puts('WARNING: Did not find alert')
     end
 
+
+    sleep 5
 
     puts 'Success!'
     driver.quit

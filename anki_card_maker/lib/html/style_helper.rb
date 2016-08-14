@@ -129,6 +129,9 @@ class StyleHelper
         .font_weight('bold')
         .color('#812050')
       .select_e
+      .select('span.opt')
+        .color('darkgray')
+      .select_e
       
       if @lang == HighlightersEnum::PHP
         style = style.select('span.phptag')

@@ -1,23 +1,7 @@
 require './lib/source_reader'
 require './lib/tag_helper'
 require './lib/latest_file_finder'
-require 'logger'
-
-
-# path = '/Users/royce/Dropbox/Documents/Reviewer/java/EJB'
-# path = '/Users/royce/Dropbox/Documents/Reviewer/ruby/API'
-# path = '/Users/royce/Dropbox/Documents/Reviewer/jQuery'
-
-
-$logger = Logger.new(STDOUT)
-
-
-$logger.formatter = proc do |severity, datetime, progname, msg|
-  # subscript 3 for eclipse/commandline, 4 for sublime 2
-  line = caller[3]
-  source = line[line.rindex('/', -1)+1 .. -1]
-  "#{severity} #{source} - #{msg}\n"
-end
+require './lib/mylogger'
 
 
 path = '/Users/royce/Dropbox/Documents/Reviewer/javascript'

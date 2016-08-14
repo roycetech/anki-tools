@@ -32,7 +32,7 @@ class BaseHighlighter
   def self.python() return PythonHighlighter.new; end
   def self.git() return GitHighlighter.new; end
   def self.spring() return SpringHighlighter.new; end
-  def self.sql() return SpringHighlighter.new; end
+  def self.sql() return SqlHighlighter.new; end
 
   attr_reader :type
 
