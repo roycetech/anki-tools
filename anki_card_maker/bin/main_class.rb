@@ -34,14 +34,16 @@ class MainClass
 
     hash = {
       :source_file => '/Users/royce/Dropbox/Documents/Reviewer/@test.txt'
-      # :source_file => '/Users/royce/Dropbox/Documents/Reviewer/spring/Spring-Backend-II.txt'
     }.merge(opts);  
 
     @@filepath = hash[:source_file]
 
     $logger.info "File Path: #@@filepath"
     @@filepath = Dir.pwd + File::SEPARATOR + @@filepath unless @@filepath.start_with?(File::SEPARATOR)
+    generate_output_filename()
+  end
 
+  def generate_output_filename
     today = Time.new
 
     source_filename = @@filepath[@@filepath.rindex('/') + 1 .. @@filepath.rindex('.')-1]
@@ -68,14 +70,14 @@ class MainClass
 
 
     File.open(@@filepath, 'r') do |file|
-      @tag_count_map = TagCounter.count_tags(file)
+      @tag_count_map = TagCounter.new.count_tags(file)
       CSV.open(@@outputFilename, 'w', {:col_sep => "\t"}) do |csv|
 
         meta_map = MetaReader.read(file)
         language = meta_map['lang']
         $logger.debug("Language: #{language}")
         if language
-          @@highlighter = @@highlighter.send(language)
+          @@highlighter = @@highlighter.send(language.downcase)
         else
           @@highlighter = BaseHighlighter.none
         end

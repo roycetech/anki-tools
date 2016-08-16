@@ -12,7 +12,7 @@ class MetaReader
 
       if line[0, 3] == '# @'
         key = line[/(?:@)(\w*)/, 1].downcase
-        value = line[/(?:=)(\w*)/, 1].downcase
+        value = line[/(?:=)(.*)/, 1]
         return_value[key] = value
       end
       break if line[0, 1] != '' and line[0, 1] != '#';

@@ -18,17 +18,17 @@ class SqlHighlighter < BaseHighlighter
     parser.regexter('optional param', /\[.*\]/, lambda { |token, regexp| 
       HtmlUtil.span('opt', token) })
 
-    parser.regexter('datatype', /TIMESTAMP WITH (?:LOCAL)? TIME ZONE/, lambda { |token, regexp| 
+    parser.regexter('datatype', /TIMESTAMP(?: WITH(?: LOCAL)? TIME ZONE)?/, lambda { |token, regexp| 
       HtmlUtil.span('keyword', token) })
 
     parser.regexter('WITHIN GROUP', /WITHIN GROUP/, lambda { |token, regexp| 
       token })
 
-    ym_re = /INTERVAL '\d+(?:-\d+)?' (?:YEAR|MONTH)(?:\(\d\))?(?: TO MONTH)?/
+    ym_re = /INTERVAL(?: '\d+(?:-\d+)?')? (?:YEAR|MONTH)(?:\(\d\))?(?: TO MONTH)?/
     parser.regexter('INTERVAL_YM', ym_re, lambda { |token, regexp| 
       HtmlUtil.span('keyword', token) })
 
-    ds_re = /INTERVAL '[\d: \.]+' (?:DAY|HOUR|MINUTE|SECOND)(?:\(\d+(?:,\d+)?\))?(?: TO (?:HOUR|MINUTE|SECOND)(?:\(\d+\))?)?/
+    ds_re = /INTERVAL(?: '[\d: \.]+')? (?:DAY|HOUR|MINUTE|SECOND)(?:\(\d+(?:,\d+)?\))?(?: TO (?:HOUR|MINUTE|SECOND)(?:\(\d+\))?)?/
     parser.regexter('INTERVAL_DS', ds_re, lambda { |token, regexp| 
       HtmlUtil.span('keyword', token) })
   end
