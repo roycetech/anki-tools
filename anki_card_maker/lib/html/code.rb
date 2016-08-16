@@ -1,7 +1,7 @@
 require './lib/assert'
 require './lib/html/html_util'
 
-# It detects code wells, 
+# It detects code wells,
 # appends some needed <br>'s ?
 # Escapes some spaces with &nbsp; ?
 class Code
@@ -18,74 +18,53 @@ class Code
 
 
   def execute(html_builder, string_array)
-      
-      if string_array.length == 1
-      
-        text = highlight_code(string_array)
-        html_builder.br if text.lstrip =~ /\w/ and html_builder.build.strip.end_with? '/span>'
+    if string_array.length == 1
 
-        html_builder
-          .text(text)
-        .lf
+      text = highlight_code(string_array)
+      html_builder.br if text.lstrip =~ /\w/ and html_builder.build.strip.end_with? '/span>'
 
-      else
+      html_builder
+      .text(text)
+      .lf
 
-        highlighted_string = highlight_code(string_array)
-        re = /<div class="well"><code>([\d\D]*)<\/code><\/div>/
-        if highlighted_string =~ re
-          assert !highlighted_string[re, 1].empty?, "Highlight must not be empty!"
-        end
+    else
 
-        html_builder.br if highlighted_string.lstrip =~ /\w|<code/ and html_builder.build.strip.end_with? '/span>'
-        html_builder.text(highlighted_string).lf
-
+      highlighted_string = highlight_code(string_array)
+      re = /<div class="well"><code>([\d\D]*)<\/code><\/div>/
+      if highlighted_string =~ re
+        assert !highlighted_string[re, 1].empty?, "Highlight must not be empty!"
       end
+
+      html_builder.br if highlighted_string.lstrip =~ /\w|<code/ and html_builder.build.strip.end_with? '/span>'
+      html_builder.text(highlighted_string).lf
+
+    end
 
   end
 
 
   def highlight_code(string_array)
+
     block_to_html_raw(string_array)
 
+    code_block = string_array.join("\n")
+    $logger.debug(code_block)
 
-    inside_well = false
-    return_value = string_array.inject('') do |result, element|
+    well_re = /<div class="well"><code>\n([\d\D]*?)<\/code><\/div>/
+    $logger.debug(code_block[well_re, 1])
 
-      result += "\n" unless result.empty?
+    if code_block[well_re, 1]
+      code_block = code_block[well_re, 1].chomp
+      @highlighter.highlight_all(code_block)
 
-      if inside_well
-        text = @highlighter.highlight_all(element)
-      else
-        parser = SourceParser.new
-        parser.regexter('bold', Markdown::BOLD[:regexp], Markdown::BOLD[:lambda]);
-        parser.regexter('italic', Markdown::ITALIC[:regexp], Markdown::ITALIC[:lambda]);
-        text = parser.parse(element)
-      end
-
-      if result.end_with? "</span>\n" and text.start_with?('<span')
-        result += HtmlBuilder::BR + text
-      elsif text.gsub('&nbsp;', '')[0, 5] == '<span' and
-          not result.strip().end_with? '<code>'and not result.strip().end_with? '<br>'
-        result.chomp!
-        result += "<br>\n" + text
-      elsif text.gsub('&nbsp;', '')[0, 5] == '<code' and
-          not result.strip().end_with? '<code>'and not result.strip().end_with? '<br>' and
-          not result.strip().empty?
-        result.chomp!
-        result += "<br>\n" + text
-      else 
-        result += text
-      end
-      re = />( *)</
-      result.gsub!(re) { |token| '>' + '&nbsp;' * token[re,1].length + '<'}
-
-      inside_well = true if element.include? '<div class="well"'
-      inside_well = false if element.include? '</code></div>'
-
-      result
+      code_block.gsub!(/(<\/span>\n\s*)<span/, "\\1<br><span")
+      return "<div class=\"well\"><code>\n#{code_block}<\/code><\/div>"
+    else
+      parser = SourceParser.new
+      parser.regexter('bold', Markdown::BOLD[:regexp], Markdown::BOLD[:lambda]);
+      parser.regexter('italic', Markdown::ITALIC[:regexp], Markdown::ITALIC[:lambda]);
+      return parser.parse(code_block)
     end
-
-    return_value
   end
 
 
@@ -113,10 +92,10 @@ class Code
 
       inside.strip!.gsub!("\n", "<br>\n")
       %Q(<div class="well"><code>\n#{inside}\n  </code></div>)
-    end
+         end
 
-    string_list.replace(string_block.lines.collect {|element| element.rstrip})
-    return string_list
-  end
+         string_list.replace(string_block.lines.collect {|element| element.rstrip})
+         return string_list
+         end
 
-end
+         end

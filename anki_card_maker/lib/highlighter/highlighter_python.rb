@@ -8,6 +8,13 @@ class PythonHighlighter < BaseHighlighter
   def comment_regex() RegextrationStore::CommentBuilder.new.perl.c.build; end
   def string_regex() quote_both_regex; end
 
+  def regexter_blocks(parser)
+      parser.regexter('Multiline String', /"""[\d\D]*"""/, lambda { |token, regexp| 
+        HtmlUtil.span('quote', token)
+      });
+
+  end
+
   def regexter_singles(parser)
       parser.regexter('Number Anywhere', Markdown::NUMBER[:regexp], Markdown::NUMBER[:lambda]);
 

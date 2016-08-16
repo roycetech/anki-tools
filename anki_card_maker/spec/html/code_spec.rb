@@ -22,9 +22,9 @@ describe Code do
           '  <div class="well"><code>', 
           '  name = <span class="quote">"peter"</span>',
           '  </code></div>'
-        ].join("\n")
+        ].join("\n").strip
 
-        expect(builder.build.gsub(/&nbsp;/, ' ').strip).to eq(expected.strip) 
+        expect(builder.build.gsub(/&nbsp;/, ' ').strip).to eq(expected) 
 
       end
 
@@ -41,8 +41,32 @@ describe Code do
         sut = Code.new nil
         expect(sut.highlight_code(input_array)).to eq(expected)
       end
-
     end
+
+    python_input = ['  <div class="well"><code>', 
+                    '  multiline = """\\',
+                    'Line 1',
+                    'Line 2"""',
+                    '  </code></div>']
+    context "given '#{python_input}'" do
+      python_expected = [
+        '<div class="well"><code>', 
+        '  multiline = <span class="quote">"""\\',
+        'Line 1',
+        'Line 2"""</span>',
+        '  </code></div>'
+      ].join("\n").strip
+
+      it "returns '#{python_expected}'" do
+        highlighter = BaseHighlighter.python
+        builder = HtmlBuilder.new
+        sut = Code.new(highlighter)
+        # sut.execute(builder, input_array)
+        expect(sut.highlight_code(python_input).gsub('&nbsp;', ' ').strip).to eq(python_expected)
+      end
+    end
+
+
 
   end
 
