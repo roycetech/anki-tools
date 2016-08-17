@@ -12,7 +12,8 @@ describe PhpHighlighter do
 
       it 'wrap string after # in comment span' do
         input_string = 'Test # comment'
-        expect(@sut.highlight_all(input_string)).to eq('Test <span class="comment"># comment</span>')
+        expect(@sut.highlight_all(input_string)).to eq('Test <span class='\
+          '"comment"># comment</span>')
       end
 
     end
@@ -21,7 +22,9 @@ describe PhpHighlighter do
     context 'given "global $globalvar;"' do
       input_string = 'global $globalvar;'
 
-      expected = '<span class="keyword">global</span>&nbsp;<span class="var">$globalvar</span>;'
+      expected = '<span class="keyword">global</span>&nbsp;<span class="var">'\
+        '$globalvar</span>;'
+      
       it 'should return "%s"' % expected do
         expect(@sut.highlight_all(input_string)).to eq(expected)
       end
