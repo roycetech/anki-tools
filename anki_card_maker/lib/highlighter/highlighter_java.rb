@@ -27,7 +27,8 @@ class JavaHighlighter < BaseHighlighter
       HtmlUtil.span('ann', token)
     })
 
-  end
+    parser.regexter('num', Markdown::NUMBER[:regexp], Markdown::NUMBER[:lambda])
 
+  end
 
 end

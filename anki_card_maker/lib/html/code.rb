@@ -48,10 +48,8 @@ class Code
     block_to_html_raw(string_array)
 
     code_block = string_array.join("\n")
-    $logger.debug(code_block)
 
     well_re = /<div class="well"><code>\n([\d\D]*?)<\/code><\/div>/
-    $logger.debug(code_block[well_re, 1])
 
     if code_block[well_re, 1]
       code_block = code_block[well_re, 1].chomp

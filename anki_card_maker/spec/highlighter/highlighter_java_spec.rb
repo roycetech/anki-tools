@@ -25,7 +25,15 @@ describe JavaHighlighter do
       end
     end
 
-    
+    input_string3 = 'int i = 0;'
+    context "given '#{input_string3}'" do
+
+      expected3 = '<span class="keyword">int</span> i = <span class="num">0</span>;'
+      it "returns '#{expected3}'" do
+        sut = JavaHighlighter.new
+        expect(sut.highlight_all(input_string3.clone)).to eq(expected3)
+      end
+    end
 
   end
   
