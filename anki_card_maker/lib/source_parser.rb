@@ -103,11 +103,6 @@ class SourceParser
     end
 
     return_value.delete(:lambda) if partition_missed(return_value[:partition])
-    # if return_value[:lambda]
-    #   $logger.debug("Pattern Found: #{return_value[:regexp_name]}, String: #{string}")
-    # else
-    #   $logger.debug("Pattern Not Found: #{return_value[:regexp_name]}, String: #{string}")
-    # end
 
     return_value
   end
@@ -135,25 +130,3 @@ class SourceParser
   end
 
 end
-
-
-# parser = SourceParser.new
-# parser.regexter('all', /one two three four/, lambda{ |token, regexp| "(#{token})" })
-# parser.regexter('four', /four/, lambda{ |token, regexp| "<#{token}>" })
-# puts(parser.parse('one two three four'))
-# test.print_result
-
-# re = /o/
-# puts test.partition_missed("hello".partition(re))
-# puts "hello".partition(re)
-
-
-# test.process
-# test.print_result
-
-
-# puts "Result: #{test.check_pattern('one two three four')}"
-# test.process() do |id, token|
-#   "(#{id}:#{token})"
-# end
-# test.print_result

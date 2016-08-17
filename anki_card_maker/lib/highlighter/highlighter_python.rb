@@ -5,11 +5,11 @@ class PythonHighlighter < BaseHighlighter
 
   def initialize() super(HighlightersEnum::PYTHON); end
   def keywords_file() return 'keywords_python.txt'; end
-  def comment_regex() RegextrationStore::CommentBuilder.new.perl.c.build; end
+  def comment_regex() RegextrationStore::CommentBuilder.new.perl.build; end
   def string_regex() quote_both_regex; end
 
   def regexter_blocks(parser)
-      parser.regexter('Multiline String', /"""[\d\D]*"""/, lambda { |token, regexp| 
+      parser.regexter('Multiline String', /(['"]{3})[\d\D]*\1/, lambda { |token, regexp| 
         HtmlUtil.span('quote', token)
       });
 
