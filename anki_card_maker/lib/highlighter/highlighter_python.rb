@@ -13,6 +13,10 @@ class PythonHighlighter < BaseHighlighter
         HtmlUtil.span('quote', token)
       });
 
+      parser.regexter('raw string', /r(['"]).*\1/, lambda { |token, regexp| 
+        HtmlUtil.span('quote', token)
+      });
+
   end
 
   def regexter_singles(parser)
