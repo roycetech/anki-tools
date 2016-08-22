@@ -18,7 +18,7 @@ class SqlHighlighter < BaseHighlighter
     parser.regexter('optional param', /\[.*\]/, lambda { |token, regexp| 
       HtmlUtil.span('opt', token) })
 
-    parser.regexter('datatype', /TIMESTAMP(?: WITH(?: LOCAL)? TIME ZONE)?/, lambda { |token, regexp| 
+    parser.regexter('datatype', /\bTIMESTAMP(?: WITH(?: LOCAL)? TIME ZONE)?/, lambda { |token, regexp| 
       HtmlUtil.span('keyword', token) })
 
     parser.regexter('WITHIN GROUP', /WITHIN GROUP/, lambda { |token, regexp| 
