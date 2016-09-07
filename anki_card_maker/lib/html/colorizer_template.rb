@@ -29,14 +29,29 @@ class DarkColorizer < ColorizerTemplate
       'span.cmd{color' => '#CC7833',
       'span.opt{color' => '#AAAAAA',
       'div.well{background-color' => 'black',
-      'div.well{color' => 'white',
+      'div.well{color' => '#D4D4D4',
       'code.inline{background-color' => 'black',
-      'code.inline{color' => 'white'
+      'code.inline{color' => '#D4D4D4'
     }
   end
 
   attr_reader :mapping
 
+end
+
+class VisualStudioColorizer < ColorizerTemplate
+  def initialize
+    @mapping = {
+      'span.quote{color' => '#CE9178',
+      'span.keyword{color' => '#5294CB',
+      'span.cmd{color' => '#CC7833',
+      'span.opt{color' => '#AAAAAA',
+      'div.well{background-color' => '#1E1E1E',
+      'div.well{color' => '#D2D2D2',
+      'span.attr{color' => '#9ADAFC'      
+    }
+  end
+  attr_reader :mapping
 end
 
 

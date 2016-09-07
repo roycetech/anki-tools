@@ -8,6 +8,8 @@ class StyleHelper
 
     if lang == 'git' || cmd
       @colorizer = DarkColorizer.new
+    elsif lang == 'asp'
+      @colorizer = VisualStudioColorizer.new
     else 
       @colorizer = LightColorizer.new
     end
@@ -117,6 +119,9 @@ class StyleHelper
       .select_e
       .select('span.var')
         .color('#426F9C')
+      .select_e
+      .select('span.url')
+        .color('blue')
       .select_e
       .select('span.html')
         .color('#446FBD')

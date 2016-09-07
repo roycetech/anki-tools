@@ -45,7 +45,7 @@ class BaseHighlighter
 
     http_re = /^https?:\/\/\w+(?:\.\w+)*(?::\d{1,5})?(?:\/\w+)*\/?$/
     @parser.regexter('http_url', http_re, lambda { |token, regexp|
-      HtmlUtil.span('quote', token)
+      HtmlUtil.span('url', token)
     })
 
     comment_lambda = lambda{ |token, regexp| 
