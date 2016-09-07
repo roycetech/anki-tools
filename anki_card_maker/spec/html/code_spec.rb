@@ -61,14 +61,45 @@ describe Code do
         highlighter = BaseHighlighter.python
         builder = HtmlBuilder.new
         sut = Code.new(highlighter)
-        # sut.execute(builder, input_array)
         expect(sut.highlight_code(python_input).gsub('&nbsp;', ' ').strip).to eq(python_expected)
       end
     end
 
 
+    multi_input = [
+      'one',
+      '```',
+      '$ first',
+      '```',
+      'two',
+      '```',
+      '$ second',
+      '```'
+    ]
+    context "given multi-well" do
+      
+      multi_expected = [
+        'one',
+        '<div class="well"><code>', 
+        '  <span class="cmdline">$ <span class="cmd">first</span>',
+        '  </span></code></div>',
+        'two',
+        '<div class="well"><code>', 
+        '  <span class="cmdline">$ <span class="cmd">second</span>',
+        '  </span></code></div>'
+      ].join("\n").strip
 
-  end
+      it "returns '#{multi_expected}'" do
+        highlighter = BaseHighlighter.asp
+        builder = HtmlBuilder.new
+        sut = Code.new(highlighter)
+        expect(sut.highlight_code(multi_input).gsub('&nbsp;', ' ').strip).to eq(multi_expected)
+      end
 
 
-end
+    end
+
+
+  end  # method
+
+end  # class

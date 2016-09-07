@@ -133,11 +133,11 @@ class MainClass
 
       re_styleless = /<div[\d\D]*/m
 
-      # $logger.debug("Front: \n" + lst[0] + "\n\n")
-      # $logger.debug("Back: \n" + lst[1] + "\n\n")
+      $logger.debug("Front: \n" + lst[0] + "\n\n")
+      $logger.debug("Back: \n" + lst[1] + "\n\n")
 
-      $logger.debug("Front: \n" + lst[0][re_styleless] + "\n\n")
-      $logger.debug("Back: \n" + lst[1][re_styleless] + "\n\n")
+      # $logger.debug("Front: \n" + lst[0][re_styleless] + "\n\n")
+      # $logger.debug("Back: \n" + lst[1][re_styleless] + "\n\n")
 
 
       # $logger.debug("Tag: \n" + lst[2] + "\n\n")

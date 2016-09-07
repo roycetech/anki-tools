@@ -10,5 +10,6 @@ module HighlightersEnum
   GIT = 'git'
   SPRING = 'spring'
   SQL = 'sql'
+  ASP = 'asp'
 
 end

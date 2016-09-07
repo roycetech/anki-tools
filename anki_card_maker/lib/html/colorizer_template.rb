@@ -26,6 +26,7 @@ class DarkColorizer < ColorizerTemplate
     @mapping = {
       'span.quote{color' => '#66CC33',
       'span.keyword{color' => '#CC7833',
+      'span.cmd{color' => '#CC7833',
       'span.opt{color' => '#AAAAAA',
       'div.well{background-color' => 'black',
       'div.well{color' => 'white',
@@ -36,9 +37,6 @@ class DarkColorizer < ColorizerTemplate
 
   attr_reader :mapping
 
-  # def get_mapping() 
-  #   @mapping
-  # end
 end
 
 
@@ -50,34 +48,5 @@ class LightColorizer < ColorizerTemplate
 
   attr_reader :mapping
 
-  # def get_mapping() 
-  #   @mapping
-  # end
-
 end
 
-
-# <style>
-#   code {
-#     background-color: black;
-#     color: white
-#   }
-  
-#   .opt {
-#     color: #AAAAAA;
-#   }
-#   .quote {
-#     color: #66CC33;
-#   }
-  
-#   .keyword {
-#     color: #CC7833;
-#     font-weight: bold;
-#   }
-  
-# </style>
-# <div class="well">
-#   <code>
-#     $ <span class="keyword">git</span> <span class="keyword">commit</span> <span class="opt">-m</span> <span class="quote">"DEV"</span>
-#   </code>
-# </div>

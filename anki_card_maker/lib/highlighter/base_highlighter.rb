@@ -33,6 +33,7 @@ class BaseHighlighter
   def self.git() return GitHighlighter.new; end
   def self.spring() return SpringHighlighter.new; end
   def self.sql() return SqlHighlighter.new; end
+  def self.asp() return AspHighlighter.new; end
 
   attr_reader :type
 
@@ -41,6 +42,11 @@ class BaseHighlighter
 
     @parser = SourceParser.new
     @type = type  # initialized by subclass
+
+    http_re = /^https?:\/\/\w+(?:\.\w+)*(?::\d{1,5})?(?:\/\w+)*\/?$/
+    @parser.regexter('http_url', http_re, lambda { |token, regexp|
+      HtmlUtil.span('quote', token)
+    })
 
     comment_lambda = lambda{ |token, regexp| 
       @@html_class.comment(token.sub(HtmlBuilder::BR, '')) 
@@ -126,4 +132,5 @@ require './lib/highlighter/highlighter_python'
 require './lib/highlighter/highlighter_git'
 require './lib/highlighter/highlighter_spring'
 require './lib/highlighter/highlighter_sql'
+require './lib/highlighter/highlighter_asp'
 

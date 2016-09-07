@@ -1,6 +1,7 @@
 require './lib/assert'
 require './lib/html/html_util'
 
+
 # It detects code wells,
 # appends some needed <br>'s ?
 # Escapes some spaces with &nbsp; ?
@@ -47,22 +48,31 @@ class Code
 
     block_to_html_raw(string_array)
 
-    code_block = string_array.join("\n")
+    card_block = string_array.join("\n")
 
     well_re = /<div class="well"><code>\n([\d\D]*?)<\/code><\/div>/
 
-    if code_block[well_re, 1]
-      code_block = code_block[well_re, 1].chomp
+    parser = SourceParser.new
+    parser.regexter('well', well_re, lambda { |token, regexp|
+      code_block = token[regexp, 1].chomp
       @highlighter.highlight_all(code_block)
-
       code_block.gsub!(/(<\/span>\n\s*)<span/, "\\1<br><span")
       return "<div class=\"well\"><code>\n#{code_block}<\/code><\/div>"
-    else
-      parser = SourceParser.new
+    })
+
+    # if code_block[well_re, 1]
+    #   code_block = code_block[well_re, 1].chomp
+    #   @highlighter.highlight_all(code_block)
+
+    #   code_block.gsub!(/(<\/span>\n\s*)<span/, "\\1<br><span")
+    #   return "<div class=\"well\"><code>\n#{code_block}<\/code><\/div>"
+    # else
+      # parser = SourceParser.new
       parser.regexter('bold', Markdown::BOLD[:regexp], Markdown::BOLD[:lambda]);
       parser.regexter('italic', Markdown::ITALIC[:regexp], Markdown::ITALIC[:lambda]);
-      return parser.parse(code_block)
-    end
+
+      return parser.parse(card_block)
+    # end
   end
 
 

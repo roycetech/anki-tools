@@ -9,6 +9,7 @@ require './lib/html/style_helper'
 require './lib/html/colorizer_template'
 
 require './lib/code_detector'
+require './lib/cmd_detector'
 require './lib/markdown'
 
 
@@ -26,7 +27,7 @@ class HtmlHelper
     @tag_helper = tag_helper
     @highlighter = highlighter
 
-    style_helper = StyleHelper.new(tag_helper, @highlighter.type)
+    style_helper = StyleHelper.new(tag_helper, @highlighter.type, CmdDetector.has_cmd?(back_array))
 
     builder_front = HtmlBuilder.new
     builder_back = HtmlBuilder.new
@@ -142,8 +143,6 @@ class HtmlHelper
   def line_to_html_raw(param_string)
 
     parser = SourceParser.new
-
-    # parser.regexter('`\`', /\\/, );
 
     code_lambda = lambda { |token, regexp|
       inline_code = token[regexp,2].gsub('\`', '`')

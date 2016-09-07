@@ -22,6 +22,7 @@ class WebHighlighter < JsHighlighter
   def regexter_blocks(parser)
         
     pattern = Regexp.new("&lt;\\/?(?:#{@@html_tags.join('|')}).*&gt;")
+    
     parser.regexter('html', pattern, lambda {
       |blocktoken, re_name|
       parser_inner = SourceParser.new
@@ -55,6 +56,7 @@ class WebHighlighter < JsHighlighter
   end
 
 
+  # TODO: Angular Specific.
   def regexter_singles(parser)
       ngattr_lambda = lambda{ |token, re_name| HtmlUtil.span('attr', token) }
       parser.regexter('ng_attr', /ng-\w+/, ngattr_lambda)

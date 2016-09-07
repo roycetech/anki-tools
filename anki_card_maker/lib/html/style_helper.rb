@@ -3,8 +3,10 @@
 # Do bunch of apply, then invoke end_apply to close the style tag
 class StyleHelper
 
-  def initialize(tag_helper, lang='none')
-    if lang == 'git'
+  def initialize(tag_helper, lang='none', cmd=false)
+    $logger.debug(cmd)
+
+    if lang == 'git' || cmd
       @colorizer = DarkColorizer.new
     else 
       @colorizer = LightColorizer.new
@@ -104,7 +106,7 @@ class StyleHelper
       .select('span.keyword')
         .color('#7E0854')
       .select_e
-      .select('span.keyword')
+      .select('span.cmd')
         .color('#7E0854')
       .select_e
       .select('span.comment')
