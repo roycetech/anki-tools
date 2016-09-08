@@ -6,7 +6,7 @@ describe AspHighlighter do
 
     input1 = '$ dotnet new -t web'
     context "given '#{input1}'" do      
-      expected1 = '&nbsp;&nbsp;<span class="cmdline">$ <span class="cmd">dotnet</span> new <span class="opt">-t</span> web</span>'
+      expected1 = '<span class="cmdline">$ <span class="cmd">dotnet</span> new <span class="opt">-t</span> web</span>'
 
       it "returns #{expected1}" do
         sut = AspHighlighter.new
@@ -17,7 +17,7 @@ describe AspHighlighter do
 
     input2 = '<form asp-action="Create">'
     context "given '#{input2}'" do      
-      expected2 = '<span class="html">&lt;form</span>&nbsp;<span class="attr">asp-action</span>=<span class="quote">"Create"</span><span class="html">&gt;</span>'
+      expected2 = '<span class="symbol">&lt;</span><span class="html">form</span>&nbsp;<span class="attr">asp-action</span><span class="symbol">=</span><span class="quote">"Create"</span><span class="symbol">&gt;</span>'
 
       it "returns #{expected2}" do
         sut = AspHighlighter.new
@@ -39,15 +39,35 @@ describe AspHighlighter do
 
     input4 = '    <li>@item.Name</li>'
     context "given '#{input4}'" do
-      expected4 = '&nbsp;&nbsp;&nbsp;&nbsp;<span class="html">&lt;li&gt;</span>@item.Name<span class="html">&lt;/li&gt;</span>'
+      expected4 = '&nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">&lt;</span><span class="html">li</span><span class="symbol">&gt;</span>@item.Name<span class="symbol">&lt;/</span><span class="html">li</span><span class="symbol">&gt;</span>'
 
       it "returns #{expected4}" do
         sut = AspHighlighter.new
         expect(sut.highlight_all(input4.clone)).to eq(expected4)
       end
-
     end # context
 
+    # multiline command
+    input5 = '    <li>@item.Name</li>'
+    context "given '#{input5}'" do
+      expected5 = '&nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">&lt;</span><span class="html">li</span><span class="symbol">&gt;</span>@item.Name<span class="symbol">&lt;/</span><span class="html">li</span><span class="symbol">&gt;</span>'
+
+      it "returns #{expected5}" do
+        sut = AspHighlighter.new
+        expect(sut.highlight_all(input5.clone)).to eq(expected5)
+      end
+    end # context
+
+    input6 = '@model List<ForgingAhead.Models.Quest>'
+    context "given '#{input6}'" do
+      expected6 = '@<span class="html">model</span> List&lt;ForgingAhead.Models.Quest&gt;'
+
+      it "returns #{expected6}" do
+        sut = AspHighlighter.new
+        expect(sut.highlight_all(input6.clone)).to eq(expected6)
+      end
+    end # context
+    
 
   end # method
   

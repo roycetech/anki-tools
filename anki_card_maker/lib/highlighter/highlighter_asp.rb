@@ -21,7 +21,7 @@ class AspHighlighter < BaseHighlighter
 
   def regexter_blocks(parser)
 
-    parser.regexter('commandline', /^\$.*$/m, lambda { |outtoken, outregexp| 
+    parser.regexter('commandline', /^\$.*$/, lambda { |outtoken, outregexp| 
       cmd_parser = SourceParser.new
 
       cmd_parser.regexter('optional', /\[.*\]/, lambda { |token, regexp| 
@@ -34,49 +34,52 @@ class AspHighlighter < BaseHighlighter
         HtmlUtil.span('cmd', token[regexp, 1])
       })
 
-      "  <span class=\"cmdline\">$ #{cmd_parser.parse(outtoken)}</span>"
+      "<span class=\"cmdline\">$ #{cmd_parser.parse(outtoken)}</span>"
     })
 
     parser.regexter('skip_br', /<br>/, lambda { |token, regexp|
       token
     })
 
-    pattern = Regexp.new("<\\/?(?:#{@@html_tags.join('|')}).*?>")    
-    parser.regexter('html', pattern, lambda { |blocktoken, regexp|
+    pattern = Regexp.new("<\\/?(#{@@html_tags.join('|')}).*?>")    
+    parser.regexter('html', pattern, lambda { |blocktoken, blockregexp|
 
       parser_inner = SourceParser.new
 
-      parser_inner.regexter('html_tags', /<\/?(\w+)(?:>)?|>$/m, 
-        lambda {
-          |token, regexp|
-
-          element_name = token[/<\/?(\w+)(?:>)?/, 1] 
-
-          if (@@html_tags.include? element_name) || element_name.nil?
-            HtmlUtil.span('html', token.gsub('<', '&lt;').gsub('>', '&gt;'))
-          else
-            token
-          end
-        })
+      parser_inner.regexter('html_tag', /(?<=<|<\/)(\w+)(?=\s|>)/, 
+        lambda { |token, regexp|
+          HtmlUtil.span('html', token)
+        }
+      )
 
       parser_inner.regexter('quote', /(?<=)((["']).*?\2)/, 
-        lambda { |token, regexp| HtmlUtil.span('quote', token)})
+        lambda { |token, regexp| HtmlUtil.span('quote', token)}
+      )
 
       parser_inner.regexter('attr', /[\w-]+/, 
-        lambda {|token, regexp| HtmlUtil.span('attr', token)})
+        lambda {|token, regexp| HtmlUtil.span('attr', token)}
+      )
+
+      parser_inner.regexter('symbols', /<\/?|>|=/, 
+        lambda {|token, regexp| 
+          HtmlUtil.span('symbol', token.gsub('<', '&lt;').gsub('>', '&gt;'))
+        }
+      )
 
       parser_inner.parse(blocktoken)
     })
 
     parser.regexter('annotations', /^\[.*\]$/m, lambda { |token, regexp| 
-      HtmlUtil.span('ann', token) })
+      token
+    })
 
   end
 
 
   def regexter_singles(parser)
-    parser.regexter('razor_model', /@model \S+/, lambda { |token, regexp| 
-      token
+
+    parser.regexter('razor_model', /@(model) (\S+)/, lambda { |token, regexp| 
+      "@#{HtmlUtil.span('html', token[regexp, 1])} #{token[regexp, 2].gsub('<', '&lt;').gsub('>', '&gt;')}"
     })
 
     parser.regexter('razor_expr', /@\S+/, lambda { |token, regexp| 

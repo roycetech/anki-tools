@@ -148,6 +148,10 @@ class StyleHelper
         style = style.select('span.ann')
           .color('#426F9C')
         .select_e
+      elsif @lang == HighlightersEnum::ASP
+        style = style.select('span.symbol')
+          .color('#808080')
+        .select_e
       elsif @lang == HighlightersEnum::GIT
         style = style.select('span.opt')
           .color('black')

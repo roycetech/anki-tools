@@ -81,12 +81,12 @@ describe Code do
       multi_expected = [
         'one',
         '<div class="well"><code>', 
-        '  <span class="cmdline">$ <span class="cmd">first</span>',
-        '  </span></code></div>',
+        '<span class="cmdline">$ <span class="cmd">first</span></span>',
+        '  </code></div>',
         'two',
         '<div class="well"><code>', 
-        '  <span class="cmdline">$ <span class="cmd">second</span>',
-        '  </span></code></div>'
+        '<span class="cmdline">$ <span class="cmd">second</span></span>',
+        '  </code></div>'
       ].join("\n").strip
 
       it "returns '#{multi_expected}'" do
