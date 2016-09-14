@@ -10,11 +10,11 @@ class BaseHighlighter
 
   @@html_class = '<span class="%{klass}">%{word}</span>'
   class << @@html_class
-    def quote(string) self % {klass: 'quote', word: string}; end
-    def comment(string) self % {klass: 'comment', word: string}; end
-    def identifier(string) self % {klass: 'ident', word: string}; end
-    def user(string) self % {klass: 'user', word: string}; end
-    def keyword(string) self % {klass: 'keyword', word: string}; end
+    def quote(string) self % { klass: 'quote', word: string }; end
+    def comment(string) self % { klass: 'comment', word: string }; end
+    def identifier(string) self % { klass: 'ident', word: string }; end
+    def user(string) self % { klass: 'user', word: string }; end
+    def keyword(string) self % { klass: 'keyword', word: string }; end
   end
 
 
@@ -33,6 +33,7 @@ class BaseHighlighter
   def self.git() return GitHighlighter.new; end
   def self.spring() return SpringHighlighter.new; end
   def self.sql() return SqlHighlighter.new; end
+  def self.csharp() return CSharpHighlighter.new; end
   def self.asp() return AspHighlighter.new; end
 
   attr_reader :type
@@ -132,5 +133,6 @@ require './lib/highlighter/highlighter_python'
 require './lib/highlighter/highlighter_git'
 require './lib/highlighter/highlighter_spring'
 require './lib/highlighter/highlighter_sql'
+require './lib/highlighter/highlighter_csharp'
 require './lib/highlighter/highlighter_asp'
 

@@ -10,6 +10,7 @@ module RegextrationStore
     RE_COMMENT_NONE = /(?!.*)/
     RE_COMMENT_SQL = /--.*/
 
+
     def initialize
       @regexp = nil      
       @c = nil
@@ -33,6 +34,7 @@ module RegextrationStore
 
 
     private
+
     def comment(flag_name, regexp)      
       if !instance_variable_get(flag_name)
         if @regexp

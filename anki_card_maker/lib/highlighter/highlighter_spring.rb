@@ -29,7 +29,7 @@ class SpringHighlighter < JavaHighlighter
         lambda { |t, r| HtmlUtil.span('html', '&lt;' + t[r, 1]) })
 
       inner_parser.regexter('name="value"', / ([a-z]+) ?= ?(".*?")/, 
-        lambda { |t, r| " #{HtmlUtil.span('attr', t[r, 1])}=#{HtmlUtil.span('quote', t[r, 2])}"})
+        lambda { |t, r| " #{ HtmlUtil.span('attr', t[r, 1])}=#{HtmlUtil.span('quote', t[r, 2])}" })
 
       inner_parser.regexter('closing', /(\/?)>/, 
         lambda { |t, r| HtmlUtil.span('html', t[r, 1] + '&gt;') })

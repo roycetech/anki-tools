@@ -3,19 +3,20 @@
 # Do bunch of apply, then invoke end_apply to close the style tag
 class StyleHelper
 
-  def initialize(tag_helper, lang='none', cmd=false)
-    $logger.debug(cmd)
+  def initialize(tag_helper, lang='none', iscmd=false)
 
-    if lang == 'git' || cmd
-      @colorizer = DarkColorizer.new
-    elsif lang == 'asp'
-      @colorizer = VisualStudioColorizer.new
+    $logger.debug(lang)
+
+    @colorizer = if lang == 'git' || iscmd
+      DarkColorizer.new
+    elsif ['asp', 'csharp'].include?(lang)
+      VisualStudioColorizer.new
     else 
-      @colorizer = LightColorizer.new
+      LightColorizer.new
     end
+    $logger.debug(@colorizer)
 
     @lang = lang
-
     @tag_helper = tag_helper
 
     @style_common = StyleBuilder.new(nil, @colorizer)
@@ -140,28 +141,29 @@ class StyleHelper
         .color('darkgray')
       .select_e
       
-      if @lang == HighlightersEnum::PHP
-        style = style.select('span.phptag')
-          .color('#FC0D1B')
-        .select_e
-      elsif @lang == HighlightersEnum::JAVA
-        style = style.select('span.ann')
-          .color('#426F9C')
-        .select_e
-      elsif @lang == HighlightersEnum::ASP
-        style = style.select('span.symbol')
-          .color('#808080')
-        .select_e
-      elsif @lang == HighlightersEnum::GIT
-        style = style.select('span.opt')
-          .color('black')
-        .select_e
-        style = style.select('span.cmd')
-          .color('#FFFF9B')
-        .select_e
-      end
+      style = case @lang
+        when HighlightersEnum::PHP
+          style.select('span.phptag')
+            .color('#FC0D1B')
+          .select_e
+        when HighlightersEnum::JAVA
+          style.select('span.ann')
+            .color('#426F9C')
+          .select_e
+        when HighlightersEnum::ASP
+          style.select('span.symbol')
+            .color('#808080')
+          .select_e
+        when HighlightersEnum::GIT
+          style.select('span.opt')
+            .color('black')
+          .select_e
+          .select('span.cmd')
+            .color('#FFFF9B')
+          .select_e
+      end || style
 
-      html_builder.merge style
+      html_builder.merge(style)
   end
 
 end

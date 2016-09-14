@@ -46,6 +46,7 @@ class VisualStudioColorizer < ColorizerTemplate
       'span.keyword{color' => '#5294CB',
       'span.cmd{color' => '#CC7833',
       'span.opt{color' => '#AAAAAA',
+      'span.comment{color' => '#608B4E',
       'div.well{background-color' => '#1E1E1E',
       'div.well{color' => '#D2D2D2',
       'span.attr{color' => '#9ADAFC'      

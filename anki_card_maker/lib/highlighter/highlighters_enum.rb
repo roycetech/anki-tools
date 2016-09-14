@@ -11,5 +11,6 @@ module HighlightersEnum
   SPRING = 'spring'
   SQL = 'sql'
   ASP = 'asp'
+  CSHARP = 'csharp'
 
 end

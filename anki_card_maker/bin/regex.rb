@@ -1,2 +1,3 @@
 
-puts /a/ + /b/
+"Hello"
+'world'

@@ -1,23 +1,14 @@
-class AspHighlighter < BaseHighlighter
+class AspHighlighter < CSharpHighlighter
 
 
   @@html_tags = nil
 
 
   def initialize()
-    @@html_tags = FileReader.read_as_list('html_element_names.txt') unless @@html_tags
+    @@html_tags ||= FileReader.read_as_list('html_element_names.txt')
     super(HighlightersEnum::ASP)
   end
 
-  
-  def keywords_file() return 'keywords_csharp.txt'; end
-  def comment_regex
-    RegextrationStore::CommentBuilder.new.c.build
-  end
-
-  def string_regex
-    quote_double_regex()
-  end
 
   def regexter_blocks(parser)
 
@@ -68,18 +59,13 @@ class AspHighlighter < BaseHighlighter
 
       parser_inner.parse(blocktoken)
     })
-
-    parser.regexter('annotations', /^\[.*\]$/m, lambda { |token, regexp| 
-      token
-    })
-
   end
 
 
   def regexter_singles(parser)
 
     parser.regexter('razor_model', /@(model) (\S+)/, lambda { |token, regexp| 
-      "@#{HtmlUtil.span('html', token[regexp, 1])} #{token[regexp, 2].gsub('<', '&lt;').gsub('>', '&gt;')}"
+      "@#{ HtmlUtil.span('html', token[regexp, 1]) } #{ token[regexp, 2].gsub('<', '&lt;').gsub('>', '&gt;') }"
     })
 
     parser.regexter('razor_expr', /@\S+/, lambda { |token, regexp| 

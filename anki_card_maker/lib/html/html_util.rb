@@ -4,13 +4,9 @@ module HtmlUtil
   @@htmlcustom_words = nil
 
 
-  # def detect_tokens(regex, string)
-  #   string.scan(regex).sort
-  # end
-
 
   def self.span(classname, text)
-    "<span class=\"#{classname}\">#{text}</span>"
+    "<span class=\"#{ classname }\">#{ text }</span>"
   end
 
 
@@ -56,7 +52,7 @@ module HtmlUtil
     @@htmlcustom_words = get_html_keywords unless @@htmlcustom_words
     parser.regexter('known tags', 
       Regexp.new("<\\/?(?:#{@@htmlcustom_words.join('|')})>"),
-      lambda {|token, regexp|
+      lambda { |token, regexp|
         token
       }
     )
@@ -64,14 +60,14 @@ module HtmlUtil
     parser.regexter('left angle', 
       /(<)(\/?)(\w+)?/,
       lambda {|token, regexp|
-        "&lt;#{token[regexp,2]}#{token[regexp,3]}"
+        "&lt;#{ token[regexp,2] }#{ token[regexp,3] }"
       }
     )
 
     parser.regexter('right angle', 
       /(\w+)?(>)/,
       lambda {|token, regexp|
-        "#{token[regexp,1]}&gt;"
+        "#{ token[regexp,1] }&gt;"
       }
     )
 

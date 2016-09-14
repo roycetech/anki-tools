@@ -1,8 +1,11 @@
 require './lib/tag_helper'
 
 
+# This class is used to quality check cards.  It will log
+# if there are any known violations.
+#
 # Counts sentence so you can review complexity
-# Checks if fron card appears at the back of the card.
+# Checks if front card appears at the back of the card.
 class Reviewer
 
 
