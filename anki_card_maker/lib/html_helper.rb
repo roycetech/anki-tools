@@ -10,15 +10,10 @@ require './lib/html/colorizer_template'
 
 require './lib/code_detector'
 require './lib/cmd_detector'
-require './lib/markdown'
 
 
 class HtmlHelper
-
-
-  HEC_LT = '&lt;'
-  HEC_GT = '&gt;'
-
+  include HtmlUtils
 
   attr_reader :front_html, :back_html
 
@@ -45,35 +40,35 @@ class HtmlHelper
     builder_back = builder_back.style_e
 
     html_builder_common = HtmlBuilder.new
-      .div('main').lf
+      .div(:main).lf
 
     tags = build_tags(back_array)
 
     builder_front.merge(html_builder_common)
-
     has_visible_tag = !tag_helper.visible_tags.empty?
-    unless tag_helper.is_back_only? or not has_visible_tag
-      builder_front.merge(tags)
-    end
+    builder_front.merge(tags) unless tag_helper.is_back_only? or !has_visible_tag
 
-    if tag_helper.command?
-        builder_front
-          .div.lf
-            .code('command')
 
-        builder_front.text(front_array.inject('') do |result, element|
-          result += HtmlBuilder::BR + "\n" unless result.empty?
-          result += line_to_html_raw(element)
-        end).lf
+    Code.new(@highlighter).execute(builder_front, front_array)
 
-        builder_front
-          .code_e.lf
-          .div_e.lf
-    else
+    # if tag_helper.command?
+    #     builder_front
+    #       .div.lf
+    #         .code(:command)
 
-      Code.new(@highlighter).execute(builder_front, front_array)
+    #     builder_front.text(front_array.inject('') do |result, element|
+    #       result += HtmlBuilder::BR + "\n" unless result.empty?
+    #       result += line_to_html_raw(element)
+    #     end).lf
 
-    end
+    #     builder_front
+    #       .code_e.lf
+    #       .div_e.lf
+    # else
+
+    #   Code.new(@highlighter).execute(builder_front, front_array)
+
+    # end
 
     # Process Back Card Html
     builder_back.merge(html_builder_common)
@@ -86,22 +81,20 @@ class HtmlHelper
       List.new(@highlighter).execute(builder_back, back_array, tag_helper.ol?)
     elsif tag_helper.figure?
       builder_back
-        .pre('fig').lf
+        .pre(:fig).lf
           .text(back_array.inject('') do |result, element|
             result += "\n" unless result.empty?
-            result += line_to_html_raw(element)
+            # result += line_to_html_raw(element)
+            result += element
           end).lf
         .pre_e.lf
-
     else
       Code.new(@highlighter).execute(builder_back, back_array)
     end
 
 
-    if tag_helper.one_sided?
-      answerHtml = HtmlBuilder.new
-        .span('answer_only').text('Answer Only').span_e.lf
-    end
+    answerHtml = HtmlBuilder.new \
+      .span(:answer_only).text('Answer Only').span_e.lf if tag_helper.one_sided?
 
     if tag_helper.is_front_only?
 
@@ -110,8 +103,7 @@ class HtmlHelper
     end
 
     if tag_helper.is_back_only?
-
-      builder_front.br.br if builder_front.last_element == 'text' and not builder_front.build.chomp.end_with?('</code></div>')
+      builder_front.br.br if builder_front.last_element == 'text' && !builder_front.build.chomp.end_with?('</code></div>')
       builder_front.merge(answerHtml)
     end
 
@@ -130,7 +122,7 @@ class HtmlHelper
     @tag_helper.find_multi(card)
     @tag_helper.visible_tags.each do |tag|
       tags_html.space unless first
-      tags_html.span('tag').text(tag).span_e
+      tags_html.span(:tag).text(tag).span_e
       first = false
     end
     tags_html.lf
@@ -140,35 +132,35 @@ class HtmlHelper
   # 1. Find quoted codes and highlight.
   # 2. Find bold markdowns **bold** or __bold__
   # 3. Find italicized markdowns _italic_ or *italic*
-  def line_to_html_raw(param_string)
+  # def line_to_html_raw(param_string)
 
-    parser = SourceParser.new
+  #   parser = SourceParser.new
 
-    code_lambda = lambda { |token, regexp|
-      inline_code = token[regexp,2].gsub('\`', '`')
-      '<code class="inline">' + @highlighter.highlight_all(inline_code) + '</code>'
-    }
-    parser.regexter('code', /([`])((?:\\\1|[^\1])*?)\1/, code_lambda);
+  #   code_lambda = lambda { |token, regexp|
+  #     inline_code = token[regexp,2].gsub('\`', '`')
+  #     '<code class="inline">' + @highlighter.highlight_all(inline_code) + '</code>'
+  #   }
+  #   parser.regexter('code', /([`])((?:\\\1|[^\1])*?)\1/, code_lambda);
 
-    parser.regexter('bold', Markdown::BOLD[:regexp], Markdown::BOLD[:lambda]);
-    parser.regexter('italic', Markdown::ITALIC[:regexp], Markdown::ITALIC[:lambda]);
+  #   parser.regexter('bold', Markdown::BOLD[:regexp], Markdown::BOLD[:lambda]);
+  #   parser.regexter('italic', Markdown::ITALIC[:regexp], Markdown::ITALIC[:lambda]);
 
-    param_string = parser.parse(param_string)
+  #   param_string = parser.parse(param_string)
 
-    return_value = HtmlUtil.escape(param_string)
-    param_string
-      .gsub(/í([a-zA-Z ]*)í/, '<i>\1</i>')
-      .gsub(/(?: <(=?) )/, ' ' + HEC_LT + '\1 ')
-      .gsub(/(?: >(=?) )/, ' ' + HEC_GT + '\1 ')
+  #   return_value = HtmlUtil.escape(param_string)
+  #   param_string
+  #     .gsub(/í([a-zA-Z ]*)í/, '<i>\1</i>')
+  #     .gsub(/(?: <(=?) )/, ' ' + ELT + '\1 ')
+  #     .gsub(/(?: >(=?) )/, ' ' + EGT + '\1 ')
 
-    if return_value.index('<code>') and return_value.index('</code>')
-      pattern = /(.*<code(?: .*)?>)(.*)(<\/code>.*)/
-      colored = @highlighter.highlight_all(return_value[pattern, 2])
-      return_value[pattern, 1] + colored + return_value[pattern, 3]
-    else
-      return_value
-    end
-  end
+  #   if return_value.index('<code>') and return_value.index('</code>')
+  #     pattern = /(.*<code(?: .*)?>)(.*)(<\/code>.*)/
+  #     colored = @highlighter.highlight_all(return_value[pattern, 2])
+  #     return_value[pattern, 1] + colored + return_value[pattern, 3]
+  #   else
+  #     return_value
+  #   end
+  # end
 
 
 end

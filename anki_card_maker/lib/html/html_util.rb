@@ -1,4 +1,4 @@
-module HtmlUtil
+module HtmlUtilDeprecated
 
 
   @@htmlcustom_words = nil
@@ -31,7 +31,7 @@ module HtmlUtil
       lost_spaces = input_string[pattern_before_tag]
       input_string.sub!(pattern_before_tag, (HtmlBuilder::ESP * (lost_spaces.length - 1)) + '<')
     end
-    return input_string
+    input_string
   end
 
 
@@ -81,5 +81,5 @@ private
 
 def get_html_keywords
   File.read('./data/keywords_customhtml.txt')
-    .lines.collect {|line|  line.chomp}
+    .lines.collect { |line|  line.chomp}
 end

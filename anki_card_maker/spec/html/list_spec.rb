@@ -3,27 +3,23 @@ require './spec/spec_helper'
 describe List do
   describe '#execute' do
 
+    highlighter = BaseHighlighter.lang_none
+    sut = List.new(highlighter)
 
     describe '1. given ordered list without code' do
 
-      input_array = [
-        'one', 
-        'two'
-      ]
+      input_array = ['one', 'two']
 
       it 'returns with ol and li tags.' do
-        highlighter = BaseHighlighter.none
         builder = HtmlBuilder.new
-        sut = List.new(highlighter)
-        sut.execute(builder, input_array, true)
-        
-        expected = [
+        sut.execute(builder, input_array, true)        
+        expected = SpecUtils.join_array([
           '<ol>', 
           '  <li>one</li>',
           '  <li>two</li>',
           '</ol>'
-        ].join("\n")
-        expect(builder.build.gsub(/&nbsp;/, ' ').strip).to eq(expected.strip) 
+        ])
+        expect(SpecUtils.clean_html(builder.build).strip).to eq(expected) 
       end
 
     end
@@ -37,18 +33,17 @@ describe List do
       ]
 
       it 'returns ol li and <code class="inline"> tags' do
-        highlighter = BaseHighlighter.none
+        highlighter = BaseHighlighter.lang_none
         builder = HtmlBuilder.new
-        sut = List.new(highlighter)
         sut.execute(builder, input_array, true)
         
-        expected = [
+        expected = SpecUtils.join_array([
           '<ol>', 
           '  <li><code class="inline">one</code></li>',
           '  <li>two</li>',
           '</ol>'
-        ].join("\n")
-        expect(builder.build.gsub(/&nbsp;/, ' ').strip).to eq(expected.strip) 
+        ])
+        expect(SpecUtils.clean_html(builder.build).strip).to eq(expected) 
       end
 
     end

@@ -3,7 +3,7 @@ require './spec/spec_helper'
 describe BaseHighlighter do
   describe '#initialize' do
 
-    sut = BaseHighlighter.none
+    sut = BaseHighlighter.lang_none
 
     context 'given "hello _robin_!" ' do
       input_string = 'hello _robin_!'

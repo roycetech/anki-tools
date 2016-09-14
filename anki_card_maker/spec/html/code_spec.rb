@@ -13,7 +13,7 @@ describe Code do
       ]
 
       it 'wraps "peter" in <span>' do
-        highlighter = BaseHighlighter.ruby
+        highlighter = BaseHighlighter.lang_ruby
         builder = HtmlBuilder.new
         sut = Code.new(highlighter)
         sut.execute(builder, input_array)
@@ -58,7 +58,7 @@ describe Code do
       ].join("\n").strip
 
       it "returns '#{python_expected}'" do
-        highlighter = BaseHighlighter.python
+        highlighter = BaseHighlighter.lang_python
         builder = HtmlBuilder.new
         sut = Code.new(highlighter)
         expect(sut.highlight_code(python_input).gsub('&nbsp;', ' ').strip).to eq(python_expected)
@@ -90,7 +90,7 @@ describe Code do
       ].join("\n").strip
 
       it "returns '#{multi_expected}'" do
-        highlighter = BaseHighlighter.asp
+        highlighter = BaseHighlighter.lang_asp
         builder = HtmlBuilder.new
         sut = Code.new(highlighter)
         expect(sut.highlight_code(multi_input).gsub('&nbsp;', ' ').strip).to eq(multi_expected)

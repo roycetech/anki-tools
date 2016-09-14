@@ -7,34 +7,34 @@ require './lib/regextration_store'
 # keyword list and line comment markers.
 class BaseHighlighter 
 
+  include Wrappexter, Markdown, RegexpUtils
 
   @@html_class = '<span class="%{klass}">%{word}</span>'
   class << @@html_class
-    def quote(string) self % { klass: 'quote', word: string }; end
-    def comment(string) self % { klass: 'comment', word: string }; end
-    def identifier(string) self % { klass: 'ident', word: string }; end
-    def user(string) self % { klass: 'user', word: string }; end
-    def keyword(string) self % { klass: 'keyword', word: string }; end
+    def quote(string) self % { klass: :quote, word: string }; end
+    def comment(string) self % { klass: :comment, word: string }; end
+    def identifier(string) self % { klass: :ident, word: string }; end
+    def user(string) self % { klass: :user, word: string }; end
+    def keyword(string) self % { klass: :keyword, word: string }; end
   end
 
 
   # Factory methods.
-  def self.ruby() return RubyHighlighter.new; end
-  def self.js() return JsHighlighter.new; end
-  def self.cpp() return CppHighlighter.new; end
-  def self.java() return JavaHighlighter.new; end
-  def self.none() return NoHighlighter.new; end
-  def self.php() return PhpHighlighter.new; end
-  def self.web() return WebHighlighter.new; end
-  def self.objc() return WebHighlighter.new; end
+
+  def self.method_missing(name)
+    regex = /^lang_(\w+)/
+    method_name = name.to_s
+    if method_name =~ regex
+      Object::const_get("#{ method_name[regex, 1].titleize }Highlighter").new
+    else
+      super
+    end
+  end
+
+  # Define here if it don't follow standard naming.
   def self.jquery() return JQueryHighlighter.new; end
-  def self.command() return CommandHighlighter.new; end
-  def self.python() return PythonHighlighter.new; end
-  def self.git() return GitHighlighter.new; end
-  def self.spring() return SpringHighlighter.new; end
-  def self.sql() return SqlHighlighter.new; end
   def self.csharp() return CSharpHighlighter.new; end
-  def self.asp() return AspHighlighter.new; end
+
 
   attr_reader :type
 
@@ -45,30 +45,28 @@ class BaseHighlighter
     @type = type  # initialized by subclass
 
     http_re = /^https?:\/\/\w+(?:\.\w+)*(?::\d{1,5})?(?:\/\w+)*\/?$/
-    @parser.regexter('http_url', http_re, lambda { |token, regexp|
-      HtmlUtil.span('url', token)
+    @parser.regexter('http_url', http_re, ->(token, regexp) {
+      wrap(:url, token)
     })
 
-    comment_lambda = lambda{ |token, regexp| 
-      @@html_class.comment(token.sub(HtmlBuilder::BR, '')) 
-    }
+    comment_lambda = ->(token, regexp) { @@html_class.comment(token.sub(BR, '')) }
     @parser.regexter('comment', comment_regex, comment_lambda)
 
-    @parser.regexter('bold', Markdown::BOLD[:regexp], Markdown::BOLD[:lambda]);
-    @parser.regexter('italic', Markdown::ITALIC[:regexp], Markdown::ITALIC[:lambda]);
+    @parser.regexter('bold', BOLD[:regexp], BOLD[:lambda]);
+    @parser.regexter('italic', ITALIC[:regexp], ITALIC[:lambda]);
 
     regexter_blocks(@parser)
 
-    string_lambda = lambda{ |token, regexp| @@html_class.quote(token) }
+    string_lambda = ->(token, regex) { @@html_class.quote(token) }
     @parser.regexter('strings', string_regex, string_lambda)
 
     
-    user_lambda = lambda{ |token, regexp| @@html_class.user(token) }
-    @parser.regexter('<user>', /&lt;[\w ]*?&gt;/, user_lambda)
+    user_lambda = ->(token, regexp) { @@html_class.user(token) }
+    @parser.regexter('<user>', /#{ ELT }[\w ]*?#{ EGT }/, user_lambda)
 
     if keywords_file
       @keyworder = KeywordHighlighter.new(keywords_file)
-      keyword_lambda = lambda{ |token, regexp| @@html_class.keyword(token) }
+      keyword_lambda = ->(token, regex) { @@html_class.keyword(token) }
       @parser.regexter('keyword', @keyworder.keyword_regex, keyword_lambda)
     end
 
@@ -99,20 +97,9 @@ class BaseHighlighter
     raise NotImplementedError, 'You must implement the string_regex method'
   end
 
-
-  def quote_single_regex() /'(?:(?:\\')|[^'])*?'/ end
-  def quote_double_regex() /"(?:(?:\\")|[^"])*?"/ end
-
-  def quote_both_regex() 
-    /(["'])(?:(?:\\\1)|[^\1])*?\1/
-  end
-
-
   def highlight_all(input_string)
-    input_string.replace(@parser.parse(input_string))
-  
-    HtmlUtil.space_to_nbsp(input_string)
-    return input_string
+    input_string.replace(@parser.format(input_string))  
+    escape_spaces(input_string)
   end
 
 end

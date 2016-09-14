@@ -1,6 +1,3 @@
-require './lib/obj_util'
-
-
 class KeywordHighlighter
 
 
@@ -30,19 +27,9 @@ class KeywordHighlighter
       result += keyword
     end
 
-    return Regexp.new("(?<!\\.|-|(?:[\\w]))(?:#{kw_re_str})\\b")
-                       # (?<!\.|-|(?:[\w]))(?:@interface|interface|var|global)\b
-
-    # return Regexp.new("(?<!\\.|-)\\b(?:#{kw_re_str})\\b")
+    # return Regexp.new("(?<!\\.|-|(?:[\\w]))(?:#{ kw_re_str })\\b")
+                        /(?<!\.|-|(?:[\w]))(?:#{ kw_re_str })\b/
   end
 
-
-  # def highlight(input_string)
-  #   input_string.gsub!(kw_re) do |token|
-  #     @@html_class.keyword(token)
-  #   end    
-  #   input_string.replace!(html_class.keyword(input_string))
-  #   return input_string
-  # end
 
 end

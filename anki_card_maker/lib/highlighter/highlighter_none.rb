@@ -1,4 +1,4 @@
-class NoHighlighter < BaseHighlighter
+class NoneHighlighter < BaseHighlighter
 
 
   # Suppress base class initialization, do not remove empty initializer

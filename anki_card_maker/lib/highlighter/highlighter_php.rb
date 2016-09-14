@@ -1,11 +1,10 @@
 class PhpHighlighter < BaseHighlighter
 
 
-  COLOR_CLASS_VAR = '#426F9C'
+  include RegexpUtils
 
-  def initialize
-    super(HighlightersEnum::PHP)     
-  end
+
+  def initialize() super(HighlightersEnum::PHP); end
 
   def keywords_file() return 'keywords_php.txt'; end
 
@@ -13,20 +12,15 @@ class PhpHighlighter < BaseHighlighter
     RegextrationStore::CommentBuilder.new.perl.c.build
   end
 
-  def string_regex() quote_both_regex; end
+  def string_regex() RE_QUOTE_BOTH; end
 
   
   def regexter_singles(parser) 
-    tags_lambda = lambda do |token, regex| 
-      "<span class=\"phptag\">#{token.sub('<', '&lt;').sub('>', '&gt;')}</span>" 
-    end
+    tags_lambda = ->(token, regexp) { wrap(:phptag, escape_angles(token)) }
     parser.regexter('php_tags', /<\?=|<\?(?:php)?|\?>/, tags_lambda)
 
-    var_lambda = lambda do |token, regex| 
-      "<span class=\"var\">#{token}</span>"
-    end
+    var_lambda = ->(token, regexp) { wrap(:var, token) }
     parser.regexter('php_vars', /(\$[\w]+)/, var_lambda)
-
   end
 
 end

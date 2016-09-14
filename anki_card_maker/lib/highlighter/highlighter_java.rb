@@ -1,34 +1,33 @@
 class JavaHighlighter < BaseHighlighter
 
 
-  COLOR_ANNOTATION = '#426F9C'
+  include RegexpUtils, Markdown
+  
 
   def initialize(param=HighlightersEnum::JAVA)
     super(param)
   end
+
   
-  def keywords_file() return 'keywords_java.txt'; end
+  def keywords_file() 'keywords_java.txt'; end
   
   def comment_regex
     RegextrationStore::CommentBuilder.new.c.build
   end
 
-  def string_regex
-    quote_double_regex()
-  end
+  def string_regex() RE_QUOTE_DOUBLE; end
 
 
   def regexter_singles(parser)
     parser.regexter('char', /'\\?.{0,1}'/, lambda { |token, regexp|
-      HtmlUtil.span('quote', token)
+      wrap(:quote, token)
     })
 
     parser.regexter('annotation', /@[a-z_A-Z]+/, lambda { |token, regexp|
-      HtmlUtil.span('ann', token)
+      wrap(:ann, token)
     })
 
-    parser.regexter('num', Markdown::NUMBER[:regexp], Markdown::NUMBER[:lambda])
-
+    parser.regexter(:num, NUMBER[:regexp], NUMBER[:lambda])
   end
 
 end

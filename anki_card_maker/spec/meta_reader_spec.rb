@@ -22,6 +22,6 @@ describe MetaReader do
       end
     end
 
-  end
+  end  # method
 
-end
+end  # class

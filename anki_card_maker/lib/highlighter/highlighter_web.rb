@@ -5,12 +5,12 @@ require './lib/file_reader'
 class WebHighlighter < JsHighlighter
 
   
-  @@html_tags = nil
+  @@html_tags = nil  # if you are wondering, yes this is required.
 
 
   def initialize() 
     @@html_tags = FileReader.read_as_list('html_element_names.txt') unless @@html_tags
-    super; 
+    super
   end
 
 

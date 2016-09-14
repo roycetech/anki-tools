@@ -1,13 +1,9 @@
-require './lib/assert'
-require './lib/html/html_util'
-
-
 # It detects code wells,
 # appends some needed <br>'s ?
 # Escapes some spaces with &nbsp; ?
 class Code
 
-  include Assert
+  include Assert, HtmlUtils
 
 
   RE_WELL = /(```)([a-zA-Z]*)([\d\D]*?)(\1)/
@@ -60,19 +56,9 @@ class Code
       return "<div class=\"well\"><code>\n#{code_block}<\/code><\/div>"
     })
 
-    # if code_block[well_re, 1]
-    #   code_block = code_block[well_re, 1].chomp
-    #   @highlighter.highlight_all(code_block)
-
-    #   code_block.gsub!(/(<\/span>\n\s*)<span/, "\\1<br><span")
-    #   return "<div class=\"well\"><code>\n#{code_block}<\/code><\/div>"
-    # else
-      # parser = SourceParser.new
-      parser.regexter('bold', Markdown::BOLD[:regexp], Markdown::BOLD[:lambda]);
-      parser.regexter('italic', Markdown::ITALIC[:regexp], Markdown::ITALIC[:lambda]);
-
-      return parser.parse(card_block)
-    # end
+    parser.regexter('bold', Markdown::BOLD[:regexp], Markdown::BOLD[:lambda]);
+    parser.regexter('italic', Markdown::ITALIC[:regexp], Markdown::ITALIC[:lambda]);
+    parser.parse(card_block)
   end
 
 
@@ -80,11 +66,10 @@ class Code
     detect_wells(string_list)
     inline = Inline.new(@highlighter)
     string_list.collect! do |line|
-
-      HtmlUtil.escape(line)
-
-      line = inline.execute(line.chomp)
-      line.gsub('  ', HtmlBuilder::ESP * 2)
+      line.chomp!
+      inline.execute!(line)
+      escape_spaces(line)
+      # line.gsub('  ', HtmlBuilder::ESP * 2)
     end
 
     return string_list
@@ -100,10 +85,10 @@ class Code
 
       inside.strip!.gsub!("\n", "<br>\n")
       %Q(<div class="well"><code>\n#{inside}\n  </code></div>)
-         end
+    end
 
-         string_list.replace(string_block.lines.collect {|element| element.rstrip})
-         return string_list
-         end
+    string_list.replace(string_block.lines.collect {|element| element.rstrip})
+    return string_list
+  end
 
-         end
+end

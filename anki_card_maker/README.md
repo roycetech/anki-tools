@@ -19,12 +19,27 @@ Issues:
 
 # Testing
 
+**Notes: **
+
+"#instance_method"
+".static_method"
+
+
 How to run all Tests with coverage:
-------------
+------------------------------------
 
 ```
 $ rspec --format documentation
 ```
+
+Test a single file:
+-------------------
+
+```
+$ rspec spec/utils/html_utils_spec.rb 
+```
+
+
 
 **Note**: Logging needs to be set to `WARN` for it to be logged.
 

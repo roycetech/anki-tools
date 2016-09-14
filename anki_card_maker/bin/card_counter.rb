@@ -11,7 +11,7 @@ file_mask = '*.md'
 finder = LatestFileFinder.new('/Users/royce/Dropbox/Documents/Reviewer', file_mask)
 finder.find
 path = finder.latest_folder
-$logger.debug("Path: #{path}")
+$logger.debug("Path: #{ path }")
 
 
 total_cards = 0
@@ -27,18 +27,17 @@ Dir[File.join(path, file_mask)].each do |filename|
         card_count += 1
       end
 
-      if filename.include?'-API-'
-        total_api += card_count
-      end
+      total_api += card_count if filename.include?'-API-'
 
-      puts "#{filename}: #{card_count}"
+      puts "#{ filename }: #{ card_count }"
       total_cards += card_count
     end
   end
 end
-puts "Total files: #{total_files}"
-puts "Total cards: #{total_cards}"
-puts "Total API cards: #{total_api}"
-puts "Total non-API cards: #{total_cards-total_api}"
+
+puts "Total files: #{ total_files }"
+puts "Total cards: #{ total_cards }"
+puts "Total API cards: #{ total_api }"
+puts "Total non-API cards: #{ total_cards-total_api }"
 
 

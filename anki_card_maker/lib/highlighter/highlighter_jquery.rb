@@ -1,21 +1,17 @@
 
 
+# TODO: Outdated!!!
 class JQueryHighlighter < BaseHighlighter
 
 
-  def initialize
-    super(HighlightersEnum::JQUERY)
-  end
-
-  def keywords_file() return 'keywords_js.txt'; end
+  def initialize() super(HighlightersEnum::JQUERY) end
+  def keywords_file() 'keywords_js.txt' end
   
-
   def comment_regex
-    /\/\/ .*|\/\*.*\*\/|&lt;!--.*--&gt;/
+    RegextrationStore::CommentBuilder.new.perl.c.html.build
   end
 
-  def string_regex() quote_both_regex end
-
+  def string_regex() RE_QUOTE_DOUBLE end
 
   def highlight_lang_specific(string_input)
     string_input.gsub!(/(\/\*[\d\D]\*\/)/, '<span class="comment">\1</span>')

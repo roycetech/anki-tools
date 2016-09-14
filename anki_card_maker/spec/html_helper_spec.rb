@@ -9,7 +9,7 @@ describe HtmlHelper do
 
     context 'given no tag, front, back cards' do
       
-      sut = HtmlHelper.new(BaseHighlighter.none, TagHelper.new([]), ['front'], ['back'])
+      sut = HtmlHelper.new(BaseHighlighter.lang_none, TagHelper.new([]), ['front'], ['back'])
       expected_front = ['<div class="main">','  front', '</div>']
       expected_back = ['<div class="main">','  back', '</div>']
 
@@ -26,7 +26,7 @@ describe HtmlHelper do
 
     context 'given EnumU with lines: one, two' do
       
-      sut = HtmlHelper.new(BaseHighlighter.none, 
+      sut = HtmlHelper.new(BaseHighlighter.lang_none, 
         TagHelper.new(['EnumU']), 
         ['front'], 
         ['one', 'two'])
@@ -48,7 +48,7 @@ describe HtmlHelper do
     context 'given PHP bugged ["```", if (true):", "// stmts", "endif;", "```"]' do
       input_array = ['```', 'if (true):', '// stmts', 'endif;', '```']
 
-      sut = HtmlHelper.new(BaseHighlighter.php, TagHelper.new([]), ['front'], 
+      sut = HtmlHelper.new(BaseHighlighter.lang_php, TagHelper.new([]), ['front'], 
         input_array)
 
       expected_back = [
@@ -66,51 +66,47 @@ describe HtmlHelper do
       end
     end
 
-    
+  end  # method #initialize
 
 
+  # describe '#line_to_html_raw' do
 
-  end
+  #   # dummy instance
+  #   sut = HtmlHelper.new(BaseHighlighter.none, TagHelper.new([]), ['front'], ['back'])
 
-
-  describe '#line_to_html_raw' do
-
-    # dummy instance
-    sut = HtmlHelper.new(BaseHighlighter.none, TagHelper.new([]), ['front'], ['back'])
-
-    context 'given "_hello_"' do
-      input_string = '_hello_'
+  #   context 'given "_hello_"' do
+  #     input_string = '_hello_'
       
-      it 'return "<i>hello</i>"' do
-        expect(sut.line_to_html_raw(input_string)).to eq('<i>hello</i>')
-      end
-    end
+  #     it 'return "<i>hello</i>"' do
+  #       expect(sut.line_to_html_raw(input_string)).to eq('<i>hello</i>')
+  #     end
+  #   end
 
-    context 'given "`code`"' do
-      input_string = '`code`'
+  #   context 'given "`code`"' do
+  #     input_string = '`code`'
       
-      it 'return "<code class="inline">code</code>"' do
-        expect(sut.line_to_html_raw(input_string)).to eq('<code class="inline">code</code>')
-      end
-    end
+  #     it 'return "<code class="inline">code</code>"' do
+  #       expect(sut.line_to_html_raw(input_string)).to eq('<code class="inline">code</code>')
+  #     end
+  #   end
 
-    context 'given "__hello__"' do
-      input_string = '__hello__'
+  #   context 'given "__hello__"' do
+  #     input_string = '__hello__'
       
-      it 'return "<b>hello</b>"' do
-        expect(sut.line_to_html_raw(input_string)).to eq('<b>hello</b>')
-      end
-    end
+  #     it 'return "<b>hello</b>"' do
+  #       expect(sut.line_to_html_raw(input_string)).to eq('<b>hello</b>')
+  #     end
+  #   end
 
-    context 'given "íhelloí"' do
-      input_string = 'íhelloí'
+  #   context 'given "íhelloí"' do
+  #     input_string = 'íhelloí'
       
-      it 'return "<i>hello</i>"' do
-        expect(sut.line_to_html_raw(input_string)).to eq('<i>hello</i>')
-      end
-    end
-
-  end
+  #     it 'return "<i>hello</i>"' do
+  #       expect(sut.line_to_html_raw(input_string)).to eq('<i>hello</i>')
+  #     end
+  #   end
 
 
-end
+  # end   # method #line_to_html_raw
+
+end  # HtmlHelper class

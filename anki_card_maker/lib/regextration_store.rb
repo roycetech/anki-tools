@@ -28,15 +28,13 @@ module RegextrationStore
     def sql() comment('@sql', RE_COMMENT_SQL); end
 
 
-    def build
-      return @regexp
-    end
+    def build() @regexp; end
 
 
     private
 
     def comment(flag_name, regexp)      
-      if !instance_variable_get(flag_name)
+      unless instance_variable_get(flag_name)
         if @regexp
           @regexp += regexp
         else
@@ -44,7 +42,7 @@ module RegextrationStore
         end
         instance_variable_set(flag_name, true)
       end
-      return self
+      self
     end
 
 

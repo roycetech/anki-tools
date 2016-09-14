@@ -3,9 +3,19 @@
 require 'simplecov'
 SimpleCov.start
 
+require './lib/assert'
+require 'active_support/concern'
+require 'active_support/inflector'
+
 require './lib/class_extensions'
 require './lib/tag_helper'
+
+require './lib/utils/regexp_utils'
+require './lib/utils/html_utils'
+require './lib/markdown'
+require './lib/wrappexter'
 require './lib/html_helper'
+
 require './lib/reviewer'
 require './lib/source_reader'
 require './lib/meta_reader'
@@ -77,7 +87,7 @@ class MainClass
         language = meta_map['lang']
         $logger.debug("Language: #{language}")
         if language
-          @@highlighter = @@highlighter.send(language.downcase)
+          @@highlighter = @@highlighter.send('lang_' + language.downcase)
         else
           @@highlighter = BaseHighlighter.none
         end

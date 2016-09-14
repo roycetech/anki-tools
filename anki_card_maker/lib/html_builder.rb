@@ -7,13 +7,12 @@ require './lib/style_builder'
 # no need for manual lf on styles.
 class HtmlBuilder
 
+  include HtmlUtils
 
   SpecialTags = %w(text lf space br style style_e)
   Tag_Span_E = 'span_e'
   Tag_BR = 'br'
 
-  BR = '<br>'
-  ESP = '&nbsp;'
   LF = "\n"
 
 
@@ -174,8 +173,6 @@ class HtmlBuilder
 
 
   def each_with_value
-    # copy = @tags.clone
-    # copy.each_index { |index| yield copy[index], copy[index] }
     @tags.each_index do |index|
       yield @tags[index], @values[index]
     end
