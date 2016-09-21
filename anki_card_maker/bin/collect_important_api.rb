@@ -19,20 +19,17 @@ class CollectImportantApi
 
     file_mask = '*.md'
     find_path(file_mask)
-    read_list()
-    $logger.info("Deckname: #{@deckname}")
-    generate_output_filename()
+    read_list
+    $logger.info("Deckname: #{ @deckname }")
+    generate_output_filename
     @@highlighter = BaseHighlighter
 
-    output_builder = ""
     total = 0
     main_list = []
     tag_counter = TagCounter.new
 
     Dir[File.join(@path, file_mask)].each do |filename|
-      if !filename.include?('README.md')
-
-        # $logger.info("Opening file: #{filename}")
+      unless filename.include?('README.md')
 
         File.open(filename, 'r') do |file|
 
@@ -42,20 +39,19 @@ class CollectImportantApi
 
           if @@highlighter.class == Class
             language = meta_map['lang']
-            $logger.debug("Language: #{language}")
-            if language
-              @@highlighter = @@highlighter.send(language.downcase)
+            $logger.debug("Language: #{language}")          
+            @@highlighter = if language
+              @@highlighter.send("lang_#{ language.downcase }")
             else
-              @@highlighter = BaseHighlighter.none
+              BaseHighlighter.lang_none
             end
           end
 
 
-          SourceReader.new(file).each_card do |tags, front, back|
-            
-            tags.push(common_tag) unless common_tag.nil?
+          SourceReader.new(file).each_card do |tags, front, back|            
+            tags.push(common_tag) if common_tag
             unticked = front[0].gsub('`', '') unless front[0].nil?
-            if front_included(unticked) || !tags.empty? && !(@list & tags).empty?
+            if front_included(unticked) || tags.any? && !(@list & tags).empty?
               write_card(main_list, front, back, tags)
 
               output = ""
@@ -64,8 +60,6 @@ class CollectImportantApi
               output += back[0]
               output += "\n\n\n"
 
-              # puts(output)
-              output_builder += output
               total += 1
             end
 
@@ -75,13 +69,10 @@ class CollectImportantApi
     end
 
     CSV.open(@@outputFilename, 'w', {:col_sep => "\t"}) do |csv|
-      main_list.each do |element|
-        csv << element
-      end
+      main_list.each { |element| csv << element }
     end
 
-    # $logger.info(output_builder)
-    $logger.info("Total: #{total}")
+    $logger.info("Total: #{ total }")
 
     RunSelenium.execute
   end
@@ -99,14 +90,8 @@ class CollectImportantApi
   end
 
   def front_included(front_card)
-    found = false
-    @list.each do |element|
-      if front_card[Regexp.new("\\b#{element}\\b")]
-        found = true
-        break
-      end
-    end
-    found
+    @list.each { |element| return true if front_card[/\b#{element}\b/] }
+    false
   end
 
 
@@ -115,22 +100,20 @@ class CollectImportantApi
     finder = LatestFileFinder.new('/Users/royce/Dropbox/Documents/Reviewer', file_mask)
     finder.find
     @path = finder.latest_folder
-    $logger.debug("Path: #{@path}")
+    $logger.debug("Path: #{ @path }")
   end
 
 
   def read_list
 
     @list = []
-    File.open( "#{@path}/Zimportant.lst", 'r' ) do |file|
+    File.open( "#{ @path }/Zimportant.lst", 'r' ) do |file|
 
       meta_map = MetaReader.read(file)
       @deckname = meta_map['filename']
 
-      while line = file.gets
-        if line[0] != '#' && !line.chomp.empty?
-          @list.push(line.strip)
-        end
+      while line = file.gets        
+        @list.push(line.strip) if line[0] != '#' && !line.chomp.empty?
       end
     end
   end
@@ -154,7 +137,7 @@ class CollectImportantApi
         if count == 1
           tag
         else
-          "#{tag}(#{count})"
+          "#{ tag }(#{ count })"
         end
       end
 

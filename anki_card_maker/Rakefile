@@ -17,14 +17,21 @@ task :run do
 end
 
 
+# To run: "rake rspec[./lib/myruby.rb]"
+task :rspec, [:filename] do |t, args|
+  puts "Args were: #{ args }"
+  ruby "./bin/spec_maker.rb #{ args[:filename] }"
+end
+
+
 task :runpload do
   ruby "./bin/main_class.rb upload"
 end
 
 
 task :multi, [:wildcard] do |t, args|
-  puts "Args were: #{args}"
-  ruby "./bin/main_class.rb #{args[:wildcard]}";
+  puts "Args were: #{ args }"
+  ruby "./bin/main_class.rb #{ args[:wildcard] }";
 end
 
 

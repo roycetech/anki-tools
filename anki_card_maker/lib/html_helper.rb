@@ -15,6 +15,7 @@ require './lib/cmd_detector'
 class HtmlHelper
   include HtmlUtils
 
+
   attr_reader :front_html, :back_html
 
 
@@ -33,7 +34,7 @@ class HtmlHelper
     style_helper.apply_code(builder_front) if CodeDetector.has_code? front_array
     style_helper.apply_answer_only(builder_front) if tag_helper.is_back_only?
     style_helper.apply_answer_only(builder_back) if tag_helper.is_front_only?
-    style_helper.apply_command(builder_front) if tag_helper.command?
+    # style_helper.apply_command(builder_front) if tag_helper.command?
     style_helper.apply_figure(builder_back) if tag_helper.figure?
 
     builder_front = builder_front.style_e
@@ -119,7 +120,7 @@ class HtmlHelper
   def build_tags(card)
     first = true
     tags_html = HtmlBuilder.new
-    @tag_helper.find_multi(card)
+    @tag_helper.index_enum(card)
     @tag_helper.visible_tags.each do |tag|
       tags_html.space unless first
       tags_html.span(:tag).text(tag).span_e

@@ -5,10 +5,7 @@
 
 module Markdown
 
-
-  extend ActiveSupport::Concern
   include HtmlUtils
-
 
   BOLD = {
     regexp: /(_{2}|\*{2})(.*?)\1/,
@@ -16,13 +13,30 @@ module Markdown
   }
 
   ITALIC = {
-    regexp: /\b([_\*í])(?!\1)((?:\\\1|[^\1])+?)\1/,
+    regexp: /(?<!\\)([_*])((?:(?:\\\1)|[^\1])+?)\1/,
     lambda: ->(token, regexp) { "<i>#{ token[regexp, 2] }</i>" }
   }
 
-  NUMBER = {               
-    regexp: /(?<=\s|\()[+-]?(?:[1-9]\d*|0)(?:\.\d+)?(?!-|\.|\d|,\d)/,
-    lambda: ->(token, regexp) { %(<span class="num">#{ token }</span>) }
-  }
+  # NUMBER = {               
+  #   regexp: /(?<=\s|\()[+-]?(?:[1-9]\d*|0)(?:\.\d+)?(?!-|\.|\d|,\d)/,
+  #   # lambda: ->(token, regexp) { %(<span class="num">#{ token }</span>) }
+  #   lambda: ->(token, regexp) { self.wrap(:span, :num, token) }
+  # }
+
+  def NUMBER(key=nil)
+    hash = {
+      regexp: /(?<=\s|\()[+-]?(?:[1-9]\d*|0)(?:\.\d+)?(?!-|\.|\d|,\d)/,
+      lambda: ->(token, regexp) { self.wrap(:num, token) }
+    }
+
+    return hash[key] if key
+    hash
+  end
+
+  # def remove_backslash!(input_string)
+  #   parser = SourceParser.new
+  #   parser.regexter('escaped', /\\(.)/, ->(token, regexp) { $1 })
+  #   input_string.replace(parser.parse(input_string))
+  # end
 
 end

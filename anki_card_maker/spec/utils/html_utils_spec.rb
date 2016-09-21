@@ -12,7 +12,7 @@ describe HtmlUtils do
       input1 = 'Hello World'
       context %Q(given "#{ input1 }") do
         expected = input1.clone
-        it %Q(returns "#{ expected} ") do
+        it %Q(returns "#{ expected } ") do
           expect(sut.escape_spaces(input1)).to eq(expected) 
         end
       end
@@ -20,7 +20,7 @@ describe HtmlUtils do
       input2 = '  <span class="quote">'
       context %Q(given "#{ input2 }") do
         expected = '&nbsp;&nbsp;<span class="quote">'
-        it %Q(returns "#{ expected} ") do
+        it %Q(returns "#{ expected } ") do
           expect(sut.escape_spaces(input2)).to eq(expected) 
         end
       end
@@ -28,7 +28,7 @@ describe HtmlUtils do
       input3 = '</span>  <span class="quote">'
       context %Q(given "#{ input3 }") do
         expected = '</span>&nbsp;&nbsp;<span class="quote">'
-        it %Q(returns "#{ expected} ") do
+        it %Q(returns "#{ expected } ") do
           expect(sut.escape_spaces(input3)).to eq(expected) 
         end
       end
@@ -52,7 +52,7 @@ describe HtmlUtils do
       input1 = 'Hello World'
       context %Q(given "#{ input1 }") do
         expected = input1.clone
-        it %Q(returns "#{ expected} ") do
+        it %Q(returns "#{ expected } ") do
           sut.escape_spaces!(input1)
           expect(input1).to eq(expected) 
         end
@@ -61,7 +61,7 @@ describe HtmlUtils do
       input2 = '  <span class="quote">'
       context %Q(given "#{ input2 }") do
         expected = '&nbsp;&nbsp;<span class="quote">'
-        it %Q(returns "#{ expected} ") do
+        it %Q(returns "#{ expected } ") do
           sut.escape_spaces!(input2)
           expect(input2).to eq(expected) 
         end
@@ -70,7 +70,7 @@ describe HtmlUtils do
       input3 = '</span>  <span class="quote">'
       context %Q(given "#{ input3 }") do
         expected = '</span>&nbsp;&nbsp;<span class="quote">'
-        it %Q(returns "#{ expected} ") do
+        it %Q(returns "#{ expected } ") do
           sut.escape_spaces!(input3)
           expect(input3).to eq(expected) 
         end

@@ -7,7 +7,9 @@ require './lib/regextration_store'
 # keyword list and line comment markers.
 class BaseHighlighter 
 
+
   include Wrappexter, Markdown, RegexpUtils
+
 
   @@html_class = '<span class="%{klass}">%{word}</span>'
   class << @@html_class
@@ -32,14 +34,14 @@ class BaseHighlighter
   end
 
   # Define here if it don't follow standard naming.
-  def self.jquery() return JQueryHighlighter.new; end
-  def self.csharp() return CSharpHighlighter.new; end
+  def self.jquery() JQueryHighlighter.new end
+  def self.csharp() CSharpHighlighter.new end
 
 
   attr_reader :type
 
   def initialize(type)
-    $logger.debug "Highlighter: #{self.class}" 
+    # $logger.debug "Highlighter: #{ self.class }" 
 
     @parser = SourceParser.new
     @type = type  # initialized by subclass
@@ -71,6 +73,7 @@ class BaseHighlighter
     end
 
     regexter_singles(@parser)
+    @parser.regexter('escaped', /\\(.)/, ->(token, regexp) { token[regexp, 1] })
   end
   private :initialize
 
@@ -79,27 +82,18 @@ class BaseHighlighter
   def regexter_blocks(parser) end
   def regexter_singles(parser) end
 
-
-  # @Abstract 
-  def keywords_file
-    # raise NotImplementedError, 'You must implement the keywords_file method'
-  end
-
+  def keywords_file() end
 
   # Subclass should return regex string
-  def comment_regex
-    raise NotImplementedError, 'You must implement the comment_regex method'
-  end
-
+  def comment_regex() abstract end
 
   # Subclass should return regex string for string literals
-  def string_regex
-    raise NotImplementedError, 'You must implement the string_regex method'
-  end
+  def string_regex() abstract end
 
   def highlight_all(input_string)
     input_string.replace(@parser.format(input_string))  
-    escape_spaces(input_string)
+    escape_spaces!(input_string)
+    input_string
   end
 
 end

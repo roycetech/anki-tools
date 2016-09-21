@@ -4,14 +4,10 @@
 # regexp name will serve as better ID for readability.
 class SourceParser
 
-  include Assert
-
 
   def initialize
-
     @regexp_lambda = {}
     @regexp_name = {}
-
   end
 
 
@@ -22,20 +18,9 @@ class SourceParser
   end
 
 
-  # def token_snatcher(parser, description, regexp )
-  #   parser.regexter(description, regexp, ->(token, regexp) { token })
-  # end
-
-
-  # # Convenience method to match a regular expression, but does not make any modifications
-  # def snatch()
-  #   description, regexp
-  # end
-
-
   def parse(text)
 
-    assert @regexp_name.any?, 'You must regexter a lambda to handle a regexp match'
+    assert @regexp_name.any?, message: 'You must regexter a lambda to handle a regexp match'
 
     processed_array = [text]
     processedflag_array = [false]
@@ -83,10 +68,7 @@ class SourceParser
       end  # array loop
 
     end while(found)
-
-    processed_array.inject('') do |result, element|
-       result += element
-     end
+    processed_array.inject('') { |result, element| result += element }
   end
 
   alias_method :format, :parse
@@ -130,25 +112,11 @@ class SourceParser
   #   array[0].empty? && !array[1].empty? && array[2].empty?
   # end
 
-  def partition_missed(array)
-    _partition_common(array, false, true, true)
-  end
-
-  def partition_begin(array)
-    _partition_common(array, true, false, false)
-  end
-
-  def partition_mid(array)
-    _partition_common(array, false, false, false)
-  end
-
-  def partition_end(array)
-    _partition_common(array, false, false, true)
-  end
-
-  def partition_all(array)
-    _partition_common(array, true, false, true)
-  end
+  def partition_missed(array)  _partition_common(array, false, true, true) end
+  def partition_begin(array) _partition_common(array, true, false, false) end
+  def partition_mid(array) _partition_common(array, false, false, false) end
+  def partition_end(array) _partition_common(array, false, false, true) end
+  def partition_all(array) _partition_common(array, true, false, true) end
 
   # pass false if it is !empty?
   def _partition_common(array, bon, boo, bri)

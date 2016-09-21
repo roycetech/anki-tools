@@ -10,7 +10,7 @@ class Code
 
 
   def initialize(highlighter)
-    @highlighter = highlighter;
+    @highlighter = highlighter
   end
 
 
@@ -29,7 +29,7 @@ class Code
       highlighted_string = highlight_code(string_array)
       re = /<div class="well"><code>([\d\D]*)<\/code><\/div>/
       if highlighted_string =~ re
-        assert !highlighted_string[re, 1].empty?, "Highlight must not be empty!"
+        assert !highlighted_string[re, 1].empty?, message: "Highlight must not be empty!"
       end
 
       html_builder.br if highlighted_string.lstrip =~ /\w|<code/ and html_builder.build.strip.end_with? '/span>'
@@ -69,10 +69,8 @@ class Code
       line.chomp!
       inline.execute!(line)
       escape_spaces(line)
-      # line.gsub('  ', HtmlBuilder::ESP * 2)
     end
-
-    return string_list
+    string_list
   end
 
 
@@ -81,10 +79,10 @@ class Code
     string_block = string_list.join("\n")
 
     string_block.gsub!(RE_WELL) do |token|
-      inside = token[RE_WELL,3]
+      inside = token[RE_WELL, 3]
 
       inside.strip!.gsub!("\n", "<br>\n")
-      %Q(<div class="well"><code>\n#{inside}\n  </code></div>)
+      %Q(<div class="well"><code>\n#{ inside }\n  </code></div>)
     end
 
     string_list.replace(string_block.lines.collect {|element| element.rstrip})

@@ -9,13 +9,12 @@ class MetaReader
     return_value = {}
     while line = file.gets
       line.rstrip!
-
       if line[0, 3] == '# @'
-        key = line[/(?:@)(\w*)/, 1].downcase
+        key = line[/(?:@)(\w*)/, 1].downcase.to_sym
         value = line[/(?:=)(.*)/, 1]
         return_value[key] = value
       end
-      break if line[0, 1] != '' and line[0, 1] != '#';
+      break unless line[0, 1].empty? || line[0, 1] == '#';
     end
     file.rewind
     return_value

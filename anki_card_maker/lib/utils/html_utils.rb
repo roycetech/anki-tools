@@ -2,9 +2,6 @@
 module HtmlUtils
 
 
-  extend ActiveSupport::Concern
-
-
   BR = '<br>'
 
   # Escaped tokens

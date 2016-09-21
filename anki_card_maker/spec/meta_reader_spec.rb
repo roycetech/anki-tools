@@ -9,7 +9,7 @@ describe MetaReader do
       File.open(input_filename, 'r') do |file|
         mfile = double('file')
         meta_map = MetaReader.read(file)
-        expect(meta_map['lang']).to eq('js')      
+        expect(meta_map[:lang]).to eq('js')      
       end
     end
 

@@ -1,7 +1,4 @@
-require './spec/spec_helper'
-
 describe HtmlHelper do
-
   
   describe '#initialize' do
 
@@ -9,7 +6,7 @@ describe HtmlHelper do
 
     context 'given no tag, front, back cards' do
       
-      sut = HtmlHelper.new(BaseHighlighter.lang_none, TagHelper.new([]), ['front'], ['back'])
+      sut = HtmlHelper.new(BaseHighlighter.lang_none, TagHelper.new(tags: []), ['front'], ['back'])
       expected_front = ['<div class="main">','  front', '</div>']
       expected_back = ['<div class="main">','  back', '</div>']
 
@@ -24,10 +21,10 @@ describe HtmlHelper do
 
     end
 
-    context 'given EnumU with lines: one, two' do
+    context 'given EnumU with lines: [one, two]' do
       
       sut = HtmlHelper.new(BaseHighlighter.lang_none, 
-        TagHelper.new(['EnumU']), 
+        TagHelper.new(tags: [:'EnumU']), 
         ['front'], 
         ['one', 'two'])
       
@@ -48,7 +45,7 @@ describe HtmlHelper do
     context 'given PHP bugged ["```", if (true):", "// stmts", "endif;", "```"]' do
       input_array = ['```', 'if (true):', '// stmts', 'endif;', '```']
 
-      sut = HtmlHelper.new(BaseHighlighter.lang_php, TagHelper.new([]), ['front'], 
+      sut = HtmlHelper.new(BaseHighlighter.lang_php, TagHelper.new(tags: []), ['front'], 
         input_array)
 
       expected_back = [

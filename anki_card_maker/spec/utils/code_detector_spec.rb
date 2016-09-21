@@ -1,5 +1,3 @@
-require './spec/spec_helper'
-
 describe CodeDetector do
 
   describe '.has_code' do
@@ -31,7 +29,6 @@ describe CodeDetector do
         expect(CodeDetector::has_code?(input4)).to eq(true) 
       end
     end
-    
 
   end  # method
 end  # class

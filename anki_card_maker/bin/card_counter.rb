@@ -19,16 +19,12 @@ total_files = 0
 total_api = 0
 
 Dir[File.join(path, file_mask)].each do |filename|
-  if filename.end_with? '.md' or filename.end_with? '.api'
+  if filename =~ /\.(?:md|api)$/m
     total_files += 1
     File.open(filename, 'r') do |file|
       card_count = 0
-      SourceReader.new(file).each_card do |tags, front, back|
-        card_count += 1
-      end
-
+      SourceReader.new(file).each_card { |tags, front, back| card_count += 1 }
       total_api += card_count if filename.include?'-API-'
-
       puts "#{ filename }: #{ card_count }"
       total_cards += card_count
     end

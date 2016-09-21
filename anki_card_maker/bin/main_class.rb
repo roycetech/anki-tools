@@ -10,6 +10,7 @@ require 'active_support/inflector'
 require './lib/class_extensions'
 require './lib/tag_helper'
 
+require './lib/utils/oper_utils'
 require './lib/utils/regexp_utils'
 require './lib/utils/html_utils'
 require './lib/markdown'
@@ -89,7 +90,7 @@ class MainClass
         if language
           @@highlighter = @@highlighter.send('lang_' + language.downcase)
         else
-          @@highlighter = BaseHighlighter.none
+          @@highlighter = BaseHighlighter.lang_none
         end
 
         SourceReader.new(file).each_card do |tags, front, back|
@@ -143,11 +144,11 @@ class MainClass
 
       re_styleless = /<div[\d\D]*/m
 
-      $logger.debug("Front: \n" + lst[0] + "\n\n")
-      $logger.debug("Back: \n" + lst[1] + "\n\n")
+      # $logger.debug("Front: \n" + lst[0] + "\n\n")
+      # $logger.debug("Back: \n" + lst[1] + "\n\n")
 
-      # $logger.debug("Front: \n" + lst[0][re_styleless] + "\n\n")
-      # $logger.debug("Back: \n" + lst[1][re_styleless] + "\n\n")
+      $logger.debug("Front: \n" + lst[0][re_styleless] + "\n\n")
+      $logger.debug("Back: \n" + lst[1][re_styleless] + "\n\n")
 
 
       # $logger.debug("Tag: \n" + lst[2] + "\n\n")

@@ -1,22 +1,23 @@
-require './spec/spec_helper'
-
 describe BaseHighlighter do
   describe '#initialize' do
 
-    sut = BaseHighlighter.lang_none
+    subject(:base_none) { BaseHighlighter.lang_none }
 
-    context 'given "hello _robin_!" ' do
-      input_string = 'hello _robin_!'
-      it 'returns "hello <i>robin<i>!"' do
-        expect(sut.highlight_all(input_string)).to eq('hello <i>robin</i>!')
+    describe 'bolds text' do
+      example 'wrapped in **text**'  do
+        expect(base_none.highlight_all('**text**')).to eq('<b>text</b>')  
       end
+      example 'wrapped in __text__'  do
+        expect(base_none.highlight_all('__text__')).to eq('<b>text</b>')  
+      end
+    end
 
-    end 
-
-    context 'given "bye **robin**!" ' do
-      input_string = 'bye **robin**!'
-      it 'returns "bye <b>robin</b>!"' do
-        expect(sut.highlight_all(input_string)).to eq('bye <b>robin</b>!')
+    describe 'italizes text' do
+      example 'wrapped in *text*'  do
+        expect(base_none.highlight_all('*text*')).to eq('<i>text</i>')  
+      end
+      example 'wrapped in _text_'  do
+        expect(base_none.highlight_all('_text_')).to eq('<i>text</i>')  
       end
     end
 

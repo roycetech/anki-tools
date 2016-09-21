@@ -1,14 +1,8 @@
 class CmdDetector
 
   def self.has_cmd?(array)
-    return_value = false
-    array.each do |item|
-      if item =~ /^\$.*/
-        return_value = true
-        break
-      end 
-    end
-    return_value
+    array.each { |item| return true if item =~ /^\$.*/ }
+    false
   end
 
 end

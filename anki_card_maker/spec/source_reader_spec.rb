@@ -1,6 +1,3 @@
-require './spec/spec_helper'
-
-
 describe SourceReader do
 
   describe "#each_card" do

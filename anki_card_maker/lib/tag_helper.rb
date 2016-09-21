@@ -1,94 +1,110 @@
+require './lib/utils/oper_utils'
+
+# unit tested
 class TagHelper
 
+  include OperUtils
+  
+  HIDDEN = %i[FB BF]  
+  FRONT_ONLY = %i[FB Enum Practical Bool Abbr Syntax EnumU EnumO Terminology]
 
-  HIDDEN = %w(FB\ Only BF\ Only Code(Front))
-  FRONT_ONLY = %w[FB\ Only Enum Practical Bool Abbr Syntax EnumU EnumO Terimnology]
+
+  attr_reader :front_only, :back_only
 
 
-  def initialize(tags)
-    @tags = tags.clone
+  def initialize(tags: nil, tag_line: nil)
+    
+    assert xor(tags, tag_line), message: 'Must set either :tags or :tag_line but not both'
 
-    @enum = @tags.select do |tag|
-      ['EnumO', 'EnumU'].include? tag
-    end.first()
+    @tags = TagHelper.parse(tag_line) if tag_line
+    
+    if tags
+      @tags = tags.clone if tags
+      @tags.each do |item|
+        assert item.class == Symbol, message: 'Should be array of symbols, not strings'
+      end
+    end
 
-    @front_only = @tags.select do |tag|
-      FRONT_ONLY.include? tag
-    end.size > 0
 
-    @back_only = @tags.include? 'BF Only'
+    @enum = @tags.select { |tag| [:EnumO, :EnumU].include? tag }.first
+
+    @front_only = @tags.select { |tag| FRONT_ONLY.include? tag }.size > 0
+    @back_only = @tags.include? :BF
   end
 
+
   def self.parse(string)
-    return string[7..-1].split(',').collect do |element|
-      element.strip
+    string[/@Tags: (.*)/, 1].split(',').collect do |element|
+      element.strip.to_sym
     end
   end
 
-  def find_multi(card)
-    if has_enum?
 
-      if ol?
-        multi_tag = 'EnumO:%s' % card.size
-      elsif ul?
-        multi_tag = 'EnumU:%s' % card.size
-      end
+  def index_enum(card)
+    if has_enum?
+      multi_tag = "Enum#{ol? ? 'O' : 'U' }:#{card.size}".to_sym
           
-      if !@tags.include? multi_tag
+      unless @tags.include? multi_tag
         @tags.push(multi_tag)
         @tags.delete(@enum)
       end
     end
   end
 
+
   def add(tag)
-    @tags.push tag if not @tags.include? tag
+    @tags.push tag unless @tags.include? tag
   end
+
 
   def include?(tag)
-    return @tags.include? tag
+    @tags.include? tag
   end
 
+
   def one_sided?
-    is_front_only? or is_back_only?
+    @front_only or @back_only
   end
+
 
   def is_front_only?
     @front_only
   end
 
+
   def is_back_only?
     @back_only
   end
 
-  def command?
-    @tags.include? 'Command'
-  end
 
   def visible_tags
-    @tags.select do |tag|
-      !HIDDEN.include? tag
-    end
+    @tags.select { |tag| !HIDDEN.include? tag }
   end
+
 
   def figure?
-    @tags.include? 'Figure ☖'
+    @tags.include? :'Figure ☖'
   end
+
 
   def ol?
-    @enum == 'EnumO'
+    @enum == :EnumO
   end
+
 
   def ul?
-    @enum == 'EnumU'
+    @enum == :EnumU
   end
 
-  def untagged?
-    return visible_tags.empty?
-  end
+
+  # def untagged?
+  #   visible_tags.empty?
+  # end
+
 
   def has_enum?
-    return (ul? or ol?)
+    ul? or ol?
   end
+
 
 end

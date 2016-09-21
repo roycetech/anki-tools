@@ -56,15 +56,13 @@ class HtmlBuilder
         @values.push(builder.value)
         @styled = true
       end
-      # return self
-      return StyleBuilder.new(self)
-
+      StyleBuilder.new(self)
     elsif builder.is_a? HtmlBuilder
       raise 'Second builder cannot have a style' if builder.styled
 
       @styled ||= builder.styled
       
-      unless @tags.last == 'lf' or @tags.last == 'br'
+      unless @tags.last == 'lf' || @tags.last == 'br'
         @tags.push('lf')
         @values.push nil
       end
@@ -73,7 +71,7 @@ class HtmlBuilder
         @tags.push(tag)
         @values.push(value)
       end
-      return builder
+      builder
     end 
   end
 
@@ -87,7 +85,7 @@ class HtmlBuilder
     last_lfed = false  # last tag invoked new line
 
     self.each_with_value do |tag, value|
-
+      value = value.to_s if value
       is_open_tag = !tag.include?('_')
       unless SpecialTags.include?(tag)
         do_indent = level > 0  && last_lfed
@@ -100,44 +98,34 @@ class HtmlBuilder
         end
       end
 
-      if tag == 'text' and last_lfed and not last_tag == 'pre'
+      if tag == 'text' && last_lfed && last_tag != 'pre'
         return_value += ' ' * (2 * level)
       end
       
       
-      case tag
-      when 'input' then
-        return_value += '<input type="text">' + LF
-      when 'space' then
-        return_value += ESP
-      when 'lf' then
-        return_value += LF
-      when 'br' then
+      return_value += case tag
+      when 'space' then ESP
+      when 'lf' then LF
+      when 'br'
         return_value.chomp! unless return_value.end_with?(BR + LF)
-        return_value += BR + LF
-      when 'text' then
-        return_value += value
-      when 'style' then
-        return_value += "<style>\n" + value
+        BR + LF
+      when 'text' then value
+      when 'style' then "<style>\n" + value
       else
-
         if is_open_tag
-          klass = ' class="%s"' % value if value
-          return_value += '<%{tag}%{klass}>' % {tag: tag, klass: klass }
-          tag_name = tag
+          klass = %Q( class="#{ value }") if value
+          "<#{ tag }#{ klass }>"
         else
-          tag_name = tag[0...tag.index('_')]
-          return_value += '</%s>' % tag_name
+          "</#{ tag[/[a-z]+/] }>"  # span_e => span
         end
-
       end
 
       last_tag = tag unless SpecialTags.include?(tag)
-      last_lfed = %q(lf br).include?(tag)
+      last_lfed = %w(lf br).include?(tag)
 
     end  # each loop
 
-    return return_value
+    return_value
   end
   
 
@@ -146,7 +134,7 @@ class HtmlBuilder
     if args.length <= 1
       @tags.push(meth.to_s)
       is_end_tag = meth.to_s.include?('_e')
-      if is_end_tag and args.empty?
+      if is_end_tag && args.empty?
         @values.push(true)
       else
         @values.push(args[0])
@@ -155,27 +143,27 @@ class HtmlBuilder
       @last_tag = meth.to_s unless SpecialTags.include? meth.to_s
       @last_element = meth.to_s unless ['lf', 'space'].include? meth.to_s
 
-      return self
+      self
     else
       super
     end    
   end
 
-  def size() return @values.size; end
+
+  def size() @values.size end
+
 
   def insert(tag, value=nil)
     @tags.insert(0, tag)
     @values.insert(0, value)
-    return self
+    self
   end
+
 
   protected
 
-
   def each_with_value
-    @tags.each_index do |index|
-      yield @tags[index], @values[index]
-    end
+    @tags.each_index { |index| yield @tags[index], @values[index] }
   end
 
 end
