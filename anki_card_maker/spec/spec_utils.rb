@@ -1,3 +1,6 @@
+require './lib/utils/html_utils'
+
+
 module SpecUtils
 
   include HtmlUtils

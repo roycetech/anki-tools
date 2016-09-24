@@ -1,4 +1,6 @@
 require './lib/utils/oper_utils'
+require './lib/assert'
+
 
 # unit tested
 class TagHelper
@@ -9,9 +11,10 @@ class TagHelper
   FRONT_ONLY = %i[FB Enum Practical Bool Abbr Syntax EnumU EnumO Terminology]
 
 
-  attr_reader :front_only, :back_only
+  attr_reader :front_only, :back_only, :tags
 
 
+  # tags - list of Symbols 
   def initialize(tags: nil, tag_line: nil)
     
     assert xor(tags, tag_line), message: 'Must set either :tags or :tag_line but not both'
@@ -33,6 +36,7 @@ class TagHelper
   end
 
 
+  # parses a comma separated tags into array of tag symbols
   def self.parse(string)
     string[/@Tags: (.*)/, 1].split(',').collect do |element|
       element.strip.to_sym
@@ -40,9 +44,9 @@ class TagHelper
   end
 
 
-  def index_enum(card)
+  def index_enum(back_card)
     if has_enum?
-      multi_tag = "Enum#{ol? ? 'O' : 'U' }:#{card.size}".to_sym
+      multi_tag = "Enum#{ol? ? 'O' : 'U' }:#{back_card.size}".to_sym
           
       unless @tags.include? multi_tag
         @tags.push(multi_tag)
@@ -97,9 +101,9 @@ class TagHelper
   end
 
 
-  # def untagged?
-  #   visible_tags.empty?
-  # end
+  def untagged?
+    tags.empty?
+  end
 
 
   def has_enum?

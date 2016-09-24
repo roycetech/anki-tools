@@ -3,6 +3,13 @@ describe TagHelper do
 
   describe "#initialize" do
 
+    describe 'empty tags' do
+      subject { TagHelper.new(tags: []) }
+      it 'is untagged' do
+        expect(subject.untagged?).to be true
+      end
+    end
+
     it 'accepts :tags parameter' do
       expect { TagHelper.new(tags: [:Concept]) }.not_to raise_error
     end

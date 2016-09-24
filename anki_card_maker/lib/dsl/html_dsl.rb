@@ -5,15 +5,18 @@ class HTMLDSL
   LF = "\n"  # Used only to alias, not to dry.
 
   # single for single-line
-  def initialize (tag_name = 'html', attrs={}, level=0, single = false, first=false, &block)
+  # options to hold single style classes.
+  def initialize (element_name = 'html', options: nil, level: 0, single: false, first: false, &block)
     @level = level
-    @tag_name = tag_name
-    @attrs = attrs || {}
+    @element_name = element_name
+    @class = options || {}
     @contents = []
-    if attrs && attrs[:text]
-      @contents << attrs[:text]
-      attrs.delete(:text)
+
+    if options && @class[:text]
+      @contents << @class[:text]
+      @class.delete(:text)
     end
+
     self.instance_eval(&block) if block
     @single = single
     @first = first
@@ -25,22 +28,34 @@ class HTMLDSL
   end
 
 
-  def merge(html_text)
-    @contents << "\n#{indent(1)}#{ html_text }"
+  # allows repeating of elements
+  def times(count, &block)
+    count.times { |i|
+      yield(i)
+    }
   end
+
+
+  def merge(html_text)
+    @contents << "#{indent(1)}#{ html_text }\n"
+  end
+
 
   def indent(i) "#{'  ' * i}" end
 
 
   def method_missing (name, *args, &block)
+    
+    attrs = HTMLDSL.parse(*args)
+
     @contents << if block
-      HTMLDSL.build(name, {:class => args[0]}, @level + 1, false, @contents.empty?, &block)
+      HTMLDSL.build(name, options: attrs, level: @level + 1, single: false, first: @contents.empty?, &block)
     elsif name == :br
-      HTMLDSL.build(name, nil, @level + 1, false, @contents.empty?, &block)
+      HTMLDSL.build(name, level: @level + 1, single: false, first: @contents.empty?, &block)
     else
       proc = Proc.new { text args.last }
-      class_opt = args[0] && {:class => args[0]}
-      HTMLDSL.build(name, class_opt, @level + 1, true, @contents.empty?, &proc)
+      class_opt = args[0] && args[0].class.to_s == 'Symbol' && {:class => args[0]}
+      HTMLDSL.build(name, options: class_opt, level: @level + 1, single: true, first: @contents.empty?, &proc)
     end
   end
 
@@ -52,64 +67,83 @@ class HTMLDSL
 
 
   def to_s
-    attrs = if @attrs.empty?
+    attrs = if @class.empty?
       ""
     else
-      @attrs.map {|k, v| %Q<#{k}="#{v}"> } .join(" ")
+      @class.map {|k, v| %Q<#{k}="#{v}"> } .join(" ")
     end
 
-    tag = "#{ indent(@level) }<#{@tag_name}#{ " " unless attrs.empty? }#{ attrs }>"  
+    tag = "#{ indent(@level) }<#{@element_name}#{ " " unless attrs.empty? }#{ attrs }>"  
 
-    return "\n#{tag}" if LEAF_TAGS.include?(@tag_name.to_sym) && !@first
-    return "#{tag}" if LEAF_TAGS.include?(@tag_name.to_sym)
+    return "#{tag}\n" if LEAF_TAGS.include?(@element_name.to_sym) && !@first
+    return "#{tag}" if LEAF_TAGS.include?(@element_name.to_sym)
 
     if @contents.empty? or @single      
-      output = "#{tag}#{ @contents.join(LF).strip }</#{@tag_name}>" 
+      output = "#{tag}#{ @contents.join(LF).strip }</#{@element_name}>\n"
       return output unless @single
-      
-      # puts(">>> #@tag_name #@child #@single")
-
-      "#{output}"
+            "#{output}"
     else
 <<-HD.chomp
 #{tag}
-#{@contents.join}
-#{indent(@level)}</#{@tag_name}>
+#{@contents.join.rstrip}
+#{indent(@level)}</#{@element_name}>\n
 HD
     end
   end
+
+
+  def self.parse(*args)
+
+    param1 = args[0] unless args.empty?
+    param2 = args[1] unless args.length < 2
+
+    attrs = {} if param1 or param2
+
+    if param1.class.to_s == 'Symbol'
+      attrs = param1 && { :class => param1 }
+
+      if param2.class.to_s == 'String'
+        attrs[:text] = param2 if param2
+      end
+
+    elsif param1.class.to_s == 'String'
+      attrs[:text] = param1
+    end
+    attrs
+
+  end
+
 end
 
 
 # text is available only for single liner.
-def html(element_name, klass=nil, text=nil, &block)
-  attrs = klass && { :class => klass }
-  attrs[:text] = text if text
-  single = true if text
-  HTMLDSL.new(element_name, attrs, 0, single, &block).to_s
+def html(element_name, param1=nil, param2=nil, &block)
+  attrs = HTMLDSL.parse(param1, param2)
+  single = true if param1.class.to_s == 'String' or param2.class.to_s == 'String'
+  HTMLDSL.new(element_name, options: attrs, level: 0, single: single, &block).to_s.strip
 end
 
 
-one_liner = html :span, :answer, 'Answer Only'
 
-html1 = html :div, :main do
-  code :well do
-    text 'pass'
-  end
-  br
-  merge(one_liner)
-end.to_s
+# output1 = html :div, :main do
+#   div :tags do
+#     times(3) { |i| span :"cls#{i}", "Tag#{i}" }
+#   end
+#   ul do
+#     times(4) { |i| li "list#{i}" }
+#   end
+#   br
+#   span :tag3, "one"
+#   span :tag, "one"
+#   merge('<h1>merged portion</h1>')
+#   span "two"
+# end
 
-puts(html1)
-
-
-html2 = html :div, :main do
-  hr
-  # two do
-  #   text 'f'
-  # end
-end.to_s
-
-puts(html2)
+# puts(output1)
 
 
+# output2 = html :div, 'yo'
+# puts(output2)
+
+# output3 = html :div, :single, 'yo'
+# puts(output3)

@@ -1,5 +1,6 @@
 # This file contains extensions to exisitng classes.
 require './lib/utils/oop_utils'
+require './lib/assert'
 
 
 # Allow Regexp to be concatenated with +

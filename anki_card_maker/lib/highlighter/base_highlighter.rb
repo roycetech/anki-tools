@@ -1,5 +1,17 @@
-require './lib/highlighter/keyword_highlighter'
+require './lib/wrappexter'
+require './lib/markdown'
 require './lib/regextration_store'
+require './lib/highlighter/keyword_highlighter'
+require './lib/highlighter/highlighters_enum'
+require './lib/utils/regexp_utils'
+require './lib/source_parser'
+
+require 'active_support/inflector'
+
+# requires reviewed Sept 23, 2016
+
+
+
 # NOTE: Highlighter implementing classes "requires" at the bottom of this file.
 
 
@@ -9,6 +21,9 @@ class BaseHighlighter
 
 
   include Wrappexter, Markdown, RegexpUtils
+
+
+  attr_reader :type
 
 
   @@html_class = '<span class="%{klass}">%{word}</span>'
@@ -38,8 +53,6 @@ class BaseHighlighter
   def self.csharp() CSharpHighlighter.new end
 
 
-  attr_reader :type
-
   def initialize(type)
     # $logger.debug "Highlighter: #{ self.class }" 
 
@@ -59,7 +72,7 @@ class BaseHighlighter
 
     regexter_blocks(@parser)
 
-    string_lambda = ->(token, regex) { @@html_class.quote(token) }
+    string_lambda = ->(token, regex) { wrap(:quote, token) }
     @parser.regexter('strings', string_regex, string_lambda)
 
     
@@ -67,9 +80,8 @@ class BaseHighlighter
     @parser.regexter('<user>', /#{ ELT }[\w ]*?#{ EGT }/, user_lambda)
 
     if keywords_file
-      @keyworder = KeywordHighlighter.new(keywords_file)
-      keyword_lambda = ->(token, regex) { @@html_class.keyword(token) }
-      @parser.regexter('keyword', @keyworder.keyword_regex, keyword_lambda)
+      keyworder = KeywordHighlighter.new(keywords_file)
+      keyworder.register_to(@parser)
     end
 
     regexter_singles(@parser)

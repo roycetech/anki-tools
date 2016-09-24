@@ -3,6 +3,8 @@
 class LatestFileFinder
 
 
+  attr_reader :last_modified_file, :last_modified_folder, :last_modified_filedate
+
   def initialize(root_path, file_mask = '*.txt')
     @root_path = root_path
     @file_mask = file_mask
@@ -14,10 +16,12 @@ class LatestFileFinder
 
   def find
     recurse_find @root_path
-    puts "Last modified date/time: #{@last_modified_filedate}"
+    # puts "Last modified date/time: #{@last_modified_filedate}"
     @last_modified_file
   end
 
+
+  private
 
   def recurse_find(path)
     Dir[File.join(path, @file_mask)].each do |filename|
@@ -26,7 +30,7 @@ class LatestFileFinder
         @last_modified_folder = path
         @last_modified_filedate = File.mtime(filename)
       end
-    end
+    end    
 
     dirs = list_dir(path)
     dirs.each do |dirname|
@@ -40,12 +44,6 @@ class LatestFileFinder
     end
   end
 
-
-  def latest_folder
-    @last_modified_folder
-  end
-
-  private :recurse_find
 
 
 end

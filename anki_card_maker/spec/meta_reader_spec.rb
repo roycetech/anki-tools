@@ -5,6 +5,8 @@ describe MetaReader do
 
   describe "#read" do
 
+    
+
     it 'returns a map with key-value pair "lang=js"' do
       File.open(input_filename, 'r') do |file|
         mfile = double('file')
@@ -12,6 +14,7 @@ describe MetaReader do
         expect(meta_map[:lang]).to eq('js')      
       end
     end
+
 
     it 'rewinds file pointer' do
       File.open(input_filename, 'r') do |file|

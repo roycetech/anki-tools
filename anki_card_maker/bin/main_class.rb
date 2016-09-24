@@ -3,18 +3,20 @@
 require 'simplecov'
 SimpleCov.start
 
-require './lib/assert'
+require './lib/class_extensions'
+
+
+# review requires below...
+
 require 'active_support/concern'
 require 'active_support/inflector'
 
-require './lib/class_extensions'
 require './lib/tag_helper'
 
 require './lib/utils/oper_utils'
 require './lib/utils/regexp_utils'
 require './lib/utils/html_utils'
 require './lib/markdown'
-require './lib/wrappexter'
 require './lib/html_helper'
 
 require './lib/reviewer'
@@ -24,154 +26,170 @@ require './lib/latest_file_finder'
 require './lib/source_parser'
 require './lib/tag_counter'
 
-require './lib/highlighter/highlighters_enum'
 
 
 require './bin/upload' unless $unit_test
 require './lib/mylogger'
 require 'CSV'
 
+require './lib/system_tag_counter'
+
 
 class MainClass
 
 
+  # Configuration
+  Home_Path = File.expand_path('~')
+  TSV_Output_Folder = "#{Home_Path}/Desktop/Anki Generated Sources"
+  Default_Source_Path = "#{Home_Path}/Dropbox/Documents/Reviewer/@test.txt"
+
+  # exposed for testability
+  attr_reader :source_absolute_path, :html_generator
+
+
   # Initialize source file name.
-  def initialize(opts={})
-
-    @@highlighter = BaseHighlighter
-    @@untagged_count = 0
-
+  def initialize(source_file: Default_Source_Path)
     @reviewer = Reviewer.new
+    @source_absolute_path = source_file
+    $logger.info "File Path: #@source_absolute_path"
+  end
+  
 
-    hash = {
-      :source_file => '/Users/royce/Dropbox/Documents/Reviewer/@test.txt'
-    }.merge(opts);  
-
-    @@filepath = hash[:source_file]
-
-    $logger.info "File Path: #@@filepath"
-    @@filepath = Dir.pwd + File::SEPARATOR + @@filepath unless @@filepath.start_with?(File::SEPARATOR)
-    generate_output_filename()
+  def generate_output_filepath
+    today = Time.now
+    basename = File.basename(@source_absolute_path, '.*')
+    "#{Home_Path}/Desktop/Anki Generated Sources/#{basename} #{ Time.now.strftime('%Y%b%d_%H%M') }.tsv" 
   end
 
-  def generate_output_filename
-    today = Time.new
 
-    source_filename = @@filepath[@@filepath.rindex('/') + 1 .. @@filepath.rindex('.')-1]
-    simple_name = source_filename
-
-    @@outputFilename = '/Users/royce/Desktop/Anki Generated Sources/%s %s%s%s_%s%s.tsv' %
-    [simple_name,
-      today.year % 1000,
-      '%02d' % today.month,
-      '%02d' % today.day,
-      '%02d' % today.hour,
-      '%02d' % today.min]
-  end
-
-  def pbcopy(input)
-   str = input.to_s
-   IO.popen('pbcopy', 'w') { |f| f << str }
-   str
-  end
-
+  # It opens source file for reading.
+  # It opens CSV file.
+  # It has to invoke #init_html_generator()
   def execute
-    $logger.info 'Program Start. Unit Test: %s' % ($unit_test ? 'Y' : 'n')
-    return if $unit_test
+    # $logger.info 'Program Start. Unit Test: %s' % ($unit_test ? 'Y' : 'n')
+    # return if $unit_test
 
+    File.open(@source_absolute_path, 'r') do |file|
 
-    File.open(@@filepath, 'r') do |file|
-      @tag_count_map = TagCounter.new.count_tags(file)
-      CSV.open(@@outputFilename, 'w', {:col_sep => "\t"}) do |csv|
+      tag_counter = TagCounter.new
+      tag_count_map = tag_counter.count_tags(file) if tag_counter  # for testability
+      output_absolute_path = generate_output_filepath
 
-        meta_map = MetaReader.read(file)
-        language = meta_map['lang']
-        $logger.debug("Language: #{language}")
-        if language
-          @@highlighter = @@highlighter.send('lang_' + language.downcase)
-        else
-          @@highlighter = BaseHighlighter.lang_none
-        end
+      init_html_generator(file)
+      
+      CSV.open(output_absolute_path, 'w', {col_sep: "\t"}) do |csv|
 
         SourceReader.new(file).each_card do |tags, front, back|
-            write_card(csv, front, back, tags)
+          process_card(csv, front, back, tags, count_map: tag_count_map)
         end
 
         @reviewer.print_sellout
         @reviewer.print_duplicate
         @reviewer.print_card_count
-        @reviewer.show_multi
+        @reviewer.print_multi
 
-        deckname = @@outputFilename[@@outputFilename.rindex('/') + 1..@@outputFilename.index('.') - 1]
-        pbcopy deckname
+        deckname = File.basename(output_absolute_path)
         puts('', deckname , '')
       end
     end
   end
 
-  def write_card(csv, front, back, tags)
-    tag_helper = TagHelper.new(tags)
 
-    back.pop if back[-1] == ''
-    tag_helper.find_multi(back)
+  def init_html_generator(file)
+    meta_map = MetaReader.read(file)
+    language = meta_map[:lang]
+    $logger.info("Language: #{ language }")
+    
+    highlighter = BaseHighlighter
+    highlighter = if language
+       highlighter.send("lang_#{ language.downcase }")
+    else
+      BaseHighlighter.lang_none
+    end
+    @html_generator = HtmlGenerator.new(highlighter)
+  end
 
-    shown_tags = tag_helper.visible_tags
+
+  def process_card(csv, front, back, tags, count_map: {})
+    tag_helper = TagHelper.new(tags: tags)
+    tag_helper.index_enum(back)
+
     @reviewer.count_sentence(tag_helper, front, back)
-
-    html_helper = HtmlHelper.new(@@highlighter, tag_helper, front, back)
-
     @reviewer.detect_sellouts(front, back) unless tag_helper.is_front_only?
 
-    lst = [html_helper.front_html, html_helper.back_html]
-
-    if tag_helper.untagged?
-      lst.push 'untagged'
-    else
-
-      tags_numbered = tags.map do |tag|
-        count = @tag_count_map[tag]
-        if count == 1
-          tag
-        else
-          "#{tag}(#{count})"
-        end
-      end
-
-      lst.push tags_numbered.join(',')
-    end
-
-    if $logger.debug?
-
-      re_styleless = /<div[\d\D]*/m
-
-      # $logger.debug("Front: \n" + lst[0] + "\n\n")
-      # $logger.debug("Back: \n" + lst[1] + "\n\n")
-
-      $logger.debug("Front: \n" + lst[0][re_styleless] + "\n\n")
-      $logger.debug("Back: \n" + lst[1][re_styleless] + "\n\n")
+    @html_generator.format(tag_helper, front, back)
+    
+    write_card(tag_helper, count_map)
+    debug_print_cards
+  end
 
 
-      # $logger.debug("Tag: \n" + lst[2] + "\n\n")
-    end
+  # def write_card(csv, front, back, tags, highlighter: nil, count_map: {})
+  #   tag_helper = TagHelper.new(tags: tags)
+  #   tag_helper.index_enum(back)
 
-    @reviewer.addFrontCard(tags, front)
+  #   @reviewer.count_sentence(tag_helper, front, back)
+  #   @reviewer.detect_sellouts(front, back) unless tag_helper.is_front_only?
 
-    csv << lst
+  #   html_helper = HtmlGenerator.new(highlighter, tag_helper, front, back)
+  #   tsv_compat_lst = [html_helper.front_html, html_helper.back_html]
+
+  #   tsv_compat_lst << SystemTagCounter.new.count(tag_helper, map: count_map)
+
+  #   debug_print_cards
+  #   # @reviewer.addFrontCard(tags, front)
+  #   csv << tsv_compat_lst
+  # end
+
+
+  def write_card(csv: nil, tag_helper: nil, count_map: {})
+    assert csv != null 
+    assert tag_helper != null
+    
+
+
+    tsv_compat_lst << @html_generator.front_html
+    tsv_compat_lst << @html_generator.back_html
+    tsv_compat_lst << SystemTagCounter.new.count(tag_helper, map: count_map)
+
+    debug_print_cards
+    # @reviewer.addFrontCard(tags, front)
+    csv << tsv_compat_lst
   end
 
 end
 
 
+
+
+# :nocov:
+# Used for debugging only
+def debug_print_cards
+  if $logger.debug?
+    re_styleless = /<div[\d\D]*/m
+
+    # $logger.debug("Front: \n#{ lst[0] }\n\n")
+    # $logger.debug("Back: \n#{ lst[1] }\n\n")
+
+    $logger.debug("Front: \n#{ lst[0][re_styleless] }\n\n")
+    $logger.debug("Back: \n#{ lst[1][re_styleless] }\n\n")
+
+    # $logger.debug("Tag: \n" + lst[2] + "\n\n")
+  end
+end
+# :nocov:
+
+
 path = '/Users/royce/Dropbox/Documents/Reviewer'
 
 
-if not $unit_test
+unless $unit_test
   if ARGV.empty? or 'upload' === ARGV[0]
     # - Generate a single file
     main = MainClass.new({:source_file => LatestFileFinder.new(path, '*.md').find})
     main.execute
 
-    RunSelenium.execute if not ARGV.empty? and 'upload' === ARGV[0].downcase
+    RunSelenium.execute unless ARGV.empty? or 'upload' == ARGV[0].downcase
 
   else
     # - Generate multiple file

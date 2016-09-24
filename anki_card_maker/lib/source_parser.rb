@@ -91,27 +91,6 @@ class SourceParser
   end
 
 
-  # unit tested.
-  # def partition_missed(array)
-  #   !array[0].empty? && array[1].empty? && array[2].empty?
-  # end
-
-  # def partition_begin(array)
-  #   array[0].empty? && !array[1].empty? && !array[2].empty?
-  # end
-
-  # def partition_mid(array)
-  #   !array[0].empty? && !array[1].empty? && !array[2].empty?
-  # end
-
-  # def partition_end(array)
-  #   !array[0].empty? && !array[1].empty? && array[2].empty?
-  # end
-
-  # def partition_all(array)
-  #   array[0].empty? && !array[1].empty? && array[2].empty?
-  # end
-
   def partition_missed(array)  _partition_common(array, false, true, true) end
   def partition_begin(array) _partition_common(array, true, false, false) end
   def partition_mid(array) _partition_common(array, false, false, false) end

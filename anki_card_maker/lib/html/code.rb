@@ -1,9 +1,12 @@
+require './lib/assert'
+
+
 # It detects code wells,
 # appends some needed <br>'s ?
 # Escapes some spaces with &nbsp; ?
 class Code
 
-  include Assert, HtmlUtils
+  include Assert, Markdown
 
 
   RE_WELL = /(```)([a-zA-Z]*)([\d\D]*?)(\1)/
@@ -25,7 +28,7 @@ class Code
       .lf
 
     else
-
+      $logger.debug(string_array)
       highlighted_string = highlight_code(string_array)
       re = /<div class="well"><code>([\d\D]*)<\/code><\/div>/
       if highlighted_string =~ re
@@ -56,8 +59,8 @@ class Code
       return "<div class=\"well\"><code>\n#{code_block}<\/code><\/div>"
     })
 
-    parser.regexter('bold', Markdown::BOLD[:regexp], Markdown::BOLD[:lambda]);
-    parser.regexter('italic', Markdown::ITALIC[:regexp], Markdown::ITALIC[:lambda]);
+    parser.regexter('bold', BOLD[:regexp], BOLD[:lambda]);
+    parser.regexter('italic', ITALIC[:regexp], ITALIC[:lambda]);
     parser.parse(card_block)
   end
 

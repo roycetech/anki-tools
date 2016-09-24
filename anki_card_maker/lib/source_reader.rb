@@ -9,7 +9,7 @@ class SourceReader
 
 
   def blank_or_comment?(line)
-    true if line[/^#/] or line.empty?
+    true if line[/^#/] or line.strip.empty?
   end
 
 
@@ -30,35 +30,31 @@ class SourceReader
       card_began = !blank_or_comment?(line) unless card_began
       next unless card_began
 
-      # unless card_began
-      #   if line[0, 1] == '#' or line.strip.empty?
-      #     next
-      #   else
-      #     card_began = true
-      #   end
-      # end
-
       space_counter += 1 if line.empty?
 
-      is_question = if space_counter >= 2
-        true
+       if space_counter >= 2
+        is_question = true
       elsif space_counter == 1 and is_question
         space_counter = 0
-        false
+        is_question = false
       end
+
+      # puts("XXX #{ line } is question: #{ is_question } space_counter #{ space_counter } line.empty? #{ line.empty? }")
 
       if is_question
 
         if space_counter >= 2  # write to file
+          
+          back.pop if back.last.empty?
           yield tags, front, back
           space_counter, front, back, tags = 0, [], [], []
         else
 
-          validate_tag_declaration(line)
+          validate_tag_declaration(line, line_number: line_number)
 
           if line[/@Tags: .*/]
             tags = TagHelper.parse(line)
-          elsif tags.include? 'Abbr'
+          elsif tags.include? :Abbr
             front.push(line + ' abbreviation')
           else
             front.push(line)
@@ -68,7 +64,7 @@ class SourceReader
 
       else
 
-        unless line.empty? and back.empty?
+        unless line.empty? && back.empty?
           back.push(line)
           space_counter = 0 unless line.empty?
         end
@@ -76,12 +72,18 @@ class SourceReader
       end
 
     end
+
     yield tags, front, back unless front.empty? or front[0].strip.empty?
   end
 
 
-  def validate_tag_declaration(line)
-      raise "ERROR: Misspelled @Line #{line_number}:#{line}" if line[/@tags/i] && !line[tags[/@Tags: .*/]]
+  # def delete_last_blank!(string_list)
+  #   string_list.pop if string_list.last.empty?
+  # end
+
+
+  def validate_tag_declaration(line, line_number: 0)
+      raise "ERROR: Misspelled @Line #{ line_number }:#{ line }" if line[/@tags/i] && !line[/@Tags: .*/]
   end
 
 

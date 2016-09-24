@@ -6,16 +6,16 @@ require 'selenium-webdriver'
 
 class RunSelenium 
 
+  Base_Url = 'https://api.ankiapp.com/'
+
   def self.execute
     driver = Selenium::WebDriver.for :firefox
-    # driver = Selenium::WebDriver.for :safari  # Does not work!!!
     
-    @base_url = 'https://api.ankiapp.com/'
     @accept_next_alert = true
     driver.manage.timeouts.implicit_wait = 30
     @verification_errors = []
 
-    driver.navigate.to @base_url + 'nexus/'
+    driver.navigate.to "#{Base_Url}nexus/"
 
     driver.find_element(:css, 'input.flex-item').clear()
     driver.find_element(:css, 'input.flex-item').send_keys(Config::USERNAME)
@@ -51,7 +51,6 @@ class RunSelenium
     rescue
       puts('WARNING: Did not find alert')
     end
-
 
     sleep 5
 

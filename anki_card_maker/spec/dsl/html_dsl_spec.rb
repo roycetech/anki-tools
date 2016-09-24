@@ -51,7 +51,7 @@ describe HTMLDSL do
 
   context 'with nested block' do
     subject do 
-      html(:div) do
+      html :div do
         code :well do
           text 'pass'
         end
@@ -69,7 +69,7 @@ describe HTMLDSL do
 
   context 'with nested block and self-closing tag' do
     subject do 
-      html(:div) do
+      html :div do
         code :well do
           text 'pass'
         end
@@ -90,7 +90,7 @@ describe HTMLDSL do
 
   context 'with nested one-liner' do
     subject do 
-      html(:div) do
+      html :div do
         span :answer, 'Answer Only'
       end
     end
@@ -100,6 +100,55 @@ describe HTMLDSL do
           '  <span class="answer">Answer Only</span>', 
           '</div>'].join("\n"))
     end
+  end
+
+
+  context 'Actual Use Case: with Tags' do
+    subject do 
+      html :div, :main do
+        div :tags do
+          ['Concept', 'Topic1'].each do |tag|
+            span :tag, tag
+          end
+        end
+        text 'Question 1'
+      end
+    end
+    it 'is supported' do
+      expect(subject).to eq(
+        [ '<div class="main">', 
+          '  <div class="tags">', 
+          '    <span class="tag">Concept</span>', 
+          '    <span class="tag">Topic1</span>', 
+          '  </div>', 
+          '  Question 1', 
+          '</div>'].join("\n"))
+    end    
+  end
+
+
+  context 'Actual Use Case: List' do
+    subject do 
+      answer_only = html :span, :answer, 'Answer Only'
+      html :div, :main do
+        ul do
+          ['One', 'Two'].each do |item|
+            li item
+          end
+        end
+        merge(answer_only)
+      end
+    end
+    it 'is supported' do
+      expect(subject).to eq(
+        [ '<div class="main">', 
+          '  <ul>', 
+          '    <li>One</li>', 
+          '    <li>Two</li>', 
+          '  </ul>', 
+          '  <span class="answer">Answer Only</span>', 
+          '</div>'].join("\n"))
+    end    
   end
 
 

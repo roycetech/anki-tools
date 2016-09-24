@@ -1,34 +1,29 @@
+require './lib/utils/html_utils'
+
+
 class KeywordHighlighter
 
 
-  @@html_class = '<span class="keyword">%{word}</span>'
-  class << @@html_class
-    def keyword(word) self % {word: word}; end
-  end
+  include HtmlUtils
 
 
-  def initialize(keywords_file)
-    raise 'Keywords required' unless keywords_file
-    @keywords = get_keywords(keywords_file)
+  # argument must be truthy and has contents.
+  def initialize(keywords_filename)
+    raise 'Keywords required' unless keywords_filename
+    @keywords = get_keywords(keywords_filename)
     raise 'Keywords required' if @keywords.empty?    
   end
 
 
   def get_keywords(keywords_file)
-    return File.read('./data/' + keywords_file).lines.collect do |line|
-      line.chomp
-    end
+    File.read("./data/#{keywords_file}").lines.collect { |line| line.chomp }
   end
 
 
-  def keyword_regex
-    kw_re_str = @keywords.inject('') do |result, keyword|
-      result += '|'  unless result.empty?
-      result += keyword
-    end
-
-    # return Regexp.new("(?<!\\.|-|(?:[\\w]))(?:#{ kw_re_str })\\b")
-                        /(?<!\.|-|(?:[\w]))(?:#{ kw_re_str })\b/
+  def register_to(parser)
+    regexp = /(?<!\.|-|(?:[\w]))(?:#{ @keywords.join('|') })\b/
+    lambda = ->(token, regexp) { self.wrap(:keyword, token) }
+    parser.regexter('keyword', regexp, lambda)
   end
 
 

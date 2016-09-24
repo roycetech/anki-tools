@@ -1,3 +1,5 @@
+require './lib/assert'
+
 describe Assert do
   
   describe '#assert' do
