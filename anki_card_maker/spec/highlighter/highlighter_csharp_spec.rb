@@ -1,23 +1,15 @@
-require './spec/spec_helper'
-
+require './lib/highlighter/highlighter_csharp'
 
 describe CSharpHighlighter do
   describe '#highlight_all' do
-        
 
-    input1 = 'virtual'
-    context "given '#{input1}'" do
-      expected1 = '<span class="keyword">virtual</span>'
-
-      it "returns #{expected1}" do
-        sut = CSharpHighlighter.new
-        expect(sut.highlight_all(input1.clone)).to eq(expected1)
-      end
-    end # context
-    
+    let(:input) { 'virtual' }
+    it "highlights keywords" do
+      expect { subject.highlight_all!(input) }.to change { input }.from('virtual').to('<span class="keyword">virtual</span>')
+    end
 
   end # method
-  
+
 end # class
 
 

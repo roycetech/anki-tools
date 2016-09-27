@@ -1,77 +1,50 @@
-require './spec/spec_helper'
+require './lib/highlighter/highlighter_php'
+require './spec/support/shared_examples_html_highlighter'
+
 
 describe PhpHighlighter do
   
   describe '#highlight_all' do
 
+    # TODO:
+    # it_behaves_like('html highlighter', PhpHighlighter.new )
 
-    before(:each) { @sut = PhpHighlighter.new }
-
-
-    context 'perl comment' do
-
-      it 'wrap string after # in comment span' do
-        input_string = 'Test # comment'
-        expect(@sut.highlight_all(input_string)).to eq('Test <span class='\
-          '"comment"># comment</span>')
-      end
-
+    let(:perl_comment) { 'Test # comment' } 
+    it 'highlights perl comment' do
+      expect{ subject.highlight_all!(perl_comment) }.to change { perl_comment }.from('Test # comment').to('Test <span class="comment"># comment</span>')
     end
 
-
-    context 'given "global $globalvar;"' do
-      input_string = 'global $globalvar;'
-
-      expected = '<span class="keyword">global</span>&nbsp;<span class="var">'\
-        '$globalvar</span>;'
-      
-      it 'should return "%s"' % expected do
-        expect(@sut.highlight_all(input_string)).to eq(expected)
-      end
-
+    let(:global_var) { 'global $globalvar;' }
+    it 'highlights keywords and global variable' do
+      expect{ subject.highlight_all!(global_var) }.to change { global_var }.from('global $globalvar;').to('<span class="keyword">global</span>&nbsp;<span class="var">'\
+        '$globalvar</span>;')
     end
 
-
-    context 'given "function __destruct() {}"' do
-      input_string = 'function __destruct() {}'
-
-      expected = '<span class="keyword">function</span> __destruct() {}'
-      it 'should return "%s"' % expected do
-        expect(@sut.highlight_all(input_string)).to eq(expected)
-      end
-
+    let(:destructor) { 'function __destruct() {}' }
+    it 'can mark destructor function declaration' do
+      expect { subject.highlight_all!(destructor) }.to change { destructor }.
+          from('function __destruct() {}').
+          to('<span class="keyword">function</span> __destruct() {}')
     end
 
-    context 'given "<?php"' do
-      input_string = '<?php'
-
-      expected = '<span class="phptag">&lt;?php</span>'
-      it 'should return "%s"' % expected do
-        expect(@sut.highlight_all(input_string)).to eq(expected)
-      end
-
+    let(:opentag) { '<?php' }
+    it 'can mark open tag' do
+      expect { subject.highlight_all!(opentag) }.to change { opentag }.
+        from('<?php').
+        to('<span class="phptag">&lt;?php</span>')
     end
 
-    context 'given "<?"' do
-      input_string = '<?'
-
-      expected = '<span class="phptag">&lt;?</span>'
-      it 'should return "%s"' % expected do
-        expect(@sut.highlight_all(input_string)).to eq(expected)
-      end
-
+    let(:short_opentag) { '<?' }
+    it 'can mark short open tag' do
+      expect{ subject.highlight_all!(short_opentag) }.to change { short_opentag }.
+        from('<?').
+        to('<span class="phptag">&lt;?</span>')
     end
 
-    context 'given "?>"' do
-      input_string = '?>'
-
-      expected = '<span class="phptag">?&gt;</span>'
-      it 'should return "%s"' % expected do
-        expect(@sut.highlight_all(input_string)).to eq(expected)
-      end
-
+    let(:closetag) { '?>' }
+    it 'can mark closing tag' do
+      expect{ subject.highlight_all!(closetag) }.to change { closetag }.from('?>').to('<span class="phptag">?&gt;</span>')
     end
-
 
   end
 end

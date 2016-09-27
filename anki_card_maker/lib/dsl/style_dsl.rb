@@ -1,7 +1,7 @@
 # Terminology:
 #   style - refers to the select block (selector and styles inside)
 
-require './selector_dsl' unless defined?(SelectorDSL)
+require './lib/dsl/selector_dsl' 
 
 
 class StyleDSL
@@ -11,13 +11,15 @@ class StyleDSL
   attr_accessor :styles
 
 
-  def initialize
+  def initialize(theme=nil, &block)
+    @theme = theme
     @styles = []
+    instance_eval(&block)
   end
 
 
-  def select(selector, &block)
-    @styles << global_select(selector, &block)
+  def select(selector, name=nil, value=nil, &block)
+    @styles << global_select(selector, name, value, &block)
   end
 
 
@@ -36,20 +38,18 @@ end  # class
 
 
 # DSL Entry
-def style(&block)
-  style = StyleDSL.new
-  style.instance_eval(&block)
-  style
+def style(theme=nil, &block)
+  StyleDSL.new(theme, &block)
 end
 
 
-# Example
-puts(style do
-  select 'div.main' do
-    text_align 'left'
-    font_size '16pt'
-  end
-  select 'input' do
-    width '100%'
-  end
-end)
+# # Example
+# puts(style do
+#   select 'div.main' do
+#     text_align 'left'
+#     font_size '16pt'
+#   end
+#   select 'input' do
+#     width '100%'
+#   end
+# end)

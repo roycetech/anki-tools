@@ -1,3 +1,5 @@
+require './lib/tag_helper'
+
 
 describe TagHelper do
 
@@ -9,6 +11,14 @@ describe TagHelper do
         expect(subject.untagged?).to be true
       end
     end
+
+    describe 'tagged' do
+      subject { TagHelper.new(tags: [:Concept]) }
+      it 'is not untagged' do
+        expect(subject.untagged?).to be false
+      end
+    end
+
 
     it 'accepts :tags parameter' do
       expect { TagHelper.new(tags: [:Concept]) }.not_to raise_error

@@ -17,7 +17,7 @@ require './lib/utils/oper_utils'
 require './lib/utils/regexp_utils'
 require './lib/utils/html_utils'
 require './lib/markdown'
-require './lib/html_helper'
+require './lib/html_generator'
 
 require './lib/reviewer'
 require './lib/source_reader'
@@ -117,10 +117,15 @@ class MainClass
     @reviewer.count_sentence(tag_helper, front, back)
     @reviewer.detect_sellouts(front, back) unless tag_helper.is_front_only?
 
-    @html_generator.format(tag_helper, front, back)
+    tsv_compat_lst = []
+    tsv_compat_lst << @html_generator.format_front(tag_helper, front)
+    tsv_compat_lst << @html_generator.format_back(tag_helper, back)
+    tsv_compat_lst << SystemTagCounter.new.count(tag_helper, map: count_map)
+
+    debug_print_cards(tsv_compat_lst)
+    # @reviewer.addFrontCard(tags, front)
+    csv << tsv_compat_lst
     
-    write_card(tag_helper, count_map)
-    debug_print_cards
   end
 
 
@@ -141,38 +146,21 @@ class MainClass
   #   csv << tsv_compat_lst
   # end
 
-
-  def write_card(csv: nil, tag_helper: nil, count_map: {})
-    assert csv != null 
-    assert tag_helper != null
-    
-
-
-    tsv_compat_lst << @html_generator.front_html
-    tsv_compat_lst << @html_generator.back_html
-    tsv_compat_lst << SystemTagCounter.new.count(tag_helper, map: count_map)
-
-    debug_print_cards
-    # @reviewer.addFrontCard(tags, front)
-    csv << tsv_compat_lst
-  end
-
 end
-
 
 
 
 # :nocov:
 # Used for debugging only
-def debug_print_cards
+def debug_print_cards(lst)
   if $logger.debug?
     re_styleless = /<div[\d\D]*/m
 
-    # $logger.debug("Front: \n#{ lst[0] }\n\n")
-    # $logger.debug("Back: \n#{ lst[1] }\n\n")
+    $logger.debug("Front: \n#{ lst[0] }\n\n")
+    $logger.debug("Back: \n#{ lst[1] }\n\n")
 
-    $logger.debug("Front: \n#{ lst[0][re_styleless] }\n\n")
-    $logger.debug("Back: \n#{ lst[1][re_styleless] }\n\n")
+    # $logger.debug("Front: \n#{ lst[0][re_styleless] }\n\n")
+    # $logger.debug("Back: \n#{ lst[1][re_styleless] }\n\n")
 
     # $logger.debug("Tag: \n" + lst[2] + "\n\n")
   end

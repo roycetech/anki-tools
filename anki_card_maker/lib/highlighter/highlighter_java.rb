@@ -1,3 +1,5 @@
+require './lib/highlighter/base_highlighter'
+
 class JavaHighlighter < BaseHighlighter
 
   def initialize(param=HighlightersEnum::JAVA) super(param) end

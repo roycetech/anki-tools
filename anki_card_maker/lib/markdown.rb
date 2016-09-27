@@ -1,3 +1,4 @@
+require './lib/utils/html_utils'
 
 # Code Store for tagging bold and italic from card text.  Bold is used for 
 # non-code, while italic can be used for both code, and non-code.

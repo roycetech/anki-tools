@@ -37,7 +37,12 @@ class HTMLDSL
 
 
   def merge(html_text)
-    @contents << "#{indent(1)}#{ html_text }\n"
+    indented = html_text.lines.collect do |line|
+      "#{indent(1)}#{ line.chomp }"
+    end.join("\n")
+    # @contents << "#{indent(1)}#{ html_text }\n"
+    # @contents << indented + "\n"
+    @contents << "#{ indented }\n"
   end
 
 

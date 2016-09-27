@@ -1,5 +1,7 @@
-require './lib/html_helper'
+require './lib/html_generator'
 require './lib/tag_helper'
+require './lib/highlighter/highlighter_java'
+require './lib/highlighter/highlighter_none'
 
 
 describe HtmlGenerator do
@@ -24,14 +26,11 @@ describe HtmlGenerator do
 
 
   describe '#build_tags' do
-
     subject { HtmlGenerator.new(NoneHighlighter.new) } 
-
     context 'given :Concept, :List' do
       let(:tag_helper) { TagHelper.new(tags: [:Concept, :List])}
-
       it 'returns in html' do
-        expect(subject.build_tags(tag_helper, nil)).to eq([
+        expect(subject.build_tags(tag_helper)).to eq([
             '<div class="tags">',
             '  <span class="tag">Concept</span>',
             '  <span class="tag">List</span>',
@@ -39,8 +38,28 @@ describe HtmlGenerator do
           ].join("\n").strip)
       end
     end
+  end  #build_tags()
 
 
-  end
+  describe '#format_front' do
+    subject { HtmlGenerator.new(NoneHighlighter.new) } 
+    context 'given single line' do
+      let(:tag_helper) { TagHelper.new(tags: [])}
+      it 'returns in html' do
+        expect(subject.format_front(tag_helper, ['front'])).to eq([
+            '<style>',
+            '  div.main {',
+            '    font-size: 16pt;',
+            '    text-align: left;',
+            '  }',
+            '</style>',
+            '<div class="main">',
+            '  front',
+            '</div>'
+          ].join("\n").strip)
+      end
+    end
+  end  #build_tags()
+
 
 end  # class

@@ -1,5 +1,4 @@
 shared_examples_for 'html highlighter' do |highlighter|
-  
   it 'escapes spaces to &nbsp;' do
     expect(highlighter.highlight_all!(' <span>')).to match(/&nbsp;.*/)
   end

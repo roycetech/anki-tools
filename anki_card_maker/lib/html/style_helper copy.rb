@@ -24,9 +24,6 @@ class StyleHelper
         .text_align('left')
         .font_size('16pt')
       .select_e
-      .select('input')
-        .width('100%')
-      .select_e
       .select('code.inline')
         .border('1px solid #DDD')
         .font_family("monaco, courier")

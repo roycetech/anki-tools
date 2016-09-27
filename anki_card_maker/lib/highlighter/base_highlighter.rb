@@ -28,10 +28,8 @@ class BaseHighlighter
 
   @@html_class = '<span class="%{klass}">%{word}</span>'
   class << @@html_class
-    def quote(string) self % { klass: :quote, word: string }; end
+    # def quote(string) self % { klass: :quote, word: string }; end
     def comment(string) self % { klass: :comment, word: string }; end
-    def identifier(string) self % { klass: :ident, word: string }; end
-    def user(string) self % { klass: :user, word: string }; end
     def keyword(string) self % { klass: :keyword, word: string }; end
   end
 
@@ -60,12 +58,13 @@ class BaseHighlighter
     @type = type  # initialized by subclass
 
     http_re = /^https?:\/\/\w+(?:\.\w+)*(?::\d{1,5})?(?:\/\w+)*\/?$/
-    @parser.regexter('http_url', http_re, ->(token, regexp) {
+    @parser.regexter('http_url', http_re, ->(token, regexp) do
       wrap(:url, token)
-    })
+    end)
 
-    comment_lambda = ->(token, regexp) { @@html_class.comment(token.sub(BR, '')) }
-    @parser.regexter('comment', comment_regex, comment_lambda)
+    @parser.regexter('comment', comment_regex, ->(token, regexp) do
+      wrap(:comment, token.sub(BR, '')) 
+    end)
 
     @parser.regexter('bold', BOLD[:regexp], BOLD[:lambda]);
     @parser.regexter('italic', ITALIC[:regexp], ITALIC[:lambda]);
@@ -77,7 +76,7 @@ class BaseHighlighter
 
     
     user_lambda = ->(token, regexp) { @@html_class.user(token) }
-    @parser.regexter('<user>', /#{ ELT }[\w ]*?#{ EGT }/, user_lambda)
+    @parser.regexter('<user_identifier>', /#{ ELT }[\w ]*?#{ EGT }/, user_lambda)
 
     if keywords_file
       keyworder = KeywordHighlighter.new(keywords_file)
@@ -102,22 +101,21 @@ class BaseHighlighter
   # Subclass should return regex string for string literals
   def string_regex() abstract end
 
-  def highlight_all(input_string)
+  def highlight_all!(input_string)
     input_string.replace(@parser.format(input_string))  
     escape_spaces!(input_string)
-    input_string
   end
 
 end
 
 
+require './lib/highlighter/highlighter_none'
 require './lib/highlighter/highlighter_ruby'
 require './lib/highlighter/highlighter_js'
 require './lib/highlighter/highlighter_cpp'
 require './lib/highlighter/highlighter_java'
 require './lib/highlighter/highlighter_swift'
 require './lib/highlighter/highlighter_plsql'
-require './lib/highlighter/highlighter_none'
 require './lib/highlighter/highlighter_php'
 require './lib/highlighter/highlighter_web'
 require './lib/highlighter/highlighter_objc'

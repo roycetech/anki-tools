@@ -1,5 +1,5 @@
 require './lib/utils/oper_utils'
-require './lib/assert'
+# require './lib/assert'
 
 
 # unit tested
@@ -17,14 +17,16 @@ class TagHelper
   # tags - list of Symbols 
   def initialize(tags: nil, tag_line: nil)
     
-    assert xor(tags, tag_line), message: 'Must set either :tags or :tag_line but not both'
+    assert xor(tags, tag_line), 
+      message: 'Must set either :tags or :tag_line but not both'
 
     @tags = TagHelper.parse(tag_line) if tag_line
     
     if tags
       @tags = tags.clone if tags
       @tags.each do |item|
-        assert item.class == Symbol, message: 'Should be array of symbols, not strings'
+        assert item.class == Symbol, 
+          message: 'Should be array of symbols, not strings'
       end
     end
 
@@ -102,7 +104,7 @@ class TagHelper
 
 
   def untagged?
-    tags.empty?
+    @tags.empty?
   end
 
 

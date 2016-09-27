@@ -1,86 +1,47 @@
 require './spec/spec_helper'
 
+
 describe HtmlUtils do
 
-  sut = Object.new
-  sut.extend(HtmlUtils)
+  subject do
+    sut = Object.new
+    sut.extend(HtmlUtils)
+  end
+
 
   describe '1. #escape_spaces' do
 
-    context 'positives' do 
+    it 'ignores space between words' do
+      expect(subject.escape_spaces('one two')).to eq('one two')
+    end
 
-      input1 = 'Hello World'
-      context %Q(given "#{ input1 }") do
-        expected = input1.clone
-        it %Q(returns "#{ expected } ") do
-          expect(sut.escape_spaces(input1)).to eq(expected) 
-        end
-      end
+    it 'converts leading spaces' do
+      expect(subject.escape_spaces('  <span class="quote">')).to eq('&nbsp;&nbsp;<span class="quote">')
+    end
 
-      input2 = '  <span class="quote">'
-      context %Q(given "#{ input2 }") do
-        expected = '&nbsp;&nbsp;<span class="quote">'
-        it %Q(returns "#{ expected } ") do
-          expect(sut.escape_spaces(input2)).to eq(expected) 
-        end
-      end
-
-      input3 = '</span>  <span class="quote">'
-      context %Q(given "#{ input3 }") do
-        expected = '</span>&nbsp;&nbsp;<span class="quote">'
-        it %Q(returns "#{ expected } ") do
-          expect(sut.escape_spaces(input3)).to eq(expected) 
-        end
-      end
-
-
-    end  # end positives context
-
-
-    context 'negatives' do 
-
-      
-    end  # end negatives
+    it 'converts spaces between tags' do
+      expect(subject.escape_spaces('</span>  <span class="quote">')).to eq('</span>&nbsp;&nbsp;<span class="quote">')
+    end
 
   end  # 1. #escape_spaces
 
 
   describe '2. #escape_spaces!' do
 
-    context 'positives' do 
+    let(:betwee_words) { 'Hello World' }
+    it 'ignores space between words' do      
+      expect { subject.escape_spaces!(betwee_words)}.not_to change{betwee_words}
+    end
 
-      input1 = 'Hello World'
-      context %Q(given "#{ input1 }") do
-        expected = input1.clone
-        it %Q(returns "#{ expected } ") do
-          sut.escape_spaces!(input1)
-          expect(input1).to eq(expected) 
-        end
-      end
+    let(:leading) { '  <span class="quote">' }
+    it 'converts leading spaces' do
+      expect { subject.escape_spaces!(leading)}.to change{ leading }.from('  <span class="quote">').to('&nbsp;&nbsp;<span class="quote">')
+    end
 
-      input2 = '  <span class="quote">'
-      context %Q(given "#{ input2 }") do
-        expected = '&nbsp;&nbsp;<span class="quote">'
-        it %Q(returns "#{ expected } ") do
-          sut.escape_spaces!(input2)
-          expect(input2).to eq(expected) 
-        end
-      end
-
-      input3 = '</span>  <span class="quote">'
-      context %Q(given "#{ input3 }") do
-        expected = '</span>&nbsp;&nbsp;<span class="quote">'
-        it %Q(returns "#{ expected } ") do
-          sut.escape_spaces!(input3)
-          expect(input3).to eq(expected) 
-        end
-      end
-
-    end  # end positives context
-
-
-    context 'negatives' do 
-    end  # end negatives
+    let(:between_angles) { '</span>  <span class="quote">' }
+    it 'converts spaces between angles' do
+      expect { subject.escape_spaces!(between_angles) }.to change{ between_angles }.from('</span>  <span class="quote">').to('</span>&nbsp;&nbsp;<span class="quote">')
+    end
 
 
   end  # 2. #escape_spaces!
@@ -88,36 +49,16 @@ describe HtmlUtils do
 
   describe '3. #wrap' do
 
-    context 'positives' do 
+    let(:without_tag) { [:quote, 'text'] }
+    it 'wraps in span with class, given no tag' do
+      expect(subject.wrap(*without_tag)).to eq('<span class="quote">text</span>')
+    end
 
-      input1 = :quote, 'text'
-      context %Q(given "#{ input1 }") do
-        expected = %Q(<span class="quote">text</span>)
-        it %Q(returns "#{ expected }") do          
-          expect(sut.wrap(*input1)).to eq(expected) 
-        end
-      end
-
-      input2 = :div, :attr, 'text'
-      context %Q(given "#{ input2 }") do
-        expected = %Q(<div class="attr">text</div>)
-        it %Q(returns "#{ expected }") do          
-          expect(sut.wrap(*input2)).to eq(expected) 
-        end
-      end
-
-
-    end  # end positives context
-
-
-    context 'negatives' do 
-    end  # end negatives
-
+    let(:with_tag) { [:div, :attr, 'text'] }
+    it 'wraps in given tag with class' do
+      expect(subject.wrap(*with_tag)).to eq('<div class="attr">text</div>')
+    end
 
   end  # 3. #span
-
-
-
-
 
 end  # class

@@ -1,4 +1,5 @@
-require './spec/spec_helper'
+# require './lib/highlighter/highlighter_java'
+require './lib/highlighter/base_highlighter'
 
 
 describe JavaHighlighter do
@@ -9,8 +10,7 @@ describe JavaHighlighter do
 
       expected = 'called <b>type use</b>.'
       it "returns '#{ expected }'" do
-        sut = JavaHighlighter.new
-        expect(sut.highlight_all(input_string1.clone)).to eq(expected)
+        expect(subject.highlight_all!(input_string1.clone)).to eq(expected)
       end
     end
 
@@ -22,8 +22,7 @@ describe JavaHighlighter do
         'class="keyword">@interface</span> Ann'
       
       it "returns '#{ expected }'" do
-        sut = JavaHighlighter.new
-        expect(sut.highlight_all(input_string2.clone)).to eq(expected)
+        expect(subject.highlight_all!(input_string2.clone)).to eq(expected)
       end
     end
 
@@ -34,8 +33,7 @@ describe JavaHighlighter do
         '</span>;'
       
       it "returns '#{ expected }'" do
-        sut = JavaHighlighter.new
-        expect(sut.highlight_all(input_string3.clone)).to eq(expected)
+        expect(subject.highlight_all!(input_string3.clone)).to eq(expected)
       end
     end
 

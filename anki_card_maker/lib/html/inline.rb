@@ -1,6 +1,10 @@
 class Inline
 
-  RE_PATTERN = /(`)((?:\\\1|[^\1])*?)(\1)/
+  # RE_PATTERN = /(`)((?:\\\1|[^\1])*?)(\1)/
+
+
+  # Supports escaped: `\``, same line only
+  RE_PATTERN = /`(?:\\`|[^`\n])+`/
 
   def initialize(highlighter)
     @highlighter = highlighter

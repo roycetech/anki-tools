@@ -4,9 +4,7 @@ require './lib/dsl/html_dsl'
 describe HTMLDSL do
 
 
-  let(:answer_only) do
-    html :span, :answer, 'Answer Only'
-  end
+  let(:answer_only) { html :span, :answer, 'Answer Only' }
 
   context 'empty' do
     subject do 
@@ -128,7 +126,7 @@ describe HTMLDSL do
 
 
   context 'Actual Use Case: List' do
-    subject do 
+    subject do
       answer_only = html :span, :answer, 'Answer Only'
       html :div, :main do
         ul do
@@ -155,8 +153,8 @@ describe HTMLDSL do
   describe  '#merge' do
 
     subject do
-      # WET because, could not reference the outer subject in this scope
-      one_liner = html :span, :answer, 'Answer Only'
+      one_liner = answer_only  # Must be outside DSL otherwise it will be called
+        # as DSL method.
       html(:div) do
         code :well do
           text 'pass'
@@ -175,6 +173,30 @@ describe HTMLDSL do
           '  <br>',
           '  <span class="answer">Answer Only</span>',
           '</div>'].join("\n"))
+    end
+
+    context 'a block' do
+      subject do
+        
+        block = html :div, :tags do
+          span :tag, 'Concept'
+        end
+
+        html(:div) do
+          merge(block)
+          text 'pass'
+        end
+      end
+
+      it 'is supported' do
+        expect(subject).to eq(
+          [ '<div>', 
+            '  <div class="tags">',
+            '    <span class="tag">Concept</span>',
+            '  </div>',
+            '  pass',
+            '</div>'].join("\n"))
+      end
     end
 
   end  # #merge

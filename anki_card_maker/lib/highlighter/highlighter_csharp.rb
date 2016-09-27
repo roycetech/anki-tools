@@ -1,3 +1,6 @@
+require './lib/highlighter/base_highlighter'
+
+
 class CSharpHighlighter < BaseHighlighter
 
   def initialize(param=HighlightersEnum::CSHARP) super end

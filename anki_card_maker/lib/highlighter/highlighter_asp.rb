@@ -1,3 +1,6 @@
+require './lib/highlighter/highlighter_csharp'
+
+
 class AspHighlighter < CSharpHighlighter
 
 

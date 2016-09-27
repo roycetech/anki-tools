@@ -17,41 +17,7 @@ class Code
   end
 
 
-  def mark_codes(string)
-    parser = SourceParser.new
-    
-    parser.regexter('wells', /^(```)([a-zA-Z]*\n)([\d\D]*?)(\1)/, ->(token, regexp) do
-      lang = token[regexp,2]
-      code_block = token[regexp,3].chomp
-      @highlighter.highlight_all!(code_block)
-      code_block.gsub!("\n", "<br>\n")
-      %(<code class="well">\n#{code_block}\n</code>)
-    end)
-
-    parser.regexter('inlines', /`((?:\\`|[^`\n])+)`/, ->(token, regexp) do
-      code = token[regexp,1]
-      @highlighter.highlight_all!(code)
-      %(<code class="inline">#{code}</code>)
-    end)
-
-    parser.regexter('bold', BOLD[:regexp], BOLD[:lambda]);
-
-    parser.regexter('italic', ITALIC[:regexp], ITALIC[:lambda]);
-
-    string.replace(parser.parse(string))
-  end
-
-
-  def execute!(string_line)
-    string_line.gsub!(RE_PATTERN) do |token|
-      inline_code = token[RE_PATTERN,2].gsub('\`', '`')
-      %Q(<code class="inline">#{ @highlighter.highlight_all(inline_code) }</code>)
-    end
-
-
-    string_array.replace(parser.lines)
-
-
+  def execute(string_array)
     if string_array.length == 1
 
       text = highlight_code(string_array)
@@ -93,6 +59,8 @@ class Code
       return "<code class=\"well\">\n#{code_block}<\/code>"
     })
 
+    parser.regexter('bold', BOLD[:regexp], BOLD[:lambda]);
+    parser.regexter('italic', ITALIC[:regexp], ITALIC[:lambda]);
     parser.parse(card_block)
   end
 
@@ -121,7 +89,6 @@ class Code
     end
 
     string_list.replace(string_block.lines.collect { |element| element.rstrip})
-
     return string_list
   end
 

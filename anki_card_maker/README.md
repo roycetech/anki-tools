@@ -12,7 +12,7 @@ Terminology:
 - _Display Tag_ - it is hard coded into the card html to quick visibility.  It adds important, relative information to the card content.
 
 - File _base name_ - it is the simple filename without the extension.  e.g. `file.txt.bak` => `file.txt`
-
+- _card block_ - it is the line(s) of text that will appear on one side of a card.
 
 
 Notable Codes:
