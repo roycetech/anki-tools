@@ -1,41 +1,27 @@
-# TODO: Outdated!!!
+require './lib/highlighter/base_highlighter'
+
+
 class RubyHighlighter < BaseHighlighter
 
 
-  COLOR_CLASS_VAR = '#426F9C'
+  include HtmlUtils
+
 
   def initialize() super(HighlightersEnum::RUBY) end
-  def keywords_file() 'keywords_ruby.txt'; end
-  def comment_regex() /#.*/ end
+  def keywords_file() 'keywords_ruby.txt' end
+  def comment_regex() RegextrationStore::CommentBuilder.new.perl.build end
   def string_regex() RE_QUOTE_BOTH end
 
 
-  def highlight_lang_specific(input_string)
-    highlight_block_param(input_string)
-    highlight_variable(input_string)
-    return input_string
-  end
 
+  def regexter_singles(parser) 
 
-  # Added <br/ > as workaround to quirk of missing new lines.
-  def highlight_block_param(input_string)
-    pattern = Regexp.new %Q{\\|[^"\\\r\n]*(?:\\.[^"\\\r\n]*)*\\|}
-    if pattern =~ input_string
-      input_string.gsub!(pattern, 
-        "<span class=\"ident\">#{input_string[pattern]}</span>")
-    end
-    return input_string
-  end
+    parser.regexter('|vars,...|', //, ->(t, r) do
+      p = SourceParser.new
+      p.regexter('var', /\w+/, ->(t, r) { wrap(:var, t) })
+      "#|#{p.parse(token)}|"
+    end)
 
-
-  # highlight instance and class variables
-  def highlight_variable(input_string)
-    pattern = /@[@a-z_A-Z]*\s/
-    if pattern =~ input_string
-      input_string.gsub!(pattern, 
-        "<span class=\"var\">#{input_string[pattern]}</span>")
-    end
-    return input_string
   end
 
 end  # end of RubyHighlighter class

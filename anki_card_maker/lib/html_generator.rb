@@ -35,11 +35,11 @@ class HtmlGenerator
     card_block = front_array.join("\n")
     
     untagged = tag_helper.untagged? || tag_helper.is_back_only?
-    tag_htmls = build_tags(tag_helper)  # VERIFY IF NESTED works
+    tags_html = build_tags(tag_helper)  # VERIFY IF NESTED works
     
     Code.new(@highlighter).mark_codes(card_block)
     output = html :div, :main do      
-      merge(tag_htmls) unless untagged
+      merge(tags_html) unless untagged
       text card_block
     end
 
@@ -54,10 +54,26 @@ class HtmlGenerator
     card_block = back_array.join("\n")
 
     if tag_helper.has_enum?
-      List.new(@highlighter).execute(builder_back, back_array, tag_helper.ol?)
+      Code.new(@highlighter).mark_codes(card_block)
+
+      output = html :div, :main do
+        if tag_helper.ol?
+          ol do
+            card_block.lines.each do |line|
+              li line
+            end
+          end
+        else
+          ul do
+            card_block.lines.each do |line|
+              li line
+            end
+          end
+        end
+      end
 
     elsif tag_helper.figure?
-      html :div, :main do
+      output = html :div, :main do
         pre :fig do
           text back_array.inject('') do |result, element|
             result += "\n" unless result.empty?
@@ -69,9 +85,11 @@ class HtmlGenerator
     else
       Code.new(@highlighter).mark_codes(card_block)
       untagged = tag_helper.untagged? || tag_helper.is_front_only?
+      tags_html = build_tags(tag_helper)  # VERIFY IF NESTED works
       output = html :div, :main do      
-        merge(tag_htmls) unless untagged
-        text card_block
+        merge(tags_html) unless untagged
+        merge(card_block)
+        # text card_block
       end
     end
 

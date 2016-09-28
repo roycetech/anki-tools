@@ -1,8 +1,10 @@
 require './lib/file_reader'
+require './lib/utils/html_utils'
 
 
-# Include angular directives ng-*.
 class CommandHighlighter < BaseHighlighter
+
+  include HtmlUtils
 
   
   @@html_tags = nil
@@ -14,18 +16,16 @@ class CommandHighlighter < BaseHighlighter
   end
 
 
-  def comment_regex
-  end
+  def comment_regex() /^\$.*$/ end
 
 
   def regexter_blocks(parser)
         
-    pattern = Regexp.new("&lt;\\/?(?:#{@@html_tags.join('|')}).*&gt;")
-    parser.regexter('html', pattern, lambda {
-      |blocktoken, re_name|
+    pattern = /&lt;\/?(?:#{@@html_tags.join('|')}).*&gt;/
+    parser.regexter('html', pattern, ->(bt, br) do
+      
       parser_inner = SourceParser.new
-
-      parser.regexter('expression', /\{\{.*?\}\}/, lambda {|blocktoken, regex_name|
+      parser.regexter('expression', /\{\{.*?\}\}/, lambda { |blocktoken, regex_name|
         blocktoken  # no markup
       })
 
@@ -55,7 +55,7 @@ class CommandHighlighter < BaseHighlighter
 
 
   def regexter_singles(parser)
-      ngattr_lambda = lambda{ |token, re_name| HtmlUtil.span('attr', token) }
+      ngattr_lambda = lambda{ |token, re_name| wrap(:attr, token) }
       parser.regexter('ng_attr', /ng-\w+/, ngattr_lambda)
   end
   

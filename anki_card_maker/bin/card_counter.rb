@@ -4,13 +4,11 @@ require './lib/latest_file_finder'
 require './lib/mylogger'
 
 
-path = '/Users/royce/Dropbox/Documents/Reviewer/javascript'
-
 # Use folder of last modified file
 file_mask = '*.md'
 finder = LatestFileFinder.new('/Users/royce/Dropbox/Documents/Reviewer', file_mask)
 finder.find
-path = finder.latest_folder
+path = finder.last_modified_folder
 $logger.debug("Path: #{ path }")
 
 
@@ -23,13 +21,14 @@ Dir[File.join(path, file_mask)].each do |filename|
     total_files += 1
     File.open(filename, 'r') do |file|
       card_count = 0
-      SourceReader.new(file).each_card { |tags, front, back| card_count += 1 }
+      SourceReader.new(file, filename).each_card { |tags, front, back| card_count += 1 }
       total_api += card_count if filename.include?'-API-'
       puts "#{ filename }: #{ card_count }"
       total_cards += card_count
     end
   end
 end
+
 
 puts "Total files: #{ total_files }"
 puts "Total cards: #{ total_cards }"

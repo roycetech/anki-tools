@@ -3,7 +3,7 @@ require './lib/dsl/style_dsl'
 
 class StyleList 
 
-  def initialize(element_name='span', tags)
+  def initialize(tags, theme=nil, element_name='span')
     @element_name = element_name
     @list = []
     @tags = tags || []

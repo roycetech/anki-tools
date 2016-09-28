@@ -59,7 +59,7 @@ class StyleGenerator
     back_style = style {}
     back_style.styles << build_main
 
-    no_tag = @tag_helper.untagged? or @tag_helper.is_front_only?
+    no_tag = @tag_helper.untagged? || @tag_helper.is_front_only?
     back_style.styles << build_tag unless no_tag
     back_style.styles <<  build_figure if @tag_helper.figure?
     back_style.styles <<  build_command if has_command?(back_card_block)
@@ -83,7 +83,9 @@ class StyleGenerator
       background_color '#5BC0DE'
       border_radius '5px'
       color 'white'
+      font_size '14pt'
       padding '2px'
+      margin_right '10px'
     end
   end
 
@@ -144,7 +146,7 @@ class StyleGenerator
 
 
   def build_code(tags, theme=nil)
-    style_list = StyleList.new(tags, theme)
+    style_list = StyleList.new(tags)
     style_list.add('keyword', :color, '#7E0854')
     style_list.add('comment', :color, '#417E60')
     style_list.add('quote', :color, '#1324BF')

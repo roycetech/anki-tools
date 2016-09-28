@@ -75,7 +75,7 @@ class HTMLDSL
     attrs = if @class.empty?
       ""
     else
-      @class.map {|k, v| %Q<#{k}="#{v}"> } .join(" ")
+      @class.map { |k, v| %Q<#{k}="#{v}"> } .join(" ")
     end
 
     tag = "#{ indent(@level) }<#{@element_name}#{ " " unless attrs.empty? }#{ attrs }>"  

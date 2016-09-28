@@ -72,12 +72,12 @@ class Reviewer
   end
 
 
-  # def register_front_card(tags, front_card)
-  #   front_key =  tags.join(',') + front_card.join("\n")    
-  #   @all_front.push(front_key)
-  #   @front_tag_map[front_key] = front_card.join("\n")
-  # end
-
+  # Used to analyze later for duplicates
+  def register_front_card(tags, front_card)
+    front_key =  tags.join(',') + front_card.join("\n")    
+    @all_front.push(front_key)
+    @all_front_tag_map[front_key] = front_card.join("\n")
+  end
 
 
   # :nocov:

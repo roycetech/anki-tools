@@ -123,7 +123,7 @@ class MainClass
     tsv_compat_lst << SystemTagCounter.new.count(tag_helper, map: count_map)
 
     debug_print_cards(tsv_compat_lst)
-    # @reviewer.addFrontCard(tags, front)
+    @reviewer.register_front_card(tags, front)
     csv << tsv_compat_lst
     
   end
@@ -170,14 +170,12 @@ end
 
 path = '/Users/royce/Dropbox/Documents/Reviewer'
 
-
 unless $unit_test
   if ARGV.empty? or 'upload' === ARGV[0]
     # - Generate a single file
     main = MainClass.new({:source_file => LatestFileFinder.new(path, '*.md').find})
     main.execute
-
-    RunSelenium.execute unless ARGV.empty? or 'upload' == ARGV[0].downcase
+    RunSelenium.execute unless ARGV.empty? || 'upload' != ARGV[0].downcase
 
   else
     # - Generate multiple file

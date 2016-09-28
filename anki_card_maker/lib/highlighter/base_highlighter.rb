@@ -126,4 +126,5 @@ require './lib/highlighter/highlighter_spring'
 require './lib/highlighter/highlighter_sql'
 require './lib/highlighter/highlighter_csharp'
 require './lib/highlighter/highlighter_asp'
+require './lib/highlighter/highlighter_erb'
 

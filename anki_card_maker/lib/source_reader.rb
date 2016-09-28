@@ -3,8 +3,11 @@
 class SourceReader
 
 
-  def initialize(file)
+  def initialize(file, filename=nil)
     @file = file
+
+    @filename = filename  # used for debugging only.  
+      #file should be opened already.
   end
 
 
@@ -45,7 +48,7 @@ class SourceReader
 
         if space_counter >= 2  # write to file
           
-          back.pop if back.last.empty?
+          back.pop if back.last && back.last.empty?
           yield tags, front, back
           space_counter, front, back, tags = 0, [], [], []
         else
@@ -83,7 +86,8 @@ class SourceReader
 
 
   def validate_tag_declaration(line, line_number: 0)
-      raise "ERROR: Misspelled @Line #{ line_number }:#{ line }" if line[/@tags/i] && !line[/@Tags: .*/]
+      filemsg = "@File: #{@filename[/([\w\d\-_]+\.md)/, 1]}, " if @filename
+      raise "ERROR: Misspelled #{filemsg}@Line #{ line_number }:#{ line }" if line[/@tags/i] && !line[/@Tags: .*/]
   end
 
 

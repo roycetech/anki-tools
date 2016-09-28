@@ -12,5 +12,6 @@ module HighlightersEnum
   SQL = 'sql'
   ASP = 'asp'
   CSHARP = 'csharp'
+  ERB = 'erb'
 
 end
