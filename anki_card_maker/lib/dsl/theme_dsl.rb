@@ -29,14 +29,25 @@ class ThemeDSL
   end
 
   def method_missing(method_symbol, *args, &block)
+    return if method_symbol == :to_ary
     method_name = method_symbol.to_s
     if block
       @children[method_name] = ThemeDSL.new(parent: self, &block)
     else
       @hash[method_name.gsub(/_/,'-')] = args[0]
     end
-
   end
+
+  # def to_s
+  #   str = ''
+  #   @children.each_pair do |key, value| 
+  #     str += "    #{ key }: #{ value };\n" 
+  #   end
+  #   @hash.each_pair do |key, value| 
+  #     str += ">>>>#{ key }: #{ value };\n" 
+  #   end
+  #   str
+  # end
 
 end  # class
 
@@ -55,6 +66,8 @@ output = theme do
   select 'span.attr', color: 'silver'
 
 end
+
+puts(output)
 
 # puts(output.get('code.well', 'background-color'))
 # puts(output.get('span.attr', :color))

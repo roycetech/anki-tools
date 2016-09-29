@@ -2,6 +2,7 @@
 #   style - refers to the select block (selector and styles inside)
 
 require './lib/dsl/selector_dsl' 
+require './lib/theme_store' 
 
 
 class StyleDSL
@@ -11,7 +12,7 @@ class StyleDSL
   attr_accessor :styles
 
 
-  def initialize(theme=nil, &block)
+  def initialize(theme, &block)
     @theme = theme
     @styles = []
     instance_eval(&block)
@@ -26,9 +27,7 @@ class StyleDSL
   # :nocov:
   def to_s
     str = "<style>\n"
-    @styles.each do |item| 
-      str += "#{ item }\n"
-    end
+    @styles.each { |item| str += "#{ item.apply_theme(@theme) }\n" }
     str += "</style>"
   end
   # :nocov:
@@ -38,7 +37,7 @@ end  # class
 
 
 # DSL Entry
-def style(theme=nil, &block)
+def style(theme=ThemeStore::Default, &block)
   StyleDSL.new(theme, &block)
 end
 

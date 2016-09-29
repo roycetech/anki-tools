@@ -30,6 +30,24 @@ class SelectorDSL
   end
 
 
+  def apply_theme(theme)
+    
+    output = if @styles_hash.length == 1
+      array = @styles_hash.to_a[0]
+      prop_name = array.to_a[0]
+      new_value = theme.get(@selector, prop_name) || array[1]
+      "  #{ @selector } { #{ prop_name }: #{new_value}; }"
+    else
+      str = "  #{ @selector } {\n"
+      @styles_hash.each_pair do |key, value| 
+        new_value = theme.get(@selector, key) || value
+        str += "    #{ key }: #{ new_value };\n" 
+      end
+      str += "  }"
+    end
+  end
+
+
   def to_s
     if @styles_hash.length == 1
       array = @styles_hash.to_a[0]

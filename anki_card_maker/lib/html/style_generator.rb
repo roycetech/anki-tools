@@ -75,7 +75,6 @@ class StyleGenerator
   def get_theme
     case @lang
       when HighlightersEnum::RUBY then ThemeStore::SublimeText2_Sunburst_Ruby
-      else ThemeStore::Default
     end
   end
 
@@ -141,7 +140,7 @@ class StyleGenerator
   def build_well
     select 'code.well' do
       background_color '#F1F1F1'
-      border '1px solid #e3e3e3'
+      border '1px solid #E3E3E3'
       border_radius '4px'
       box_shadow 'inset 0 1px 1px rgba(0, 0, 0, 0.05)'
       color 'black'
@@ -156,7 +155,7 @@ class StyleGenerator
 
 
   def build_code(tags)
-    style_list = StyleList.new(tags, get_theme)
+    style_list = StyleList.new(tags)
     style_list.add('keyword', :color, '#7E0854')
     style_list.add('comment', :color, '#417E60')
     style_list.add('quote', :color, '#1324BF')
