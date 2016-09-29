@@ -7,7 +7,7 @@ describe WebHighlighter do
 
     let(:non_html) { 'hello' }
     it 'does not change non-html' do
-      expect { subject.highlight_all!(non_html) }.not_to change { non_html }
+      expect { subject.mark_known_codes(non_html) }.not_to change { non_html }
     end
 
   end

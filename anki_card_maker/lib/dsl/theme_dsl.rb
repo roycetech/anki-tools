@@ -5,7 +5,7 @@ class ThemeDSL
   attr_reader :hash, :children
 
   def initialize(parent: nil, selector: nil, hash: nil, &block) 
-    @hash = hash || {} 
+    @hash = hash || {}
     @parent = parent
     @selector = selector
     @children = {}

@@ -19,7 +19,7 @@ describe PythonHighlighter do
       end
 
       it 'wraps multiline in span' do
-         expect(subject.highlight_all!(input)).to eq(expected)
+         expect(subject.mark_known_codes(input)).to eq(expected)
       end
 
     end # context
@@ -27,10 +27,10 @@ describe PythonHighlighter do
 
     describe 'raw string' do
       it 'it wraps given single quote' do
-        expect(subject.highlight_all!(%q(raw = r'c:\Users'))).to eq(%q(raw = <span class="quote">r'c:\Users'</span>))
+        expect(subject.mark_known_codes(%q(raw = r'c:\Users'))).to eq(%q(raw = <span class="quote">r'c:\Users'</span>))
       end
       it 'it wraps given double quote' do
-        expect(subject.highlight_all!(%q(raw = r"c:\Users"))).to eq(%q(raw = <span class="quote">r"c:\Users"</span>))
+        expect(subject.mark_known_codes(%q(raw = r"c:\Users"))).to eq(%q(raw = <span class="quote">r"c:\Users"</span>))
       end
     end  # end context raw string    
 

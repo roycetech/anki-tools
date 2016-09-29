@@ -10,7 +10,7 @@ describe JavaHighlighter do
 
       expected = 'called <b>type use</b>.'
       it "returns '#{ expected }'" do
-        expect(subject.highlight_all!(input_string1.clone)).to eq(expected)
+        expect(subject.mark_known_codes(input_string1.clone)).to eq(expected)
       end
     end
 
@@ -22,7 +22,7 @@ describe JavaHighlighter do
         'class="keyword">@interface</span> Ann'
       
       it "returns '#{ expected }'" do
-        expect(subject.highlight_all!(input_string2.clone)).to eq(expected)
+        expect(subject.mark_known_codes(input_string2.clone)).to eq(expected)
       end
     end
 
@@ -33,7 +33,7 @@ describe JavaHighlighter do
         '</span>;'
       
       it "returns '#{ expected }'" do
-        expect(subject.highlight_all!(input_string3.clone)).to eq(expected)
+        expect(subject.mark_known_codes(input_string3.clone)).to eq(expected)
       end
     end
 

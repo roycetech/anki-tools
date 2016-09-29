@@ -12,14 +12,14 @@ describe SpringHighlighter do
     # TODO: Should be on java
     let(:with_keyword) { "char c = 'a';" }
     it 'marks keywords' do
-      expect { subject.highlight_all!(with_keyword) }.to change { with_keyword}.
+      expect { subject.mark_known_codes(with_keyword) }.to change { with_keyword}.
         from("char c = 'a';").
         to(%q[<span class="keyword">char</span> c = <span class="quote">'a'</span>;])
     end
 
     let(:xml_config) { '<sec:authentication property="name" />' }
     it 'marks xml config codes' do
-      expect { subject.highlight_all!(xml_config) }.to change { xml_config }.
+      expect { subject.mark_known_codes(xml_config) }.to change { xml_config }.
         from('<sec:authentication property="name" />').
         to('<span class="html">&lt;sec:authentication</span>&nbsp;'\
         '<span class="attr">property</span>=<span class="quote">"name"</span>'\
@@ -28,7 +28,7 @@ describe SpringHighlighter do
 
     let(:java_annotation) { '@RolesAllowed' }
     it 'marks java annotations' do
-      expect { subject.highlight_all!(java_annotation) }.to change { java_annotation }.
+      expect { subject.mark_known_codes(java_annotation) }.to change { java_annotation }.
         from('@RolesAllowed').
         to('<span class="ann">@RolesAllowed</span>')
     end

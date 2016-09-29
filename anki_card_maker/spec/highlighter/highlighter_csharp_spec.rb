@@ -5,7 +5,7 @@ describe CSharpHighlighter do
 
     let(:input) { 'virtual' }
     it "highlights keywords" do
-      expect { subject.highlight_all!(input) }.to change { input }.from('virtual').to('<span class="keyword">virtual</span>')
+      expect { subject.mark_known_codes(input) }.to change { input }.from('virtual').to('<span class="keyword">virtual</span>')
     end
 
   end # method

@@ -9,6 +9,7 @@ require './lib/tag_helper'
 require './lib/html/html_class_finder'
 require './lib/html/style_list'
 require './lib/highlighter/highlighters_enum'
+require './lib/theme_store'
 
 
 # Do bunch of apply, then invoke end_apply to close the style tag
@@ -56,19 +57,27 @@ class StyleGenerator
 
 
   def style_back(back_card_block)
-    back_style = style {}
+    back_style = style(get_theme) {}
     back_style.styles << build_main
 
     no_tag = @tag_helper.untagged? || @tag_helper.is_front_only?
     back_style.styles << build_tag unless no_tag
     back_style.styles <<  build_figure if @tag_helper.figure?
     back_style.styles <<  build_command if has_command?(back_card_block)
+    back_style.styles <<  build_well if has_well?(back_card_block)
 
     tags = find(back_card_block, :span)
+
     build_code(tags) { |style| back_style.styles << style }
     back_style
   end
 
+  def get_theme
+    case @lang
+      when HighlightersEnum::RUBY then ThemeStore::SublimeText2_Sunburst_Ruby
+      else ThemeStore::Default
+    end
+  end
 
   def build_main
     select 'div.main' do
@@ -136,6 +145,7 @@ class StyleGenerator
       border_radius '4px'
       box_shadow 'inset 0 1px 1px rgba(0, 0, 0, 0.05)'
       color 'black'
+      display('block')
       font_family 'monaco, courier'
       font_size '14pt'
       margin_bottom '20px'
@@ -145,8 +155,8 @@ class StyleGenerator
   end
 
 
-  def build_code(tags, theme=nil)
-    style_list = StyleList.new(tags)
+  def build_code(tags)
+    style_list = StyleList.new(tags, get_theme)
     style_list.add('keyword', :color, '#7E0854')
     style_list.add('comment', :color, '#417E60')
     style_list.add('quote', :color, '#1324BF')

@@ -101,7 +101,7 @@ class BaseHighlighter
   # Subclass should return regex string for string literals
   def string_regex() abstract end
 
-  def highlight_all!(input_string)
+  def mark_known_codes(input_string)
     input_string.replace(@parser.format(input_string))  
     escape_spaces!(input_string)
   end

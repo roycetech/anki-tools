@@ -24,6 +24,11 @@ class SelectorDSL
     @styles_hash[method_name.to_sym] = args[0]
   end
 
+  # bandaid
+  def display(value)
+    @styles_hash[:display] = value
+  end
+
 
   def to_s
     if @styles_hash.length == 1

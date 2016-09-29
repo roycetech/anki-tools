@@ -21,14 +21,14 @@ module RegextrationStore
     end
 
 
-    def none() comment('@none', RE_COMMENT_NONE); end
-    def c() comment('@c', RE_COMMENT_C); end
-    def perl() comment('@perl', RE_COMMENT_PERL); end
-    def html() comment('@html', RE_COMMENT_HTML); end
-    def sql() comment('@sql', RE_COMMENT_SQL); end
+    def none() comment('@none', RE_COMMENT_NONE) end
+    def c() comment('@c', RE_COMMENT_C) end
+    def perl() comment('@perl', RE_COMMENT_PERL) end
+    def html() comment('@html', RE_COMMENT_HTML) end
+    def sql() comment('@sql', RE_COMMENT_SQL) end
 
 
-    def build() @regexp; end
+    def build() @regexp end
 
 
     private

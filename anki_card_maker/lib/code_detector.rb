@@ -19,13 +19,15 @@ module CodeDetector
   end
 
 
-  def has_well?(card_lines)
-    card_lines.join("\n") =~ Code::RE_WELL
+  # param can be code block or string array
+  def has_well?(array_or_codeblock)    
+    source = array_or_codeblock.kind_of?(Array) ? array_or_codeblock.join("\n") : array_or_codeblock
+    !!(source  =~ Code::RE_WELL)
   end
 
 
   def has_command?(code_block)
-    code_block =~ /```\w*\n(\$ .*\n)+```/
+    !!(code_block =~ Code::RE_CMD_WELL)
   end
 
 

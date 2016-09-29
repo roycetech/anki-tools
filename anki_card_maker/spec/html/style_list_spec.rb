@@ -8,8 +8,8 @@ describe StyleList do
   context 'add 1 supported' do
       
     subject do
-       base.add('keyword', :color, 'red')
-       base
+      base.add('keyword', :color, 'red')
+      base
     end
 
     it 'yields once' do

@@ -29,7 +29,7 @@ describe Code do
         expect{ subject.mark_codes(input) }.to change{ input }.from('one `string` two').to('one <code class="inline">string</code> two')
       end
       it 'calls highlighter on the code inside' do
-        expect(highlighter).to receive(:highlight_all!).with('string')
+        expect(highlighter).to receive(:mark_known_codes).with('string')
         subject.mark_codes(input)
       end
 
@@ -57,7 +57,7 @@ describe Code do
       end
 
       it 'calls highlighter on the code inside' do
-        expect(highlighter).to receive(:highlight_all!).with('string')
+        expect(highlighter).to receive(:mark_known_codes).with('string')
         subject.mark_codes(input)
       end
 
