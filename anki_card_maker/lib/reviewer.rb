@@ -38,8 +38,6 @@ class Reviewer
 
   # detects back cards with multiple sentences.
   def count_sentence(tag_helper, front_array, back_array)
-    count = 0
-
     if tag_helper.include? :Syntax
       sentence_count = 1 # Consider syntax as a single statement.
     else

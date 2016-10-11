@@ -89,7 +89,7 @@ class TagHelper
 
 
   def figure?
-    @tags.include? :'Figure ☖'
+    @tags.include?(:'Figure ☖')
   end
 
 

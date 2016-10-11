@@ -39,7 +39,7 @@ class LatestFileFinder
   end
 
   def list_dir(path)
-    dirs = Dir.entries(path).select do |entry| 
+    Dir.entries(path).select do |entry|
       File.directory? File.join(path, entry) and !(entry =='.' || entry == '..') 
     end
   end

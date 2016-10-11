@@ -12,7 +12,7 @@ class SourceParser
 
 
   # Register a regular expression.  Omit 3rd parameter to preserve the match
-  def regexter(name, regexp, lambda=->(token, regexp) { token })
+  def regexter(name, regexp, lambda=->(ltoken, lregexp) { ltoken })
     @regexp_name[regexp] = name
     @regexp_lambda[regexp] = lambda
   end

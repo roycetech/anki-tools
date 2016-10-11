@@ -81,7 +81,6 @@ class HtmlBuilder
     return_value = ''
     level = 0
     last_tag = nil
-    last_tag_closed = nil
     last_lfed = false  # last tag invoked new line
 
     self.each_with_value do |tag, value|

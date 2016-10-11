@@ -3,8 +3,8 @@ module Wrappexter
   extend HtmlUtils
 
   def wrappexter(parser, description, regexp, klass)
-    parser.regexter(description, regexp, ->(token, regexp) do
-      wrap(klass, token)
+    parser.regexter(description, regexp, ->(ltoken, lregexp) do
+      wrap(klass, ltoken)
     end)
   end
 

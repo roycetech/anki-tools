@@ -31,7 +31,7 @@ end
 
 task :multi, [:wildcard] do |t, args|
   puts "Args were: #{ args }"
-  ruby "./bin/main_class.rb #{ args[:wildcard] }";
+  ruby "./bin/main_class.rb #{ args[:wildcard] }"
 end
 
 

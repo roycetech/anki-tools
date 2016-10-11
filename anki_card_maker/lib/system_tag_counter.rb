@@ -12,7 +12,7 @@ class SystemTagCounter
         if count == 1
           tag
         else
-          "#{tag}(#{count})"
+          "#{ tag }(#{ count })"
         end
       end
       tags_numbered.join(',')
