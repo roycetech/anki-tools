@@ -1,28 +1,21 @@
 require './lib/file_reader'
 
-
 # Include angular directives ng-*.
 class WebHighlighter < JsHighlighter
+  @@html_tags = nil # if you are wondering, yes this is required.
 
-  
-  @@html_tags = nil  # if you are wondering, yes this is required.
-
-
-  def initialize() 
+  def initialize
     @@html_tags = FileReader.read_as_list('html_element_names.txt') unless @@html_tags
     super
   end
 
-
   def comment_regex
-    /\/\/ .*|\/\*.*\*\/|&lt;!--.*--&gt;/
+    %r{\/\/ .*|\/\*.*\*\/|&lt;!--.*--&gt;}
   end
 
-
   def regexter_blocks(parser)
-        
     pattern = Regexp.new("&lt;\\/?(?:#{@@html_tags.join('|')}).*&gt;")
-    
+
     parser.regexter('html', pattern, lambda {
       |blocktoken, re_name|
       parser_inner = SourceParser.new
@@ -55,12 +48,9 @@ class WebHighlighter < JsHighlighter
     })
   end
 
-
   # TODO: Angular Specific.
   def regexter_singles(parser)
-      ngattr_lambda = lambda{ |token, re_name| HtmlUtil.span('attr', token) }
-      parser.regexter('ng_attr', /ng-\w+/, ngattr_lambda)
+    ngattr_lambda = lambda{ |token, re_name| HtmlUtil.span('attr', token) }
+    parser.regexter('ng_attr', /ng-\w+/, ngattr_lambda)
   end
-  
-
 end

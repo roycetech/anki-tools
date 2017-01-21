@@ -1,17 +1,15 @@
 module HighlightersEnum
-
-  NONE = 'none'
-  PHP = 'php'
-  JAVA = 'java'
-  JQUERY = 'jquery'
-  JS = 'js'
-  RUBY = 'ruby'
-  PYTHON = 'python'
-  GIT = 'git'
-  SPRING = 'spring'
-  SQL = 'sql'
-  ASP = 'asp'
-  CSHARP = 'csharp'
-  ERB = 'erb'
-
+  NONE   = 'none'.freeze
+  PHP    = 'php'.freeze
+  JAVA   = 'java'.freeze
+  JQUERY = 'jquery'.freeze
+  JS     = 'js'.freeze
+  RUBY   = 'ruby'.freeze
+  PYTHON = 'python'.freeze
+  GIT    = 'git'.freeze
+  SPRING = 'spring'.freeze
+  SQL    = 'sql'.freeze
+  ASP    = 'asp'.freeze
+  CSHARP = 'csharp'.freeze
+  ERB    = 'erb'.freeze
 end

@@ -1,10 +1,14 @@
+#
 class CppHighlighter < BaseHighlighter
+  def keywords_file
+    'keywords_cpp.txt'
+  end
 
+  def comment_marker
+    '// '
+  end
 
-  def initialize() super; end
-  def keywords_file() return 'keywords_cpp.txt'; end
-  def comment_marker() return '// '; end
-  def highlight_string(input_string) return highlight_dblquoted(input_string); end
-
-
-end  # end of RubyHighlighter class
+  def highlight_string(input_string)
+    highlight_dblquoted(input_string)
+  end
+end # end of RubyHighlighter class

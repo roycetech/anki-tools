@@ -11,6 +11,4 @@ shared_examples_for 'html highlighter' do |highlighter|
     input = 'one<br>'
     expect { highlighter.mark_known_codes(input) }.not_to change { input }
   end
-
-  
 end

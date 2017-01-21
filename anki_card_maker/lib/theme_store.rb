@@ -1,8 +1,7 @@
 require './lib/dsl/theme_dsl'
 
-
+#
 class ThemeStore
-
   SublimeText2_Sunburst_Ruby = theme do
     select 'code.well' do
       background_color 'black'
@@ -14,5 +13,4 @@ class ThemeStore
   end
 
   Default = theme {}
-
 end

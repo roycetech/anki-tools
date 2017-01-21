@@ -1,10 +1,8 @@
 describe OperUtils do
-  
   describe '#xor' do
-
-    subject(:module) { 
+    subject(:module) {
       sut = Object.new
-      sut.extend(OperUtils) 
+      sut.extend(OperUtils)
     }
 
     describe 'returns' do
@@ -18,7 +16,7 @@ describe OperUtils do
           it 'false' do
             expect(subject.xor(nil, nil)).to be false
           end
-        end    
+        end
       end
 
       context 'different boolean' do
@@ -31,12 +29,8 @@ describe OperUtils do
           it 'true' do
             expect(subject.xor(1, nil)).to be true
           end
-        end    
+        end
       end
-
     end
-
   end
-
 end
-

@@ -1,62 +1,57 @@
-
-
+# DSL for Theme
 class ThemeDSL
-
   attr_reader :hash, :children
 
-  def initialize(parent: nil, selector: nil, hash: nil, &block) 
+  def initialize(parent: nil, selector: nil, hash: nil, &block)
     @hash = hash || {}
     @parent = parent
     @selector = selector
     @children = {}
-    self.instance_eval(&block) if block
+    instance_eval(&block) if block
   end
 
-
-  def select(selector, property={}, &block)
+  def select(selector, property = {}, &block)
     if block
-      @children[selector] = ThemeDSL.new(parent: self, selector: selector, &block)
+      @children[selector] = ThemeDSL.new(
+        parent: self, selector: selector, &block
+      )
     else
-      @children[selector] = ThemeDSL.new(parent: self, selector: selector, hash: property, &block)
-    end 
+      @children[selector] = ThemeDSL.new(
+        parent: self, selector: selector, hash: property, &block
+      )
+    end
   end
 
   # accept the property name as string or symbol
   def get(selector, property)
-    if @children[selector]
-      @children[selector].hash[property.to_s] || @children[selector].hash[property.to_sym] 
-    end
+    return unless @children[selector]
+
+    @children[selector].hash[property.to_s] ||
+      @children[selector].hash[property.to_sym]
+  end
+
+  def respond_to_missing?
+    super
   end
 
   def method_missing(method_symbol, *args, &block)
-    return if method_symbol == :to_ary
+    return super if method_symbol == :to_ary
+
     method_name = method_symbol.to_s
     if block
       @children[method_name] = ThemeDSL.new(parent: self, &block)
     else
-      @hash[method_name.gsub(/_/,'-')] = args[0]
+      @hash[method_name.tr('_', '-')] = args[0]
     end
   end
-
-  # def to_s
-  #   str = ''
-  #   @children.each_pair do |key, value| 
-  #     str += "    #{ key }: #{ value };\n" 
-  #   end
-  #   @hash.each_pair do |key, value| 
-  #     str += ">>>>#{ key }: #{ value };\n" 
-  #   end
-  #   str
-  # end
-
-end  # class
-
+end # class
 
 # DSL Entry
 def theme(&block)
   ThemeDSL.new(&block)
 end
 
+__END__
 
 output = theme do
   select 'code.well' do
@@ -64,7 +59,6 @@ output = theme do
   end
   select 'span.answer', color: 'red'
   select 'span.attr', color: 'silver'
-
 end
 
 puts(output)

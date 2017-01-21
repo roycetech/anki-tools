@@ -1,14 +1,11 @@
 require './lib/html/code'
 require './lib/highlighter/base_highlighter'
 
-
 describe Code do
-
   let(:highlighter) { BaseHighlighter.lang_java }
   subject { Code.new(highlighter) }
 
   describe '#mark_codes' do
-
     context 'no codes' do
       let(:input) { 'one' }
       it 'does not change the input' do

@@ -1,22 +1,17 @@
-
 require './lib/source_parser'
-
 
 # Version 2.
 module HtmlUtils
-
-
-  BR = '<br>'
+  BR = '<br>'.freeze
 
   # Escaped tokens
-  ESP = '&nbsp;'
-  ELT = '&lt;'
-  EGT = '&gt;'
-
+  ESP = '&nbsp;'.freeze
+  ELT = '&lt;'.freeze
+  EGT = '&gt;'.freeze
 
   # Wraps a text inside html tags, 'span' by default.
-  def wrap(tag = :span, class_names, text)
-    %(<#{ tag } class="#{ class_names }">#{ text }</#{ tag }>)
+  def wrap(class_names, text, tag = :span)
+    %(<#{tag} class="#{class_names}">#{text}</#{tag}>)
   end
 
   def escape_angles(input_string)
@@ -26,7 +21,7 @@ module HtmlUtils
   # Will change spaces starting a line, and in between >  and <, to &nbsp;
   def escape_spaces(input_string)
     parser = SourceParser.new
-    func = ->(token, regexp) { token.gsub(/\s/, ESP) }
+    func = ->(token, _regexp) { token.gsub(/\s/, ESP) }
     parser.regexter('starting spaces', /^\s+</, func)
     parser.regexter('spaces between tags', />\s+</, func)
     parser.parse(input_string)
@@ -35,5 +30,4 @@ module HtmlUtils
   def escape_spaces!(input_string)
     input_string.replace(escape_spaces(input_string))
   end
-
 end

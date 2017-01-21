@@ -1,9 +1,7 @@
 require './lib/system_tag_counter'
 
 describe SystemTagCounter do
-
   describe '#count' do
-
     context 'untagged' do
       let(:tag_helper) { TagHelper.new(tags: []) }
 
@@ -13,7 +11,6 @@ describe SystemTagCounter do
     end
 
     context 'single tag' do
-
       context 'sole tag in deck' do
         let(:tag_helper) { TagHelper.new(tags: [:Concept]) }
         let(:map) { { Concept: 1, Enum: 5 } }
@@ -31,12 +28,6 @@ describe SystemTagCounter do
           expect(subject.count(tag_helper, map: map)).to eq('Concept(2)')
         end
       end
-
-
     end
-
-
-
-  end  # count()
-
-end  # class
+  end # count()
+end # class

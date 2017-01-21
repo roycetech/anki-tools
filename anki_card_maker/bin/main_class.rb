@@ -26,8 +26,6 @@ require './lib/latest_file_finder'
 require './lib/source_parser'
 require './lib/tag_counter'
 
-
-
 require './bin/upload' unless $unit_test
 require './lib/mylogger'
 require 'CSV'
@@ -45,7 +43,6 @@ class MainClass
 
   # exposed for testability
   attr_reader :source_absolute_path, :html_generator
-
 
   # Initialize source file name.
   def initialize(source_file: Default_Source_Path)
@@ -196,7 +193,6 @@ def generate_multi(folder, file_wild_card)
     RunSelenium.execute
   end
 end
-
 
 # - Remove all files inside a folder, DANGER!!!
 # output_path = '/Users/royce/Desktop/Anki Generated Sources'

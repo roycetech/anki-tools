@@ -2,7 +2,6 @@ require './lib/source_reader'
 require './lib/latest_file_finder'
 require './lib/tag_helper'
 
-
 RE_TOKENS = /([a-z\?!]+)|\$\/|[+-]?\d/
 EXCLUDE_FRONT = %w(or)
 EXCLUDE_BACK = %w(Ruby e.g)
@@ -168,7 +167,7 @@ class TagApiSource
           end
         end
 
-        if !@words.nil? and not @words.empty?
+        if !@words.nil? && !@words.empty?
 
           re = '(?<=^|\s)(?:' + @words.join('|') + ')(?=[\s\.])'
           back.gsub!(Regexp.new(re)) do |token|
@@ -179,13 +178,15 @@ class TagApiSource
         end
 
         if $write
-          file_output << back  
+          file_output << back
           file_output << "\n"
         end
       end
     end
-  end          
+  end
 end
 
-latest_api = LatestFileFinder.new('/Users/royce/Dropbox/Documents/Reviewer/', '*.api').find
+latest_api = LatestFileFinder.new(
+  '/Users/royce/Dropbox/Documents/Reviewer/', '*.api'
+).find
 TagApiSource.new.execute(latest_api)

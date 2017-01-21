@@ -1,9 +1,7 @@
 require './lib/dsl/theme_dsl'
 
-
 describe ThemeDSL do
-
-  subject do 
+  subject do
     theme do
       select 'code.well' do
         background_color 'black'
@@ -28,6 +26,4 @@ describe ThemeDSL do
   it 'supports block styles, hyphenated' do
     expect(subject.get('code.well', 'background-color')).to eq('black')
   end
-
-
-end  # class 
+end # class

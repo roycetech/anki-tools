@@ -1,20 +1,18 @@
-
+#
 class StyleBuilder
-
-
-  # Colorizer is an object that determines the actual color to use 
-  def initialize(html_builder = nil, colorizer=nil)
+  # Colorizer is an object that determines the actual color to use
+  def initialize(html_builder = nil, colorizer = nil)
     @html_builder = html_builder
     @colorizer = colorizer
 
     # these two used per selectors
-    @prop_hash  = {}
+    @prop_hash = {}
 
-    #used to maintain order of property names of hash.
-    @prop_names  = []
+    # used to maintain order of property names of hash.
+    @prop_names = []
     @current_selector = nil
 
-    @values = []  # holds all the styles
+    @values = [] # holds all the styles
   end
 
   def merge(style_builder)
@@ -33,7 +31,7 @@ class StyleBuilder
     @prop_names.sort!
     @prop_names.each do |name|
       value = @prop_hash[name]
-      @values.push '  %s: %s;' % [name, value]
+      @values.push format('  %s: %s;', name, value)
     end
 
     @values.push '}'
@@ -44,19 +42,19 @@ class StyleBuilder
   end
 
   def style_e
-    raise 'End style must originate from html builder only. ' if @html_builder.nil?
+    err_msg = 'End style must originate from html builder only. '
+    raise err_msg if @html_builder.nil?
     @html_builder.merge(self)
     @html_builder
   end
 
   def value
-    @values.inject('') { |result, element| result += '  ' + element + "\n" }
+    @values.inject('') { |a, e| a + '  ' + e + "\n" }
   end
 
   def build
-    @values.inject('') { |result, value| result += value + "\n" }
+    @values.inject('') { |a, e| a + e + "\n" }
   end
-
 
   def display(param)
     method_name = 'display'
@@ -65,36 +63,40 @@ class StyleBuilder
     self
   end
 
+  def respond_to_missing?
+    super
+  end
 
   def method_missing(meth, *args, &block)
     if args.length == 1
-      name = meth.to_s.gsub('_', '-')
+      name = meth.to_s.tr('_', '-')
       @prop_names.push(name)
-      @prop_hash[name] = if @colorizer 
-        @colorizer.convert(@current_selector, name, args[0])
-      else
-        args[0]
-      end
+      @prop_hash[name] = change(name, args[0])
       self
     else
       super
     end
   end
 
-  
+  def change(name, color)
+    if @colorizer
+      @colorizer.convert(@current_selector, name, color)
+    else
+      color
+    end
+  end
+
   def each
     @values.each { |value| yield value }
   end
 
-
   def to_s
-    @values.inject("\n" + 
-      self.class.to_s + 
-      '------------------------------------' + 
-      "\n  HtmlBuilder[%s]" % (@html_builder ? 'Y' : 'n') + "\n") do
-      |result, value|
-      result += "#{value}\n"
+    @values.inject("\n" +
+      self.class.to_s +
+      '------------------------------------' +
+      format("\n  HtmlBuilder[%s]", (@html_builder ? 'Y' : 'n')) +
+      "\n") do |result, value|
+      result + "#{value}\n"
     end
   end
-
 end

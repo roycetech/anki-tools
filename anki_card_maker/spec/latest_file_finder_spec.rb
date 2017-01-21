@@ -1,11 +1,7 @@
 require './lib/latest_file_finder'
 
-
 describe LatestFileFinder do
-
-
   context 'One level deep folder' do
-
     subject do
       LatestFileFinder.new('/')
     end
@@ -14,15 +10,13 @@ describe LatestFileFinder do
       allow(File).to receive(:mtime) do |filename|
         Time.new(2000 + filename[/\w+/][-1].to_i)
       end
-      allow(Dir).to receive(:[]) { ['file1.md', 'file2. md']  }
+      allow(Dir).to receive(:[]) { ['file1.md', 'file2. md'] }
       allow(Dir).to receive(:entries) { ['.', '..'] }
       expect(subject.find).to eq('file2. md')
-    end    
+    end
   end
 
-
   context 'Two level deep folder' do
-
     let(:separator) { File::SEPARATOR }
     let(:system_folders) { [] }
 
@@ -39,8 +33,8 @@ describe LatestFileFinder do
       end
       allow(Dir).to receive(:[]) do |args|
         case args
-          when '/*.txt' then ['file1.md', 'file2. md'] 
-          when '/sub/*.txt' then ['file3.md', 'file4. md']
+        when '/*.txt' then ['file1.md', 'file2. md']
+        when '/sub/*.txt' then ['file3.md', 'file4. md']
         end
       end
 
@@ -51,7 +45,6 @@ describe LatestFileFinder do
       end
       expect(subject.find).to eq('file4. md')
       expect(subject.last_modified_folder).to eq('/sub')
-    end    
+    end
   end
-
 end

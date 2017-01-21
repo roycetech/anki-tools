@@ -1,11 +1,10 @@
 
 # Few choices so we use template method.
 class ColorizerTemplate
-
   def convert(selector, style_name, style_value)
     key = "#{selector}{#{style_name}"
-    
-    converted = mapping()[key]
+
+    converted = mapping[key]
     if converted
       converted
     else
@@ -13,15 +12,12 @@ class ColorizerTemplate
     end
   end
 
-
   # @Abstract
   # def get_mapping() end
-
 end
 
-
+#
 class DarkColorizer < ColorizerTemplate
-
   def initialize
     @mapping = {
       'span.quote{color' => '#66CC33',
@@ -36,9 +32,9 @@ class DarkColorizer < ColorizerTemplate
   end
 
   attr_reader :mapping
-
 end
 
+#
 class VisualStudioColorizer < ColorizerTemplate
   def initialize
     @mapping = {
@@ -49,20 +45,17 @@ class VisualStudioColorizer < ColorizerTemplate
       'span.comment{color' => '#608B4E',
       'div.well{background-color' => '#1E1E1E',
       'div.well{color' => '#D2D2D2',
-      'span.attr{color' => '#9ADAFC'      
+      'span.attr{color' => '#9ADAFC'
     }
   end
   attr_reader :mapping
 end
 
-
-class LightColorizer < ColorizerTemplate 
-
+#
+class LightColorizer < ColorizerTemplate
   def initialize
     @mapping = {}
   end
 
   attr_reader :mapping
-
 end
-

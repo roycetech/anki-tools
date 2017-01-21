@@ -9,5 +9,3 @@ require './spec/spec_utils'
 require './lib/mylogger'
 
 $logger.level = Logger::WARN
-
-

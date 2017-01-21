@@ -1,27 +1,30 @@
 require './lib/highlighter/base_highlighter'
 
-
+#
 class RubyHighlighter < BaseHighlighter
-
-
   include HtmlUtils
 
-
-  def initialize() super(HighlightersEnum::RUBY) end
-  def keywords_file() 'keywords_ruby.txt' end
-  def comment_regex() RegextrationStore::CommentBuilder.new.perl.build end
-  def string_regex() RE_QUOTE_BOTH end
-
-
-
-  def regexter_singles(parser) 
-
-    parser.regexter('|vars,...|', //, ->(t, r) do
-      p = SourceParser.new
-      p.regexter('var', /\w+/, ->(t, r) { wrap(:var, t) })
-      "#|#{p.parse(token)}|"
-    end)
-
+  def initialize
+    super(HighlightersEnum::RUBY)
   end
 
-end  # end of RubyHighlighter class
+  def keywords_file
+    'keywords_ruby.txt'
+  end
+
+  def comment_regex
+    RegextrationStore::CommentBuilder.new.perl.build
+  end
+
+  def string_regex
+    RE_QUOTE_BOTH
+  end
+
+  def regexter_singles(parser)
+    parser.regexter('|vars,...|', //, lambda(t, r) do
+      p = SourceParser.new
+      p.regexter('var', /\w+/, ->(ti, _ri) { wrap(:var, ti) })
+      "#|#{p.parse(token)}|"
+    end)
+  end
+end # end of RubyHighlighter class

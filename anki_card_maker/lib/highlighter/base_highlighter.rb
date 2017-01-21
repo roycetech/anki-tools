@@ -6,108 +6,113 @@ require './lib/highlighter/highlighters_enum'
 require './lib/utils/regexp_utils'
 require './lib/source_parser'
 
-require 'active_support/inflector'
-
 # requires reviewed Sept 23, 2016
-
-
-
 # NOTE: Highlighter implementing classes "requires" at the bottom of this file.
-
 
 # Base class will handle keyword, and comment, provided sub class supply
 # keyword list and line comment markers.
-class BaseHighlighter 
-
-
+class BaseHighlighter
   include Wrappexter, Markdown, RegexpUtils
-
 
   attr_reader :type
 
-
-  @@html_class = '<span class="%{klass}">%{word}</span>'
-  class << @@html_class
-    # def quote(string) self % { klass: :quote, word: string }; end
-    def comment(string) self % { klass: :comment, word: string }; end
-    def keyword(string) self % { klass: :keyword, word: string }; end
+  def self.respond_to_missing?(name, _include_all)
+    method_name = name.to_s
+    method_name =~ /^lang_(\w+)/
   end
 
-
   # Factory methods.
-
-  def self.method_missing(name)
+  def self.method_missing(name, *args)
     regex = /^lang_(\w+)/
     method_name = name.to_s
-    if method_name =~ regex
-      Object::const_get("#{ method_name[regex, 1].titleize }Highlighter").new
-    else
-      super
-    end
+    return super unless method_name =~ regex
+
+    Object.const_get("#{method_name[regex, 1].capitalize}Highlighter").new
   end
 
   # Define here if it don't follow standard naming.
-  def self.jquery() JQueryHighlighter.new end
-  def self.csharp() CSharpHighlighter.new end
+  def self.jquery
+    JQueryHighlighter.new
+  end
 
+  def self.csharp
+    CSharpHighlighter.new
+  end
+
+  RE_HTTP = %r{
+    ^             # match beginning of string
+    http          # match text 'http'
+    s?            # optionally followed by 's'
+    :\/\/         # follow by text '://'
+    \w+           # followed by a word
+    (?:\.\w+)*    # can be followed with more dot and word
+    (?::\d{1,5})? # optionally followed by a port number i.e. ":12345"
+    (?:\/\w+)*    # followed by 0 or more /word
+    \/?           # optionally ending with a '/'
+    $             # match ending of a string
+  }x
 
   def initialize(type)
-    # $logger.debug "Highlighter: #{ self.class }" 
-
     @parser = SourceParser.new
-    @type = type  # initialized by subclass
+    @type = type # initialized by subclass
 
-    http_re = /^https?:\/\/\w+(?:\.\w+)*(?::\d{1,5})?(?:\/\w+)*\/?$/
-    @parser.regexter('http_url', http_re, ->(token, regexp) do
-      wrap(:url, token)
-    end)
-
-    @parser.regexter('comment', comment_regex, ->(token, regexp) do
-      wrap(:comment, token.sub(BR, '')) 
-    end)
-
-    @parser.regexter('bold', BOLD[:regexp], BOLD[:lambda]);
-    @parser.regexter('italic', ITALIC[:regexp], ITALIC[:lambda]);
-
+    init_pre_block_regexes(@parser)
     regexter_blocks(@parser)
 
-    string_lambda = ->(token, regex) { wrap(:quote, token) }
-    @parser.regexter('strings', string_regex, string_lambda)
+    wrappexter(@parser, 'strings', string_regex, :quote)
+    wrappexter(@parser, '<user_identifier>', /#{ELT}[\w ]*?#{EGT}/, :user)
 
-    
-    user_lambda = ->(token, regexp) { @@html_class.user(token) }
-    @parser.regexter('<user_identifier>', /#{ ELT }[\w ]*?#{ EGT }/, user_lambda)
-
-    if keywords_file
-      keyworder = KeywordHighlighter.new(keywords_file)
-      keyworder.register_to(@parser)
-    end
+    init_keywords
 
     regexter_singles(@parser)
     @parser.regexter('escaped', /\\(.)/, ->(token, regexp) { token[regexp, 1] })
   end
+
   private :initialize
 
+  def init_pre_block_regexes(parser)
+    wrappexter(parser, 'http_url', RE_HTTP, :url)
 
-  # Override to register specific blocks
-  def regexter_blocks(parser) end
-  def regexter_singles(parser) end
+    parser.regexter('comment', comment_regex, lambda do |token, _regexp|
+      wrap(:comment, token.sub(BR, ''))
+    end)
 
-  def keywords_file() end
-
-  # Subclass should return regex string
-  def comment_regex() abstract end
-
-  # Subclass should return regex string for string literals
-  def string_regex() abstract end
-
-  def mark_known_codes(input_string)
-    input_string.replace(@parser.format(input_string))  
-    escape_spaces!(input_string)
+    parser.regexter('bold', BOLD[:regexp], BOLD[:lambda])
+    parser.regexter('italic', ITALIC[:regexp], ITALIC[:lambda])
   end
 
-end
+  def init_keywords
+    return unless keywords_file
 
+    keyworder = KeywordHighlighter.new(keywords_file)
+    keyworder.register_to(@parser)
+  end
+
+  # Override to register specific blocks
+  def regexter_blocks(parser)
+  end
+
+  def regexter_singles(parser)
+  end
+
+  def keywords_file
+  end
+
+  # Subclass should return regex string
+  def comment_regex
+    abstract
+  end
+
+  # Subclass should return regex string for string literals
+  def string_regex
+    abstract
+  end
+
+  def mark_known_codes(input_string)
+    input_string.replace(@parser.format(input_string))
+    escape_spaces!(input_string)
+  end
+end
 
 require './lib/highlighter/highlighter_none'
 require './lib/highlighter/highlighter_ruby'
@@ -127,4 +132,3 @@ require './lib/highlighter/highlighter_sql'
 require './lib/highlighter/highlighter_csharp'
 require './lib/highlighter/highlighter_asp'
 require './lib/highlighter/highlighter_erb'
-

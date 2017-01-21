@@ -1,34 +1,30 @@
 require './lib/html/inline'
 require './lib/html/code'
 
-
+#
 module CodeDetector
-
-
-  def has_code?(card_lines)
-    return true if has_inline?(card_lines)
-    has_well?(card_lines)
+  def code?(card_lines)
+    inline?(card_lines) || well?(card_lines)
   end
 
-
-  def has_inline?(card_lines)
+  def inline?(card_lines)
     card_lines.each do |card_line|
       return true if card_line =~ Inline::RE_PATTERN
     end
-    false 
+    false
   end
-
 
   # param can be code block or string array
-  def has_well?(array_or_codeblock)    
-    source = array_or_codeblock.kind_of?(Array) ? array_or_codeblock.join("\n") : array_or_codeblock
-    !!(source  =~ Code::RE_WELL)
+  def well?(array_or_codeblock)
+    source = if array_or_codeblock.is_a?(Array)
+               array_or_codeblock.join("\n")
+             else
+               array_or_codeblock
+             end
+    !(source =~ Code::RE_WELL).nil?
   end
 
-
-  def has_command?(code_block)
-    !!(code_block =~ Code::RE_CMD_WELL)
+  def command?(code_block)
+    !(code_block =~ Code::RE_CMD_WELL).nil?
   end
-
-
 end

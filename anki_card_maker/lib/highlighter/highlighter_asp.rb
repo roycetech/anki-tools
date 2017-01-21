@@ -1,77 +1,60 @@
 require './lib/highlighter/highlighter_csharp'
+require './lib/html/html_tags'
 
-
+#
 class AspHighlighter < CSharpHighlighter
-
-
-  @@html_tags = nil
-
-
-  def initialize()
-    @@html_tags ||= FileReader.read_as_list('html_element_names.txt')
+  def initialize
     super(HighlightersEnum::ASP)
   end
 
-
   def regexter_blocks(parser)
+    parser.regexter('commandline', /^\$.*$/, lambda_cmd)
+    parser.regexter('skip_br', /#{BR}/)
+    html_tags = HtmlTags.instance.names
+    parser.regexter('html', %r{<\/?(#{html_tags.join('|')}).*?>}, lambda_html)
+  end
 
-    parser.regexter('commandline', /^\$.*$/, ->(outtoken, outregexp) do
+  def regexter_singles(parser)
+    parser.regexter(
+      'razor_model',
+      /@(model) (\S+)/,
+      lambda do |token, regexp|
+        "@#{wrap(:html, token[regexp, 1])} #{escape_angles(token[regexp, 2])}"
+      end
+    )
+
+    parser.regexter('razor_expr', /@\S+/, ->(token, _regexp) { token })
+  end
+
+  private # --------------------------------------------------------------------
+
+  def lambda_cmd
+    lambda do |outtoken, _outregexp|
       cmd_parser = SourceParser.new
 
       wrappexter(cmd_parser, 'optional', /\[.*\]/, :opt)
-      # cmd_parser.regexter('optional', /\[.*\]/, ->(token, regexp) do
-      #   wrap(:opt, token)
-      # end)
+      wrappexter(cmd_parser, 'opt param', /(?!<\w)-[A-Za-z]\b/, :opt)
 
-      cmd_parser.regexter('opt param', /(?!<\w)-[A-Za-z]\b/, ->(token, regexp) do
-        wrap(:opt, token) 
-      end)
-
-      cmd_parser.regexter('command', /\$ (\w+)\b/, ->(token, regexp) do
+      cmd_parser.regexter('command', /\$ (\w+)\b/, lambda do |token, regexp|
         wrap(:cmd, token[regexp, 1])
       end)
 
-      %Q(<span class="cmdline">$ #{ cmd_parser.parse(outtoken) }</span>)
-    end)
-
-    parser.regexter('skip_br', /#{ BR }/)
-
-    # token_snatcher(parser, 'skip_br', /#{ BR }/)
-
-    pattern = /<\/?(#{ @@html_tags.join('|') }).*?>/
-    parser.regexter('html', pattern, lambda { |blocktoken, blockregexp|
-
-      parser_inner = SourceParser.new
-
-      parser_inner.regexter('html_tag', /(?<=<|<\/)(\w+)(?=\s|>)/, 
-        ->(token, regexp) { wrap(:html, token) }
-      )
-
-      parser_inner.regexter('quote', /(?<=)((["']).*?\2)/, 
-        ->(token, regexp) { wrap(:quote, token) }
-      )
-
-      parser_inner.regexter('attr', /[\w-]+/, 
-        ->(token, regexp) { wrap(:attr, token) }
-      )
-
-      parser_inner.regexter('symbols', /<\/?|>|=/, 
-        ->(token, regexp) { wrap(:symbol, escape_angles(token)) }
-      )
-
-      parser_inner.parse(blocktoken)
-    })
+      %(<span class="cmdline">$ #{cmd_parser.parse(outtoken)}</span>)
+    end
   end
 
+  def lambda_html
+    lambda do |blocktoken, _blockregexp|
+      parser_inner = SourceParser.new
 
-  def regexter_singles(parser)
+      wrappexter(parser_inner, 'el_name', %r{(?<=<|<\/)(\w+)(?=\s|>)}, :html)
+      wrappexter(parser_inner, 'quote', /(?<=)((["']).*?\2)/, :quote)
+      wrappexter(parser_inner, 'attr', /[-\w]+/, :attr)
+      parser_inner.regexter('<>=', %r{<\/?|>|=}, lambda do |token, _regex|
+        wrap(:symbol, escape_angles(token))
+      end)
 
-    parser.regexter('razor_model', /@(model) (\S+)/, ->(token, regexp) do 
-      "@#{ wrap(:html, token[regexp, 1]) } #{ escape_angles(token[regexp, 2]) }"
-    end)
-
-    parser.regexter('razor_expr', /@\S+/, ->(token, regexp) { token } )
-
-  end 
-
+      parser_inner.parse(blocktoken)
+    end
+  end
 end

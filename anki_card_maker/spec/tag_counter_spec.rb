@@ -1,10 +1,7 @@
 require './lib/tag_counter'
 
-
 describe TagCounter do
-
   context 'given two "Concept" tagged cards' do
-
     require 'stringio'
 
     let(:file) do
@@ -18,7 +15,7 @@ describe TagCounter do
         '@Tags: Concept',
         'front2',
         '',
-        'back2',
+        'back2'
       ].join("\n"))
     end
 
@@ -35,12 +32,9 @@ describe TagCounter do
         subject
       end
 
-      it 'keeps a hash of tag and its count' do      
-        expect(tag_counter.tags_count).to eq({:Concept => 2})
+      it 'keeps a hash of tag and its count' do
+        expect(tag_counter.tags_count).to eq(Concept: 2)
       end
     end
-
-
-  end  # Context: 'given two "Concept" tagged cards'
-
-end  # class
+  end # Context: 'given two "Concept" tagged cards'
+end # class
