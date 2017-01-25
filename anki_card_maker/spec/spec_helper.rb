@@ -1,11 +1,13 @@
 require 'simplecov'
 
 SimpleCov.start
-$unit_test = true
+UNIT_TEST = true
 
 # require './bin/main_class'
 require './lib/class_extensions'
 require './spec/spec_utils'
 require './lib/mylogger'
 
-$logger.level = Logger::WARN
+# Minimal logging when testing.
+MyLogger.instance.level = Logger::WARN
+LOGGER = MyLogger.instance.freeze

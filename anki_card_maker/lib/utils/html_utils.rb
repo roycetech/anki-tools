@@ -21,7 +21,7 @@ module HtmlUtils
   # Will change spaces starting a line, and in between >  and <, to &nbsp;
   def escape_spaces(input_string)
     parser = SourceParser.new
-    func = ->(token, _regexp) { token.gsub(/\s/, ESP) }
+    func = ->(token, _regexp) { token.gsub(/[ ]/, ESP) }
     parser.regexter('starting spaces', /^\s+</, func)
     parser.regexter('spaces between tags', />\s+</, func)
     parser.parse(input_string)

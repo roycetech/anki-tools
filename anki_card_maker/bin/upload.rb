@@ -2,12 +2,16 @@
 require './lib/latest_file_finder'
 require './lib/config'
 require 'selenium-webdriver'
+require './lib/mylogger'
 
 #
 class RunSelenium
   BASE_URL = 'https://api.ankiapp.com/'.freeze
+  LOGGER = MyLogger.instance
 
   def self.execute
+    LOGGER.info 'RunSelenium started...'
+
     driver = Selenium::WebDriver.for :firefox
     @accept_next_alert = true
     driver.manage.timeouts.implicit_wait = 30
@@ -26,13 +30,13 @@ class RunSelenium
 
     driver.find_element(:css, '.auth > div:nth-child(4)').click
 
-    import_css = 'div.center:nth-child(1) > div:nth-child(4) > div:nth-child(1)\
- > div:nth-child(2) > span:nth-child(1)'
+    import_css = 'div.center:nth-child(1) > div:nth-child(4) > '\
+                'div:nth-child(1) > div:nth-child(2) > span:nth-child(1)'
 
     driver.find_element(:css, import_css).click
 
-    spreadsheet_css = 'div.center:nth-child(1) > div:nth-child(3) > \
-span:nth-child(1)'
+    spreadsheet_css = 'div.center:nth-child(1) > div:nth-child(3) > '\
+                      'span:nth-child(1)'
 
     driver.find_element(:css, spreadsheet_css).click
 

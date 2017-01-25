@@ -11,60 +11,52 @@ require './lib/html/style_list'
 require './lib/highlighter/highlighters_enum'
 require './lib/theme_store'
 
-
 # Do bunch of apply, then invoke end_apply to close the style tag
 class StyleGenerator
-
-
   include HtmlClassFinder, HighlightersEnum, CodeDetector
 
-
-  def initialize(tag_helper, lang='none')
-
+  def initialize(tag_helper, lang = 'none')
     @tag_helper = tag_helper
     # $logger.info(lang)
-
-
 
     # # theming.
     # @colorizer = if lang == 'git' || iscmd
     #   DarkColorizer.new
     # elsif ['asp', 'csharp'].include?(lang)
     #   VisualStudioColorizer.new
-    # else 
+    # else
     #   LightColorizer.new
     # end
     # $logger.debug(@colorizer)
 
     @lang = lang
-
-
   end
-
 
   def style_front(front_card_block)
     front_style = style {}
-    front_style.styles << build_main()
-    
-    no_tag = @tag_helper.untagged? or @tag_helper.is_back_only?
+    front_style.styles << build_main
+
+    no_tag = @tag_helper.untagged? || @tag_helper.back_only?
     front_style.styles << build_tag unless no_tag
 
     tags = find(front_card_block, :span)
     build_code(tags) { |style| front_style.styles << style }
 
+    front_style.styles << build_inline if inline?(front_card_block)
+
     front_style
   end
-
 
   def style_back(back_card_block)
     back_style = style(get_theme) {}
     back_style.styles << build_main
 
-    no_tag = @tag_helper.untagged? || @tag_helper.is_front_only?
+    no_tag = @tag_helper.untagged? || @tag_helper.front_only?
     back_style.styles << build_tag unless no_tag
-    back_style.styles <<  build_figure if @tag_helper.figure?
-    back_style.styles <<  build_command if has_command?(back_card_block)
-    back_style.styles <<  build_well if has_well?(back_card_block)
+    back_style.styles << build_figure if @tag_helper.figure?
+    back_style.styles << build_command if command?(back_card_block)
+    back_style.styles << build_well if well?(back_card_block)
+    back_style.styles << build_inline if inline?(back_card_block)
 
     tags = find(back_card_block, :span)
 
@@ -74,7 +66,10 @@ class StyleGenerator
 
   def get_theme
     case @lang
-      when HighlightersEnum::RUBY then ThemeStore::SublimeText2_Sunburst_Ruby
+    when HighlightersEnum::RUBY
+      ThemeStore::SublimeText2_Sunburst_Ruby
+    else
+      ThemeStore::Default
     end
   end
 
@@ -84,7 +79,6 @@ class StyleGenerator
       text_align 'left'
     end
   end
-
 
   def build_tag
     select 'span.tag' do
@@ -109,11 +103,9 @@ class StyleGenerator
     end
   end
 
-
   def build_figure
     select '.fig', :line_height, '70%'
   end
-
 
   def build_inline
     select 'code.inline' do
@@ -128,14 +120,12 @@ class StyleGenerator
     end
   end
 
-
   def build_command
     select 'code.command' do
       color 'white'
       background_color 'black'
     end
   end
-
 
   def build_well
     select 'code.well' do
@@ -144,7 +134,7 @@ class StyleGenerator
       border_radius '4px'
       box_shadow 'inset 0 1px 1px rgba(0, 0, 0, 0.05)'
       color 'black'
-      display('block')
+      display 'block'
       font_family 'monaco, courier'
       font_size '14pt'
       margin_bottom '20px'
@@ -152,7 +142,6 @@ class StyleGenerator
       padding '19px'
     end
   end
-
 
   def build_code(tags)
     style_list = StyleList.new(tags)
@@ -179,8 +168,6 @@ class StyleGenerator
 
     style_list.each { |style| yield style }
   end
-
-
 end
 
 # # tag_helper = TagHelper.new(tags: [])

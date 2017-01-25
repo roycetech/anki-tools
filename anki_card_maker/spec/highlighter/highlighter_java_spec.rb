@@ -3,20 +3,11 @@ require './lib/highlighter/base_highlighter'
 
 describe JavaHighlighter do
   describe '#highlight_all' do
-    input_string1 = 'called __type use__.'
-    context "given '#{input_string1}'" do
-      expected = 'called <b>type use</b>.'
-      it "returns '#{expected}'" do
-        expect(subject.mark_known_codes(input_string1.clone)).to eq(expected)
-      end
-    end
-
-    input_string2 = 'public @interface Ann'
-    context "given '#{input_string2}'" do
-      expected = '<span class="keyword">public</span>&nbsp;<span '\
-        'class="keyword">@interface</span> Ann'
-      it "returns '#{expected}'" do
-        expect(subject.mark_known_codes(input_string2.clone)).to eq(expected)
+    context 'given "public @interface Ann"' do
+      it 'marks the @annotation keyword' do
+        expect(subject.mark_known_codes('public @interface Ann'))
+          .to eq('<span class="keyword">public</span>&nbsp;<span '\
+                 'class="keyword">@interface</span> Ann')
       end
     end
 

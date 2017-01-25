@@ -69,4 +69,18 @@ describe Reviewer do
       end # context: 'tags are irrelevant'
     end # context: back only
   end # count_sentence
+
+  describe '#create_tag' do
+    context 'sentence count no more than 1' do
+      it 'returns nil' do
+        expect(subject.create_tag(1, nil, nil)).to be nil
+      end
+    end
+    context 'enum' do
+      it 'returns nil' do
+        expect(subject.create_tag(2, TagHelper.new(tags: [:EnumU]), nil))\
+          .to be nil
+      end
+    end
+  end
 end # end class

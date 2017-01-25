@@ -14,6 +14,19 @@ describe MainClass do
   end
 
   describe '#execute' do
+    let(:dummy_file) do
+      require 'stringio'
+      dummy = StringIO.new(
+        [
+          'front',
+          '',
+          'back'
+        ].join("\n")
+      )
+      allow(dummy).to receive(:path) { source_file }
+      dummy
+    end
+
     it 'opens the source file for reading' do
       allow(subject).to receive(:generate_output_filepath) { test_output }
 
@@ -39,22 +52,12 @@ describe MainClass do
 
     it 'invokes process_card()' do
       expect(File).to receive(:open).with(source_file, 'r') do |&block|
-        require 'stringio'
-
-        block.call(
-          StringIO.new(
-            [
-              'front',
-              '',
-              'back'
-            ].join("\n")
-          )
-        )
+        block.call(dummy_file)
       end
 
       allow(TagCounter).to receive(:new)
-
       allow(subject).to receive(:init_html_generator)
+      # allow(File).to receive(:path) { source_file }
 
       allow(CSV).to receive(:open) do |&block|
         block.call

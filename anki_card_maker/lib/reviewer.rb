@@ -1,4 +1,5 @@
 require './lib/tag_helper'
+require './lib/reviewer_printer'
 
 # This class is used to quality check cards.  It will log
 # if there are any known violations.
@@ -6,7 +7,7 @@ require './lib/tag_helper'
 # Counts sentence so you can review complexity
 # Checks if front card appears at the back of the card.
 class Reviewer
-  attr_reader :all_sellout, :all_multi
+  attr_reader :all_sellout, :all_multi, :all_front
 
   def initialize
     @all_multi   = []
@@ -41,7 +42,7 @@ class Reviewer
   def count_non_syntax_sentence(back_array)
     sentence_cnt = back_array.inject(0) do |total, element|
       translated = element.downcase
-                          .gsub('e.g.', 'eg')
+                          .gsub(/e\.g\.?|i\.e\.?/, 'eg')
                           .gsub(/(\d+)(?:(\.)(\d*))/, '\1_\3')
                           .gsub(/(?:[a-zA-Z_]*)(?:\.[a-zA-Z_]+)+/, 'javapkg')
                           .gsub(/\.{2,}/, '')
@@ -52,7 +53,7 @@ class Reviewer
   end
 
   def create_tag(sentence_cnt, tag_helper, front_array)
-    return unless sentence_cnt > 1 || tag_helper.enum?
+    return unless sentence_cnt > 1 && !tag_helper.enum?
     multi_tag = format('Multi:%d', sentence_cnt)
 
     return if tag_helper.include? multi_tag
@@ -68,26 +69,7 @@ class Reviewer
     @all_front_tag_map[front_key] = front_card.join("\n")
   end
 
-  # :nocov:
-  def print_multi
-    count_regex = /\((\d*)\)/
-    @all_multi.sort! do |a, b|
-      a[count_regex, 1].to_i <=> b[count_regex, 1].to_i
-    end
-    puts(format("Multi Tags: %s\n\n", @all_multi.to_s))
+  def print_all
+    ReviewerPrinter.new(self).print_all
   end
-
-  def print_card_count
-    puts(format('Total cards: %s', @all_front.size))
-  end
-
-  def print_sellout
-    puts(format("Sellout: %s\n", @all_sellout.to_s))
-  end
-
-  def print_duplicate
-    dups = @all_front.select { |e| @all_front.count(e) > 1 }.uniq.to_s
-    puts(format("Potential Duplicates: %s\n", dups))
-  end
-  # :nocov:
 end

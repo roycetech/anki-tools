@@ -3,6 +3,8 @@ require './lib/source_reader'
 #
 describe SourceReader do
   describe '#each_card' do
+    let(:filename) { 'testdummy.md' }
+
     require 'stringio'
 
     context 'single card' do
@@ -15,6 +17,7 @@ describe SourceReader do
           '',
           back
         ].join("\n"))
+        allow(file).to receive(:path) { filename }
         SourceReader.new(file)
       end
 
@@ -45,6 +48,7 @@ describe SourceReader do
           '',
           back2
         ].join("\n"))
+        allow(file).to receive(:path) { filename }
         SourceReader.new(file)
       end
 
@@ -91,6 +95,7 @@ describe SourceReader do
             back2
           ].join("\n")
         )
+        allow(file).to receive(:path) { filename }
         SourceReader.new(file)
       end
 

@@ -3,12 +3,9 @@ require './lib/card_helper'
 
 # This class is todoc
 class SourceReader
-  def initialize(file, filename = nil)
+  def initialize(file)
     @file = file
-
-    @filename = filename # used for debugging only.
-    # file should be opened already.
-    @card_helper = CardHelper.new
+    @card_helper = CardHelper.new File.basename(file.path)
   end
 
   def each_card(&block)

@@ -30,12 +30,13 @@ class HTMLDSL
     @html_object.add_content "#{indented}\n"
   end
 
-  def respond_to_missing?
-    super
+  def respond_to_missing?(name, _include_all)
+    return true if name =~ /\w+/
+    false
   end
 
   def method_missing(name, *args, &block)
-    super if name =~ /\w+\?/
+    super unless respond_to_missing?(name, true)
     @html_object.add_content(build_missing(name, *args, &block))
   end
 

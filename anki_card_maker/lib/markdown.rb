@@ -24,4 +24,14 @@ module Markdown
     return hash[key] if key
     hash
   end
+
+  def mark(string)
+    parser = SourceParser.new
+    parser.regexter('wells', Code::RE_WELL)
+    parser.regexter('inlines', Inline::RE_HTML_PATTERN)
+
+    parser.regexter('bold', BOLD[:regexp], BOLD[:lambda])
+    parser.regexter('italic', ITALIC[:regexp], ITALIC[:lambda])
+    parser.parse(string)
+  end
 end

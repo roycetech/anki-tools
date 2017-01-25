@@ -1,7 +1,7 @@
 require './lib/card_helper'
 
 describe CardHelper do
-  subject { CardHelper.new }
+  subject { CardHelper.new 'text.md' }
 
   describe '#validate_tag_declaration' do
     it 'ignores non-tag' do

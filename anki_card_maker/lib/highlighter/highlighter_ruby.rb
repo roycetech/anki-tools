@@ -21,10 +21,9 @@ class RubyHighlighter < BaseHighlighter
   end
 
   def regexter_singles(parser)
-    parser.regexter('|vars,...|', //, lambda(t, r) do
-      p = SourceParser.new
-      p.regexter('var', /\w+/, ->(ti, _ri) { wrap(:var, ti) })
-      "#|#{p.parse(token)}|"
+    parser.regexter('|vars,...|', /\|.*?\|/, lambda do |token, _re|
+      wrappexter(SourceParser.new, 'var', /\w+/, :var).parse(token)
     end)
+    wrappexter(parser, 'globals', /\$\w+/, :var)
   end
 end # end of RubyHighlighter class

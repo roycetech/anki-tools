@@ -18,8 +18,7 @@ require './lib/cmd_detector'
 
 #
 class HtmlGenerator
-  include HtmlUtils
-
+  include HtmlUtils, Markdown
   attr_reader :front_html, :back_html, :highlighter
 
   def initialize(highlighter)
@@ -30,7 +29,7 @@ class HtmlGenerator
   def format_front(tag_helper, front_array)
     card_block = front_array.join("\n")
 
-    untagged = tag_helper.untagged? || tag_helper.is_back_only?
+    untagged = tag_helper.untagged? || tag_helper.back_only?
     tags_html = build_tags(tag_helper) # VERIFY IF NESTED works
 
     Code.new(@highlighter).mark_codes(card_block)
@@ -39,10 +38,14 @@ class HtmlGenerator
       text card_block
     end
 
+    build_style(tag_helper, card_block, mark(output), :style_front)
+  end
+
+  def build_style(tag_helper, card_block, output, face)
     style = StyleGenerator.new(
       tag_helper,
       @highlighter.type
-    ).style_front(card_block)
+    ).send(face, card_block)
 
     "#{style}\n#{output}"
   end
@@ -50,57 +53,20 @@ class HtmlGenerator
   def format_back(tag_helper, back_array)
     card_block = back_array.join("\n")
 
-    if tag_helper.enum?
-      Code.new(@highlighter).mark_codes(card_block)
+    output = if tag_helper.enum?
+               build_enum(tag_helper, card_block)
+             elsif tag_helper.figure?
+               build_figure(back_array)
+             else
+               build_back_else(tag_helper, card_block)
+             end
 
-      output = html :div, :main do
-        if tag_helper.ol?
-          ol do
-            card_block.lines.each do |line|
-              li line
-            end
-          end
-        else
-          ul do
-            card_block.lines.each do |line|
-              li line
-            end
-          end
-        end
-      end
-
-    elsif tag_helper.figure?
-      output = html :div, :main do
-        pre :fig do
-          text back_array.inject('') do |result, element|
-            result + "\n" unless result.empty?
-            result + element
-          end
-        end
-      end
-
-    else
-      Code.new(@highlighter).mark_codes(card_block)
-      untagged = tag_helper.untagged? || tag_helper.is_front_only?
-      tags_html = build_tags(tag_helper) # VERIFY IF NESTED works
-      output = html :div, :main do
-        merge(tags_html) unless untagged
-        merge(card_block)
-        # text card_block
-      end
-    end
-
-    style = StyleGenerator.new(
-      tag_helper,
-      @highlighter.type
-    ).style_back(card_block)
-
-    "#{style}\n#{output}"
+    build_style(tag_helper, card_block, mark(output), :style_back)
   end
 
   def build_main
     Code.new(@highlighter).mark_codes(card_block)
-    untagged = tag_helper.untagged? || tag_helper.is_front_only?
+    untagged = tag_helper.untagged? || tag_helper.front_only?
     html :div, :main do
       merge(tag_htmls) unless untagged
       text card_block
@@ -114,4 +80,54 @@ class HtmlGenerator
       end
     end
   end
-end
+
+  private # --------------------------------------------------------------------
+
+  def build_figure(back_array)
+    html :div, :main do
+      pre :fig do
+        text back_array.inject('') do |result, element|
+          result + "\n" unless result.empty?
+          result + element
+        end
+      end
+    end
+  end
+
+  def build_enum(tag_helper, card_block)
+    Code.new(@highlighter).mark_codes(card_block)
+
+    build_ol(card_block) if tag_helper.ol?
+    build_ul(card_block) if tag_helper.ul?
+  end
+
+  def build_ol(card_block)
+    html :div, :main do
+      ol do
+        card_block.each_line do |line|
+          li line
+        end
+      end
+    end
+  end
+
+  def build_ul(card_block)
+    html :div, :main do
+      ul do
+        card_block.each_line do |line|
+          li line
+        end
+      end
+    end
+  end
+
+  def build_back_else(tag_helper, card_block)
+    Code.new(@highlighter).mark_codes(card_block)
+    untagged = tag_helper.untagged? || tag_helper.front_only?
+    tags_html = build_tags(tag_helper) # VERIFY IF NESTED works
+    html :div, :main do
+      merge(tags_html) unless untagged
+      merge(card_block)
+    end
+  end
+end # class

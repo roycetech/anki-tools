@@ -20,15 +20,13 @@ class Code
 
     regexter_wells(parser)
     regexter_inlines(parser)
-
-    parser.regexter('bold', BOLD[:regexp], BOLD[:lambda])
-    parser.regexter('italic', ITALIC[:regexp], ITALIC[:lambda])
     string.replace(parser.parse(string))
   end
 
   def regexter_wells(parser)
     parser.regexter('wells', RE_WELL, lambda do |token, regexp|
       code_block = token[regexp, 3].chomp
+
       @highlighter.mark_known_codes(code_block)
       code_block.gsub!("\n", "<br>\n")
       %(<code class="well">\n#{code_block}\n</code>)

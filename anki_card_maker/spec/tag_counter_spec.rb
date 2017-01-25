@@ -2,10 +2,13 @@ require './lib/tag_counter'
 
 describe TagCounter do
   context 'given two "Concept" tagged cards' do
+
+    let(:filename) { 'testdummy.md' }
+
     require 'stringio'
 
     let(:file) do
-      StringIO.new([
+      file = StringIO.new([
         '@Tags: Concept',
         'front1',
         '',
@@ -17,6 +20,8 @@ describe TagCounter do
         '',
         'back2'
       ].join("\n"))
+      allow(file).to receive(:path) { filename }
+      file
     end
 
     context 'calls verification' do

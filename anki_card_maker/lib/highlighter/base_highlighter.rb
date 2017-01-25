@@ -76,9 +76,6 @@ class BaseHighlighter
     parser.regexter('comment', comment_regex, lambda do |token, _regexp|
       wrap(:comment, token.sub(BR, ''))
     end)
-
-    parser.regexter('bold', BOLD[:regexp], BOLD[:lambda])
-    parser.regexter('italic', ITALIC[:regexp], ITALIC[:lambda])
   end
 
   def init_keywords
@@ -109,6 +106,9 @@ class BaseHighlighter
   end
 
   def mark_known_codes(input_string)
+    # @parser.regexter('bold', BOLD[:regexp], BOLD[:lambda])
+    # @parser.regexter('italic', ITALIC[:regexp], ITALIC[:lambda])
+
     input_string.replace(@parser.format(input_string))
     escape_spaces!(input_string)
   end

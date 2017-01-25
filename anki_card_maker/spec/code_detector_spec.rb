@@ -54,7 +54,9 @@ describe CodeDetector do
     end
 
     describe '.inline?' do
-      it('returns true') { expect(subject.inline?(input)).to be true }
+      it('returns true') do
+        expect(subject.inline?(input.join("\n"))).to be true
+      end
     end
 
     describe '.well?' do
@@ -73,7 +75,9 @@ describe CodeDetector do
       end
 
       describe '.inline?' do
-        it('returns true') { expect(subject.inline?(input)).to be true }
+        it('returns true') do
+          expect(subject.inline?(input.join("\n"))).to be true
+        end
       end
 
       describe '.well?' do
@@ -93,7 +97,9 @@ describe CodeDetector do
       end
 
       describe '.inline?' do
-        it('returns false') { expect(subject.inline?(input)).to be false }
+        it('returns false') do
+          expect(subject.inline?(input.join("\n"))).to be false
+        end
       end
 
       describe '.well?' do

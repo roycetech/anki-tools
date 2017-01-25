@@ -2,6 +2,10 @@ require './lib/tag_helper'
 
 # Helper class for each card iteration in SourceParser
 class CardHelper
+  def initialize(filename)
+    @filename = filename
+  end
+
   def handle(state, line, &block)
     if state.front?
       handle_front(state, line, &block)
@@ -17,7 +21,7 @@ class CardHelper
 
   private
 
-  def handle_front(state, line, &block)
+  def handle_front(state, line)
     if state.space_counter >= 2 # write to file
       state.remove_back_last_blank
       yield state.to_a
@@ -28,8 +32,7 @@ class CardHelper
   end
 
   def handle_back(state, line)
-    return if line.empty? || !state.backless?
-
+    return if line.empty? && state.backless?
     state.add_back(line)
     state.reset_space unless line.empty?
   end

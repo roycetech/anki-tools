@@ -17,7 +17,6 @@ class TagHelper
            message: 'Must set either :tags or :tag_line but not both'
 
     @tags = TagHelper.parse(tag_line) if tag_line
-
     if tags
       @tags = tags.clone if tags
       @tags.each do |item|

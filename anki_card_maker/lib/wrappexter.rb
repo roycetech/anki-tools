@@ -10,5 +10,6 @@ module Wrappexter
         wrap(klass, ltoken)
       end
     )
+    parser
   end
 end
