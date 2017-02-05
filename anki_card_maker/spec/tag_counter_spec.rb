@@ -2,7 +2,6 @@ require './lib/tag_counter'
 
 describe TagCounter do
   context 'given two "Concept" tagged cards' do
-
     let(:filename) { 'testdummy.md' }
 
     require 'stringio'
