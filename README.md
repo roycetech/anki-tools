@@ -1,9 +1,9 @@
 # Anki-Tools
-Anki Card App Tools.  
+Anki Card App Tools.
 
-1. TSV Geenrator
+1. TSV Generator
 2. Source Analyzer
-3. Old TSV Geenrator
+3. Old TSV Generator
 
 
 
@@ -34,14 +34,14 @@ It is the original commandline script for generating TSV file from a source text
 - Comments are preceded with hash `# this is a line comment.`
 - Source comment and directives are placed on top of the source file.
 - `# @lang=java` directive is used to indicate the source code formatting language for the entire source file.
-- Cards are separated by double newline.  
-- Front and back are separated with a single line.  
+- Cards are separated by double newline.
+- Front and back are separated with a single line.
 - Back card can have blank lines in between.
 - Keywords can be wrapped by \` \`.
 - Code blocks are wrapped by `<well> </well>`.
 - Card can be tagged by preceding it with a line with `@Tag: ` followed by comma separated tags.
 - Card with multiple sentences will be automatically tagged with `Multi:#`
-- Eumeration cards will be automatically tagged with `Multi:#`
+- Enumeration cards will be automatically tagged with `Multi:#`
 
 ### Tags: With special meanings
 
