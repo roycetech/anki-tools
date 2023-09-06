@@ -4,12 +4,11 @@ apply plugin: 'application'
 
 
 dependencies {
+    implementation files("./target/classes")
 
-    compile files("/Users/royce/github/rye-common/target/classes")
-
-    testCompile "junit:junit-dep:$junitVersion"
-    testCompile "org.mockito:mockito-core:$mockitoVersion"
-    testCompile "org.hamcrest:hamcrest-library:$hamcrestVersion"
+    testImplementation "junit:junit-dep:$junitVersion"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
+    testImplementation "org.hamcrest:hamcrest-library:$hamcrestVersion"
 }
 
 repositories {
@@ -18,8 +17,8 @@ repositories {
 
 
 jar {
-    baseName = 'anki-analyzer'
-    version =  '0.1.0'
+    archiveBaseName = 'anki-analyzer'
+    version =  '1.0.0'
 }
 
 mainClassName = 'ph.rye.anki.AnkiMainGui'

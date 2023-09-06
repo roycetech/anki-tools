@@ -4,6 +4,22 @@ Source Analyzer
 This is a `GUI` written with `Java 8` `Swing`.  
 
 
+## How to Build
+
+This project is created using eclipse IDE. Using IntelliJ may require extra effort and challenging if you are inexperienced so proceed with caution.
+
+
+## Set Up
+*   Import project into eclipse.
+*   
+
+### Dependent Projects
+*   java-common
+
+### Dependent Libraries
+*   JUnit 4
+
+
 Features
 --------
 - View number of cards per tag
@@ -24,7 +40,7 @@ Notable Code
 - Gradle dependency to local classes folder.
 
 
-Changelog:
+Change log:
 ----------
 
 - June 23, 2016
@@ -32,3 +48,5 @@ Changelog:
   
 - June 15, 2016
   - Untagged cards handling.
+
+

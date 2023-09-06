@@ -1,18 +1,3 @@
-/**
- *   Copyright 2016 Royce Remulla
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
 package ph.rye.anki.view;
 
 import java.awt.GridBagConstraints;
@@ -22,8 +7,8 @@ import java.awt.Insets;
  * @author royce
  *
  */
-@SuppressWarnings("PMD.MissingStaticMethodInNonInstantiatableClass")
-public class Constraint extends GridBagConstraints {
+// @SuppressWarnings("PMD.MissingStaticMethodInNonInstantiatableClass")
+public final class Constraint extends GridBagConstraints {
 
     /** */
     private static final long serialVersionUID = 3671976461279137323L;
@@ -51,7 +36,7 @@ public class Constraint extends GridBagConstraints {
         private transient int fill = NONE;
         private transient int weightx;
         private transient int weighty;
-        private transient Insets insets = new Insets(0, 0, 0, 0);;
+        private transient Insets insets = new Insets(0, 0, 0, 0);
         private transient int gridwidth = 1;
 
 
