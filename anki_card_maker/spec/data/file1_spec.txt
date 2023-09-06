@@ -1,7 +1,0 @@
-# test file with a single card and a language defined.
-# @lang=js
-
-
-front
-
-back
